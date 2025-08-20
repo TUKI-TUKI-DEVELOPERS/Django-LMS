@@ -1,0 +1,794 @@
+{% extends 'base.html' %}
+{% load i18n %}
+{% block title %}Gestionar Calificaciones - {{ course }} | Sistema de Gestión Académica{% endblock title %}
+
+{% load static %}
+
+{% block content %}
+
+<style>
+	/* Modern Score Management Styles 2025 - Similar to Profile */
+	.score-management-container {
+		background: rgba(255, 255, 255, 0.95);
+		backdrop-filter: blur(20px);
+		border-radius: 16px;
+		box-shadow: 0 8px 32px rgba(0,0,0,0.08);
+		margin: 1rem;
+		padding: 2rem;
+	}
+
+	/* Breadcrumb - Elegant Left Aligned */
+	.breadcrumb {
+		background: transparent;
+		padding: 0;
+		margin-bottom: 2rem;
+		text-align: left;
+	}
+
+	.breadcrumb-item a {
+		color: #92b62a;
+		text-decoration: none;
+		font-weight: 500;
+		transition: color 0.3s ease;
+	}
+
+	.breadcrumb-item a:hover {
+		color: #7a9a2a;
+	}
+
+	.breadcrumb-item.active {
+		color: #6c757d;
+	}
+
+	/* Header Section - Modern */
+	.page-header {
+		background: linear-gradient(135deg, rgba(255,255,255,0.9) 0%, rgba(248,249,250,0.9) 100%);
+		backdrop-filter: blur(10px);
+		border: 1px solid rgba(146, 182, 42, 0.1);
+		border-radius: 16px;
+		box-shadow: 0 4px 20px rgba(0,0,0,0.05);
+		padding: 2rem;
+		margin-bottom: 2rem;
+		position: relative;
+		overflow: hidden;
+	}
+
+	.page-header::before {
+		content: '';
+		position: absolute;
+		top: 0;
+		left: 0;
+		right: 0;
+		height: 4px;
+		background: linear-gradient(90deg, #92b62a, #7a9a2a);
+	}
+
+	.page-title {
+		font-size: 2rem;
+		font-weight: 700;
+		color: #2c3e50;
+		margin-bottom: 0.5rem;
+		display: flex;
+		align-items: center;
+	}
+
+	.page-title i {
+		margin-right: 1rem;
+		color: #92b62a;
+		font-size: 2.2rem;
+	}
+
+	.page-subtitle {
+		color: #6c757d;
+		font-size: 1.1rem;
+		margin: 0;
+	}
+
+	/* Actions Bar */
+	.actions-bar {
+		display: flex;
+		flex-wrap: wrap;
+		gap: 0.75rem;
+		margin-top: 1rem;
+	}
+
+	.action-btn {
+		display: inline-flex;
+		align-items: center;
+		gap: 0.5rem;
+		padding: 0.6rem 1rem;
+		border-radius: 10px;
+		text-decoration: none;
+		font-weight: 600;
+		transition: transform 0.2s ease, box-shadow 0.2s ease;
+	}
+
+	.action-btn:hover { transform: translateY(-1px); }
+
+	.action-primary {
+		background: linear-gradient(135deg, #92b62a 0%, #7a9a2a 100%);
+		color: #fff;
+		box-shadow: 0 2px 12px rgba(146, 182, 42, 0.35);
+	}
+
+	.action-secondary {
+		background: linear-gradient(135deg, #6c757d 0%, #5a6268 100%);
+		color: #fff;
+		box-shadow: 0 2px 12px rgba(108, 117, 125, 0.35);
+	}
+
+	.action-neutral {
+		background: rgba(146, 182, 42, 0.12);
+		color: #2c3e50;
+		border: 1px solid rgba(146, 182, 42, 0.25);
+	}
+
+	.course-info {
+		background: rgba(146, 182, 42, 0.1);
+		border-radius: 12px;
+		padding: 1rem 1.5rem;
+		margin-top: 1rem;
+		border-left: 4px solid #92b62a;
+	}
+
+	.course-info strong {
+		color: #92b62a;
+		font-weight: 600;
+	}
+
+	/* Main Content Card */
+	.main-content-card {
+		background: linear-gradient(135deg, rgba(255,255,255,0.9) 0%, rgba(248,249,250,0.9) 100%);
+		backdrop-filter: blur(10px);
+		border: 1px solid rgba(146, 182, 42, 0.1);
+		border-radius: 16px;
+		box-shadow: 0 4px 20px rgba(0,0,0,0.05);
+		padding: 2rem;
+		transition: all 0.3s ease;
+		margin-bottom: 2rem;
+	}
+
+	.main-content-card:hover {
+		transform: translateY(-2px);
+		box-shadow: 0 8px 30px rgba(146, 182, 42, 0.15);
+		border-color: rgba(146, 182, 42, 0.3);
+	}
+
+	/* Form Section */
+	.form-section {
+		margin-bottom: 2rem;
+	}
+
+	/* Section Title - Refined */
+	.section-title {
+		font-size: 1.4rem;
+		font-weight: 600;
+		color: #2c3e50;
+		margin-bottom: 2rem;
+		padding-bottom: 1rem;
+		border-bottom: 2px solid rgba(146, 182, 42, 0.2);
+		display: flex;
+		align-items: center;
+		position: relative;
+	}
+
+	.section-title::after {
+		content: '';
+		position: absolute;
+		bottom: -2px;
+		left: 0;
+		width: 60px;
+		height: 2px;
+		background: linear-gradient(90deg, #92b62a, #7a9a2a);
+	}
+
+	.section-title i {
+		margin-right: 1rem;
+		color: #92b62a;
+		font-size: 1.5rem;
+		background: rgba(146, 182, 42, 0.1);
+		padding: 0.5rem;
+		border-radius: 10px;
+	}
+
+	/* Table Style Design */
+	.table-container {
+		background: white;
+		border-radius: 8px;
+		border: 1px solid rgba(146, 182, 42, 0.2);
+		overflow: hidden;
+		box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+		margin-bottom: 2rem;
+	}
+
+	.table-header {
+		background: rgba(146, 182, 42, 0.1);
+		border-bottom: 2px solid rgba(146, 182, 42, 0.2);
+		display: grid;
+		grid-template-columns: 2fr 1fr 1fr 1fr 1fr 1fr 0.5fr;
+		gap: 0;
+		font-weight: 600;
+		color: #2c3e50;
+		font-size: 0.8rem;
+		text-transform: uppercase;
+		letter-spacing: 0.5px;
+	}
+
+	.table-header > div {
+		padding: 0.75rem 0.5rem;
+		text-align: center;
+		border-right: 1px solid rgba(146, 182, 42, 0.1);
+	}
+
+	.table-header > div:first-child {
+		text-align: left;
+		padding-left: 1rem;
+	}
+
+	.table-header > div:last-child {
+		border-right: none;
+	}
+
+	/* Student List - Table Style */
+	.student-list {
+		display: flex;
+		flex-direction: column;
+	}
+
+	.student-item {
+		display: grid;
+		grid-template-columns: 2fr 1fr 1fr 1fr 1fr 1fr 0.5fr;
+		gap: 0;
+		border-bottom: 1px solid rgba(146, 182, 42, 0.1);
+		transition: background-color 0.2s ease;
+		align-items: center;
+	}
+
+	.student-item:last-child {
+		border-bottom: none;
+	}
+
+	.student-item:hover {
+		background: rgba(146, 182, 42, 0.05);
+	}
+
+	.student-item:nth-child(even) {
+		background: rgba(248, 249, 250, 0.5);
+	}
+
+	.student-item:nth-child(even):hover {
+		background: rgba(146, 182, 42, 0.08);
+	}
+
+	.student-header {
+		display: flex;
+		align-items: center;
+		justify-content: space-between;
+		padding: 0.5rem 1rem;
+		margin: 0;
+		border: none;
+	}
+
+	.student-info {
+		display: flex;
+		flex-direction: column;
+		gap: 0.2rem;
+	}
+
+	.student-name {
+		font-size: 0.9rem;
+		font-weight: 600;
+		color: #2c3e50;
+		margin: 0;
+	}
+
+	.student-id {
+		font-size: 0.75rem;
+		color: #6c757d;
+		font-family: 'Courier New', monospace;
+		margin: 0;
+	}
+
+	.student-link {
+		background: rgba(146, 182, 42, 0.1);
+		color: #92b62a;
+		text-decoration: none;
+		padding: 0.3rem 0.5rem;
+		border-radius: 4px;
+		font-size: 0.7rem;
+		font-weight: 500;
+		transition: all 0.2s ease;
+		border: 1px solid rgba(146, 182, 42, 0.2);
+		display: flex;
+		align-items: center;
+		gap: 0.2rem;
+	}
+
+	.student-link:hover {
+		background: #92b62a;
+		color: white;
+		text-decoration: none;
+	}
+
+	.student-link i {
+		font-size: 0.6rem;
+	}
+
+	/* Score Inputs - Table Style */
+	.score-inputs {
+		display: contents;
+	}
+
+	.score-group {
+		padding: 0.5rem;
+		text-align: center;
+		border-right: 1px solid rgba(146, 182, 42, 0.1);
+	}
+
+	.score-group:last-child {
+		border-right: none;
+	}
+
+	.score-label {
+		display: none;
+	}
+
+	.score-input {
+		width: 100%;
+		padding: 0.4rem;
+		border: 1px solid rgba(146, 182, 42, 0.2);
+		border-radius: 4px;
+		background: white;
+		color: #2c3e50;
+		font-size: 0.8rem;
+		text-align: center;
+		transition: all 0.2s ease;
+	}
+
+	.score-input:focus {
+		outline: none;
+		border-color: #92b62a;
+		box-shadow: 0 0 0 2px rgba(146, 182, 42, 0.1);
+	}
+
+	.score-input:hover {
+		border-color: rgba(146, 182, 42, 0.3);
+	}
+
+	.score-input::placeholder {
+		color: #adb5bd;
+		font-style: italic;
+		font-size: 0.75rem;
+	}
+	
+	/* Alternating row colors for better readability */
+	.student-item:nth-child(even) {
+		background: rgba(248, 249, 250, 0.95);
+	}
+	
+	/* Total score display */
+	.score-total {
+		background: rgba(146, 182, 42, 0.1);
+		border: 1px solid rgba(146, 182, 42, 0.2);
+		border-radius: 6px;
+		padding: 0.5rem;
+		text-align: center;
+		font-weight: 600;
+		color: #2c3e50;
+		font-size: 0.9rem;
+	}
+
+	/* Submit Button - Refined */
+	.submit-btn {
+		background: linear-gradient(135deg, #92b62a 0%, #7a9a2a 100%);
+		border: none;
+		color: white;
+		padding: 1.2rem 2.5rem;
+		border-radius: 12px;
+		font-size: 1.1rem;
+		font-weight: 600;
+		cursor: pointer;
+		transition: all 0.3s ease;
+		box-shadow: 0 4px 20px rgba(146, 182, 42, 0.3);
+		position: relative;
+		overflow: hidden;
+		display: flex;
+		align-items: center;
+		gap: 0.8rem;
+		margin: 2rem auto 0;
+	}
+
+	.submit-btn::before {
+		content: '';
+		position: absolute;
+		top: 0;
+		left: -100%;
+		width: 100%;
+		height: 100%;
+		background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+		transition: left 0.6s ease;
+	}
+
+	.submit-btn:hover::before {
+		left: 100%;
+	}
+
+	.submit-btn:hover {
+		transform: translateY(-3px);
+		box-shadow: 0 8px 30px rgba(146, 182, 42, 0.4);
+	}
+
+	.submit-btn:active {
+		transform: translateY(-1px);
+	}
+
+	.submit-btn i {
+		font-size: 1rem;
+	}
+
+	/* Info Cards */
+	.info-cards {
+		display: grid;
+		grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+		gap: 1.5rem;
+		margin-top: 2rem;
+	}
+
+	.info-card {
+		background: linear-gradient(135deg, rgba(255,255,255,0.9) 0%, rgba(248,249,250,0.9) 100%);
+		backdrop-filter: blur(10px);
+		border: 1px solid rgba(146, 182, 42, 0.1);
+		border-radius: 16px;
+		padding: 1.5rem;
+		box-shadow: 0 4px 20px rgba(0,0,0,0.05);
+		transition: all 0.3s ease;
+		position: relative;
+		overflow: hidden;
+	}
+
+	.info-card::before {
+		content: '';
+		position: absolute;
+		top: 0;
+		left: 0;
+		right: 0;
+		height: 3px;
+		background: linear-gradient(90deg, #92b62a, #7a9a2a);
+	}
+
+	.info-card:hover {
+		transform: translateY(-3px);
+		box-shadow: 0 8px 30px rgba(146, 182, 42, 0.15);
+		border-color: rgba(146, 182, 42, 0.3);
+	}
+
+	.info-card-title {
+		font-size: 1.2rem;
+		font-weight: 600;
+		color: #2c3e50;
+		margin-bottom: 1rem;
+		display: flex;
+		align-items: center;
+	}
+
+	.info-card-title i {
+		margin-right: 0.8rem;
+		color: #92b62a;
+		font-size: 1.3rem;
+	}
+
+	.info-card-content {
+		color: #6c757d;
+		line-height: 1.6;
+	}
+
+	/* Responsive Design */
+	@media (max-width: 768px) {
+		.score-management-container {
+			margin: 0.5rem;
+			padding: 1rem;
+		}
+		
+		.page-header {
+			padding: 1.5rem;
+		}
+		
+		.table-container {
+			border-radius: 0;
+			margin: 0 -1rem 2rem -1rem;
+		}
+		
+		.table-header {
+			grid-template-columns: 1fr 1fr 1fr 1fr 1fr 1fr 0.5fr;
+			font-size: 0.7rem;
+		}
+		
+		.table-header > div {
+			padding: 0.5rem 0.25rem;
+		}
+		
+		.student-item {
+			grid-template-columns: 1fr 1fr 1fr 1fr 1fr 1fr 0.5fr;
+		}
+		
+		.student-header {
+			padding: 0.5rem 0.25rem;
+		}
+		
+		.student-name {
+			font-size: 0.8rem;
+		}
+		
+		.student-id {
+			font-size: 0.65rem;
+		}
+		
+		.score-input {
+			padding: 0.3rem;
+			font-size: 0.75rem;
+		}
+	}
+	
+	@media (max-width: 480px) {
+		.table-header {
+			grid-template-columns: 1fr 1fr 1fr;
+			font-size: 0.65rem;
+		}
+		
+		.student-item {
+			grid-template-columns: 1fr 1fr 1fr;
+		}
+		
+		.student-header {
+			grid-column: 1 / -1;
+			border-bottom: 1px solid rgba(146, 182, 42, 0.1);
+			margin-bottom: 0.5rem;
+		}
+		
+		.score-group:nth-child(n+4) {
+			grid-column: span 1;
+		}
+	}
+		
+		.page-title {
+			font-size: 1.5rem;
+		}
+		
+		.main-content-card {
+			padding: 1.5rem;
+		}
+		
+		.student-header {
+			flex-direction: column;
+			align-items: flex-start;
+		}
+		
+		.score-inputs {
+			grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+		}
+		
+		.info-cards {
+			grid-template-columns: 1fr;
+		}
+	}
+
+	/* Animations */
+	@keyframes fadeInUp {
+		from {
+			opacity: 0;
+			transform: translateY(30px);
+		}
+		to {
+			opacity: 1;
+			transform: translateY(0);
+		}
+	}
+
+	.page-header,
+	.main-content-card,
+	.info-card {
+		animation: fadeInUp 0.6s ease-out;
+	}
+
+	.student-item {
+		animation: fadeInUp 0.4s ease-out;
+	}
+
+	.student-item:nth-child(2) { animation-delay: 0.1s; }
+	.student-item:nth-child(3) { animation-delay: 0.2s; }
+	.student-item:nth-child(4) { animation-delay: 0.3s; }
+	.student-item:nth-child(5) { animation-delay: 0.4s; }
+
+	.info-card:nth-child(2) {
+		animation-delay: 0.2s;
+	}
+
+	.info-card:nth-child(3) {
+		animation-delay: 0.4s;
+	}
+
+	/* Empty State */
+	.student-item .text-center {
+		text-align: center;
+		padding: 3rem 1rem;
+	}
+
+	.student-item .text-center i {
+		color: #adb5bd;
+		margin-bottom: 1rem;
+	}
+
+	.student-item .text-center p {
+		color: #6c757d;
+		font-size: 1.1rem;
+		margin: 0;
+	}
+</style>
+
+<div class="score-management-container">
+	<!-- Breadcrumb Navigation -->
+	<nav style="--bs-breadcrumb-divider: '/';" aria-label="breadcrumb">
+		<ol class="breadcrumb">
+			<li class="breadcrumb-item"><a href="/">Inicio</a></li>
+			<li class="breadcrumb-item"><a href="{% url 'add_score' %}">Gestionar Calificaciones</a></li>
+			<li class="breadcrumb-item active" aria-current="page">{{ course }}</li>
+		</ol>
+	</nav>
+
+	<!-- Django Messages -->
+	{% include 'snippets/messages.html' %}
+
+	<!-- Page Header -->
+	<div class="page-header">
+		<h1 class="page-title">
+			<i class="fas fa-chart-line"></i>
+			Gestionar Calificaciones
+		</h1>
+		<p class="page-subtitle">
+			Asigna puntuaciones a los estudiantes del curso seleccionado
+		</p>
+		<div class="course-info">
+			<strong>Curso:</strong> {{ course }} | 
+			<strong>Estudiantes:</strong> {{ students.count }}
+		</div>
+
+		<div class="actions-bar">
+			<a href="{% url 'add_score' %}" class="action-btn action-secondary">
+				<i class="fas fa-arrow-left"></i>
+				Volver a Gestión
+			</a>
+			<a href="{% url 'result_sheet_pdf_view' course.id %}" target="_blank" class="action-btn action-primary">
+				<i class="fas fa-file-pdf"></i>
+				Hoja de Resultados (PDF)
+			</a>
+			<a href="{% url 'quiz:quiz_marking' %}" class="action-btn action-neutral">
+				<i class="fas fa-clipboard-check"></i>
+				Exámenes Completados
+			</a>
+		</div>
+	</div>
+
+	<!-- Main Content -->
+	<div class="main-content-card">
+		<div class="form-section">
+			<h2 class="section-title">
+				<i class="fas fa-users"></i>
+				Lista de Estudiantes
+			</h2>
+			
+			<form method="post">
+				{% csrf_token %}
+				
+				<div class="table-container">
+					<!-- Table Header -->
+					<div class="table-header">
+						<div>Estudiante</div>
+						<div>Tarea</div>
+						<div>Parcial</div>
+						<div>Quiz</div>
+						<div>Asist.</div>
+						<div>Final</div>
+						<div></div>
+					</div>
+					
+					<div class="student-list">
+						{% for student in students %}
+						<div class="student-item">
+							<div class="student-header">
+								<div class="student-info">
+									<span class="student-name">{{ student.student.student.get_full_name|title }}</span>
+									<span class="student-id">{{ student.student.student.username }}</span>
+								</div>
+								<a href="{% url 'profile_single' student.student.student.id %}" class="student-link" target="_blank" title="Ver perfil completo">
+									<i class="fas fa-user"></i>
+								</a>
+							</div>
+							
+							<div class="score-group">
+								<input type="number" name="assignment_{{ student.student.student.id }}" class="score-input" 
+									   min="0" max="100" placeholder="0-100" step="0.1"
+									   value="{{ student.assignment|default:'' }}">
+							</div>
+							
+							<div class="score-group">
+								<input type="number" name="mid_exam_{{ student.student.student.id }}" class="score-input" 
+									   min="0" max="100" placeholder="0-100" step="0.1"
+									   value="{{ student.mid_exam|default:'' }}">
+							</div>
+							
+							<div class="score-group">
+								<input type="number" name="quiz_{{ student.student.student.id }}" class="score-input" 
+									   min="0" max="100" placeholder="0-100" step="0.1"
+									   value="{{ student.quiz|default:'' }}">
+							</div>
+							
+							<div class="score-group">
+								<input type="number" name="attendance_{{ student.student.student.id }}" class="score-input" 
+									   min="0" max="100" placeholder="0-100" step="0.1"
+									   value="{{ student.attendance|default:'' }}">
+							</div>
+							
+							<div class="score-group">
+								<input type="number" name="final_exam_{{ student.student.student.id }}" class="score-input" 
+									   min="0" max="100" placeholder="0-100" step="0.1"
+									   value="{{ student.final_exam|default:'' }}">
+							</div>
+							
+							<div class="score-group">
+								<!-- Empty cell for alignment -->
+							</div>
+						</div>
+						{% empty %}
+						<div class="student-item">
+							<div class="text-center text-muted" style="grid-column: 1 / -1; padding: 2rem;">
+								<i class="fas fa-users fa-2x mb-2"></i>
+								<p class="mb-0">No hay estudiantes inscritos en este curso.</p>
+							</div>
+						</div>
+						{% endfor %}
+					</div>
+				</div>
+				
+				<button type="submit" class="submit-btn">
+					<i class="fas fa-save"></i>
+					Guardar Calificaciones
+				</button>
+			</form>
+		</div>
+	</div>
+
+	<!-- Information Cards -->
+	<div class="info-cards">
+		<div class="info-card">
+			<h3 class="info-card-title">
+				<i class="fas fa-info-circle"></i>
+				Instrucciones
+			</h3>
+			<div class="info-card-content">
+				Ingresa las puntuaciones para cada estudiante en los campos correspondientes. Las calificaciones deben estar entre 0 y 100. Puedes dejar campos vacíos si no aplican.
+			</div>
+		</div>
+
+		<div class="info-card">
+			<h3 class="info-card-title">
+				<i class="fas fa-calculator"></i>
+				Cálculo de Nota Final
+			</h3>
+			<div class="info-card-content">
+				La nota final se calcula automáticamente: Tarea (20%) + Examen Parcial (25%) + Cuestionario (15%) + Asistencia (10%) + Examen Final (30%).
+			</div>
+		</div>
+
+		<div class="info-card">
+			<h3 class="info-card-title">
+				<i class="fas fa-eye"></i>
+				Vista Previa
+			</h3>
+			<div class="info-card-content">
+				Haz clic en "Ver Perfil" para acceder al perfil completo de cada estudiante y revisar su historial académico antes de asignar calificaciones.
+			</div>
+		</div>
+	</div>
+</div>
+
+{% endblock content %}

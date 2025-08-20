@@ -1,0 +1,487 @@
+{% extends 'base.html' %}
+{% load i18n %}
+{% block title %}{{ title }} | Sistema de Gestión Académica{% endblock title %}
+{% load crispy_forms_tags %}
+{% load static %}
+
+{% block content %}
+
+<style>
+:root {
+    --navy-blue: #202044;
+    --lime-green: #92b62a;
+    --dark-red: #9f081f;
+    --mustard-yellow: #e2d229;
+    --dark-gray: #454545;
+}
+
+.edit-student-container {
+    min-height: 100vh;
+    padding: 2rem 0;
+    background: linear-gradient(135deg, rgba(255, 255, 255, 0.95) 0%, rgba(146, 182, 42, 0.05) 100%);
+    backdrop-filter: blur(20px);
+}
+
+.breadcrumb-nav {
+    background: rgba(255, 255, 255, 0.9);
+    border-radius: 15px;
+    padding: 1rem 1.5rem;
+    margin-bottom: 2rem;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+    border: 1px solid rgba(146, 182, 42, 0.1);
+}
+
+.breadcrumb-item a {
+    color: var(--navy-blue);
+    text-decoration: none;
+    font-weight: 500;
+    transition: color 0.3s ease;
+}
+
+.breadcrumb-item a:hover {
+    color: var(--lime-green);
+}
+
+.page-header {
+    background: rgba(255, 255, 255, 0.95);
+    border-radius: 20px;
+    padding: 2rem;
+    margin-bottom: 2rem;
+    box-shadow: 0 8px 32px rgba(32, 32, 68, 0.08);
+    border: 1px solid rgba(146, 182, 42, 0.1);
+    backdrop-filter: blur(20px);
+    position: relative;
+    overflow: hidden;
+    transition: all 0.3s ease;
+}
+
+.page-header::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 3px;
+    background: linear-gradient(90deg, var(--lime-green), #a8c73a);
+}
+
+.page-title {
+    color: var(--navy-blue);
+    font-size: 1.8rem;
+    font-weight: 700;
+    margin-bottom: 1rem;
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+}
+
+.page-title i {
+    color: var(--lime-green);
+    font-size: 1.5rem;
+}
+
+.form-card {
+    background: rgba(255, 255, 255, 0.95);
+    border-radius: 20px;
+    padding: 2.5rem;
+    box-shadow: 0 8px 32px rgba(32, 32, 68, 0.08);
+    border: 1px solid rgba(146, 182, 42, 0.1);
+    backdrop-filter: blur(20px);
+    position: relative;
+    overflow: hidden;
+    transition: all 0.3s ease;
+    animation: fadeInUp 0.6s ease-out;
+}
+
+.form-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 3px;
+    background: linear-gradient(90deg, var(--lime-green), #a8c73a);
+}
+
+.form-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 12px 40px rgba(32, 32, 68, 0.12);
+    border-color: rgba(146, 182, 42, 0.2);
+}
+
+.section-title {
+    color: var(--navy-blue);
+    font-size: 1.4rem;
+    font-weight: 600;
+    margin-bottom: 1.5rem;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding-bottom: 0.5rem;
+    border-bottom: 2px solid rgba(146, 182, 42, 0.2);
+}
+
+.section-title i {
+    color: var(--lime-green);
+    font-size: 1.2rem;
+}
+
+.form-group {
+    margin-bottom: 1.5rem;
+}
+
+.form-label {
+    color: var(--navy-blue);
+    font-weight: 600;
+    margin-bottom: 0.5rem;
+    font-size: 0.95rem;
+    display: block;
+}
+
+.form-control {
+    border: 2px solid rgba(146, 182, 42, 0.1);
+    border-radius: 12px;
+    padding: 0.8rem 1rem;
+    font-size: 0.95rem;
+    transition: all 0.3s ease;
+    background: rgba(255, 255, 255, 0.9);
+    width: 100%;
+}
+
+.form-control:focus {
+    border-color: var(--lime-green);
+    box-shadow: 0 0 0 0.2rem rgba(146, 182, 42, 0.25);
+    outline: none;
+    background: rgba(255, 255, 255, 0.95);
+    transform: translateY(-1px);
+}
+
+.form-select {
+    border: 2px solid rgba(146, 182, 42, 0.1);
+    border-radius: 12px;
+    padding: 0.8rem 1rem;
+    font-size: 0.95rem;
+    transition: all 0.3s ease;
+    background: rgba(255, 255, 255, 0.9);
+    width: 100%;
+}
+
+.form-select:focus {
+    border-color: var(--lime-green);
+    box-shadow: 0 0 0 0.2rem rgba(146, 182, 42, 0.25);
+    outline: none;
+    background: rgba(255, 255, 255, 0.95);
+    transform: translateY(-1px);
+}
+
+.info-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 1.5rem;
+    margin-bottom: 2rem;
+}
+
+.info-item {
+    background: rgba(255, 255, 255, 0.8);
+    border-radius: 12px;
+    padding: 1.5rem;
+    border: 1px solid rgba(146, 182, 42, 0.1);
+    transition: all 0.3s ease;
+}
+
+.info-item:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 25px rgba(32, 32, 68, 0.1);
+    border-color: rgba(146, 182, 42, 0.2);
+}
+
+.file-upload {
+    border: 2px dashed rgba(146, 182, 42, 0.3);
+    border-radius: 12px;
+    padding: 2rem;
+    text-align: center;
+    background: rgba(146, 182, 42, 0.05);
+    transition: all 0.3s ease;
+    cursor: pointer;
+}
+
+.file-upload:hover {
+    border-color: var(--lime-green);
+    background: rgba(146, 182, 42, 0.1);
+}
+
+.file-upload input[type="file"] {
+    display: none;
+}
+
+.file-upload-label {
+    cursor: pointer;
+    color: var(--navy-blue);
+    font-weight: 500;
+}
+
+.file-upload-label:hover {
+    color: var(--lime-green);
+}
+
+.btn-save {
+    background: linear-gradient(135deg, var(--lime-green) 0%, #a8c73a 100%);
+    border: none;
+    color: white;
+    padding: 1rem 3rem;
+    border-radius: 50px;
+    font-weight: 600;
+    font-size: 1.1rem;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 15px rgba(146, 182, 42, 0.3);
+    position: relative;
+    overflow: hidden;
+}
+
+.btn-save::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+    transition: left 0.5s;
+}
+
+.btn-save:hover::before {
+    left: 100%;
+}
+
+.btn-save:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 25px rgba(146, 182, 42, 0.4);
+    color: white;
+}
+
+.btn-cancel {
+    background: rgba(108, 117, 125, 0.1);
+    border: 1px solid rgba(108, 117, 125, 0.2);
+    color: #6c757d;
+    padding: 1rem 2rem;
+    border-radius: 50px;
+    font-weight: 600;
+    font-size: 1rem;
+    transition: all 0.3s ease;
+    text-decoration: none;
+    display: inline-block;
+    margin-right: 1rem;
+}
+
+.btn-cancel:hover {
+    background: rgba(108, 117, 125, 0.2);
+    color: #495057;
+    transform: translateY(-2px);
+    text-decoration: none;
+}
+
+/* Animaciones */
+@keyframes fadeInUp {
+    from { opacity: 0; transform: translateY(30px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .edit-student-container {
+        padding: 1rem 0;
+    }
+    
+    .form-card {
+        padding: 1.5rem;
+    }
+    
+    .page-title {
+        font-size: 1.5rem;
+    }
+    
+    .section-title {
+        font-size: 1.2rem;
+    }
+    
+    .info-grid {
+        grid-template-columns: 1fr;
+        gap: 1rem;
+    }
+}
+
+/* Mejoras para campos específicos */
+.form-control:disabled {
+    background: rgba(146, 182, 42, 0.1);
+    border-color: rgba(146, 182, 42, 0.3);
+    color: var(--navy-blue);
+    opacity: 0.7;
+}
+
+.form-control:disabled:focus {
+    box-shadow: none;
+    transform: none;
+}
+
+/* Efectos de hover para campos */
+.form-group:hover .form-label {
+    color: var(--lime-green);
+}
+
+.form-group:hover .form-control {
+    border-color: rgba(146, 182, 42, 0.3);
+}
+
+.form-group:hover .form-select {
+    border-color: rgba(146, 182, 42, 0.3);
+}
+</style>
+
+<style>
+  /* Accounts unified skin overrides */
+  :root { --lime-green: rgb(146, 182, 42); --lime-green-dark: #7a9a2a; }
+  body { background: url('{% static "img/pic-8.png" %}') center/cover no-repeat fixed; background-attachment: fixed; }
+  .form-control, .form-select,
+  input[type="text"], input[type="email"], input[type="tel"], input[type="password"], textarea, select { border: 1px solid rgba(146,182,42,0.2); border-radius: 10px; padding: 0.65rem 0.9rem; background: rgba(255,255,255,0.95); transition: all 0.2s ease; }
+  .form-control:focus, .form-select:focus,
+  input[type="text"]:focus, input[type="email"]:focus, input[type="tel"]:focus, input[type="password"]:focus, textarea:focus, select:focus { outline: none; border-color: var(--lime-green); box-shadow: 0 0 0 3px rgba(146,182,42,0.12); }
+  .btn-save { background: linear-gradient(135deg, var(--lime-green) 0%, var(--lime-green-dark) 100%) !important; color: #fff !important; border: none; box-shadow: 0 4px 14px rgba(146,182,42,0.28); }
+  .btn-cancel { border: 1px solid rgba(146,182,42,0.22); }
+  .breadcrumb-item a { color: var(--lime-green) !important; }
+  .breadcrumb-item a:hover { color: var(--lime-green-dark) !important; }
+</style>
+
+<div class="edit-student-container">
+    <div class="container">
+        
+        <!-- Breadcrumb Navigation -->
+        <nav class="breadcrumb-nav" style="--bs-breadcrumb-divider: '>';" aria-label="breadcrumb">
+            <ol class="breadcrumb mb-0">
+                <li class="breadcrumb-item"><a href="/">Inicio</a></li>
+                <li class="breadcrumb-item"><a href="{% url 'student_list' %}">Estudiantes</a></li>
+                <li class="breadcrumb-item active" aria-current="page">Editar Estudiante</li>
+            </ol>
+        </nav>
+
+        {% include 'snippets/messages.html' %}
+
+        <!-- Page Header -->
+        <div class="page-header">
+            <h1 class="page-title">
+                <i class="fas fa-user-edit"></i>Editar Estudiante
+            </h1>
+        </div>
+
+        <form action="" method="POST" enctype="multipart/form-data">
+            {% csrf_token %}
+            
+            <!-- Información Personal -->
+            <div class="form-card">
+                <h4 class="section-title">
+                    <i class="fas fa-user"></i>Información Personal
+                </h4>
+                
+                <div class="info-grid">
+                    <div class="form-group">
+                        <label for="{{ form.first_name.id_for_label }}" class="form-label">
+                            <i class="fas fa-user me-2"></i>{{ form.first_name.label }}
+                        </label>
+                        {{ form.first_name }}
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="{{ form.last_name.id_for_label }}" class="form-label">
+                            <i class="fas fa-user me-2"></i>{{ form.last_name.label }}
+                        </label>
+                        {{ form.last_name }}
+                    </div>
+                </div>
+                
+                <div class="info-grid">
+                    <div class="form-group">
+                        <label for="{{ form.email.id_for_label }}" class="form-label">
+                            <i class="fas fa-envelope me-2"></i>{{ form.email.label }}
+                        </label>
+                        {{ form.email }}
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="{{ form.phone.id_for_label }}" class="form-label">
+                            <i class="fas fa-phone me-2"></i>{{ form.phone.label }}
+                        </label>
+                        {{ form.phone }}
+                    </div>
+                </div>
+                
+                <div class="form-group">
+                    <label for="{{ form.address.id_for_label }}" class="form-label">
+                        <i class="fas fa-map-marker-alt me-2"></i>{{ form.address.label }}
+                    </label>
+                    {{ form.address }}
+                </div>
+                
+                <div class="info-grid">
+                    <div class="form-group">
+                        <label for="{{ form.gender.id_for_label }}" class="form-label">
+                            <i class="fas fa-venus-mars me-2"></i>{{ form.gender.label }}
+                        </label>
+                        {{ form.gender }}
+                    </div>
+                </div>
+            </div>
+
+            <!-- Información Académica -->
+            <div class="form-card">
+                <h4 class="section-title">
+                    <i class="fas fa-graduation-cap"></i>Información Académica
+                </h4>
+                
+                <div class="info-grid">
+                    <div class="form-group">
+                        <label for="{{ form.level.id_for_label }}" class="form-label">
+                            <i class="fas fa-layer-group me-2"></i>{{ form.level.label }}
+                        </label>
+                        {{ form.level }}
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="{{ form.program.id_for_label }}" class="form-label">
+                            <i class="fas fa-book me-2"></i>{{ form.program.label }}
+                        </label>
+                        {{ form.program }}
+                    </div>
+                </div>
+            </div>
+
+            <!-- Foto de Perfil -->
+            <div class="form-card">
+                <h4 class="section-title">
+                    <i class="fas fa-image"></i>Foto de Perfil
+                </h4>
+                
+                <div class="form-group">
+                    <div class="file-upload">
+                        <label for="{{ form.picture.id_for_label }}" class="file-upload-label">
+                            <i class="fas fa-cloud-upload-alt fa-2x text-muted mb-3"></i>
+                            <p class="mb-2">Haz clic para subir o arrastra y suelta</p>
+                            <p class="small text-muted">PNG, JPG, GIF hasta 10MB</p>
+                        </label>
+                        {{ form.picture }}
+                    </div>
+                </div>
+            </div>
+            
+            <div class="text-center mt-4">
+                <a href="{% url 'student_list' %}" class="btn-cancel">
+                    <i class="fas fa-times me-2"></i>Cancelar
+                </a>
+                <button type="submit" class="btn-save">
+                    <i class="fas fa-save me-2"></i>Actualizar Estudiante
+                </button>
+            </div>
+        </form>
+
+    </div>
+</div>
+
+{% endblock content %}

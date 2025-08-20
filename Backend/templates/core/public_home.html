@@ -1,0 +1,1320 @@
+{% extends 'base_public.html' %}
+{% load static %}
+
+{% block title %}Inicio - Aprende Ya{% endblock %}
+
+{% block content %}
+<!-- Background Pattern -->
+<div class="page-bg-2025"></div>
+
+<!-- Hero Banner Section -->
+<section class="hero-banner hero-2025 position-relative overflow-hidden bg-head-aprd">
+    <div class="container">
+        <div class="row align-items-center min-vh-75">
+            <div class="col-lg-6 text-center text-lg-start">
+                <!-- Logo -->
+                <div class="logo-container mb-4">
+                    <div class="logo-circle bg-white rounded-circle d-inline-flex align-items-center justify-content-center mb-4" style="width: 120px; height: 120px; box-shadow: 0 10px 30px rgba(0,0,0,0.2); border: 3px solid rgb(146, 182, 42);">
+                        <img src="{% static 'img/logo-aprendeya.png' %}" alt="Aprende Ya Logo" style="width: 80px; height: 80px; object-fit: contain;">
+                    </div>
+                    <h1 class="display-3 fw-bold mb-3 reveal">Aprende Ya</h1>
+                </div>
+                
+                <!-- Slogan con animación -->
+                <div class="slogan-container mb-5">
+                    <h2 class="display-5 fw-light reveal reveal-delay-1">
+                        <span class="text-gradient">Formación que marca la diferencia</span>
+                    </h2>
+                    <div class="slogan-underline bg-white mx-auto mt-3 reveal reveal-delay-2" style="width: 100px; height: 3px;"></div>
+                </div>
+                
+                <!-- Descripción -->
+                <p class="lead mb-5 reveal reveal-delay-3">
+                    Somos una institución educativa comprometida con la excelencia académica y la formación integral de nuestros estudiantes. 
+                    Ofrecemos programas de calidad que preparan a nuestros alumnos para los desafíos del futuro.
+                </p>
+                
+                <!-- Botón de acción principal -->
+                <div class="cta-container reveal">
+                    <a href="{% url 'register' %}" class="btn btn-lime btn-lg px-5 py-3 fw-bold text-dark shadow-lg hover-lift">
+                        <i class="fas fa-rocket me-3"></i>¡Sí quiero capacitarme!
+                    </a>
+                </div>
+                
+                <!-- Botones secundarios -->
+                <div class="secondary-actions mt-4 reveal reveal-delay-1">
+                    <a href="{% url 'login' %}" class="btn btn-outline-light btn-lg me-3">
+                        <i class="fas fa-sign-in-alt me-2"></i>Iniciar Sesión
+                    </a>
+                    <a href="{% url 'about' %}" class="btn btn-outline-light btn-lg">
+                        <i class="fas fa-info-circle me-2"></i>Conoce Más
+                    </a>
+                </div>
+            </div>
+            
+            <div class="col-lg-6 text-center">
+                <!-- Elementos decorativos animados -->
+                <div class="floating-elements d-none d-lg-block">
+                    <div class="floating-icon bg-white bg-opacity-10 rounded-circle d-flex align-items-center justify-content-center position-absolute" style="width: 80px; height: 80px; top: 20%; right: 20%; animation: float 3s ease-in-out infinite;">
+                        <i class="fas fa-book text-white fa-2x"></i>
+                    </div>
+                    <div class="floating-icon bg-white bg-opacity-10 rounded-circle d-flex align-items-center justify-content-center position-absolute" style="width: 60px; height: 60px; top: 60%; right: 10%; animation: float 3s ease-in-out infinite 1s;">
+                        <i class="fas fa-users text-white fa-lg"></i>
+                    </div>
+                    <div class="floating-icon bg-white bg-opacity-10 rounded-circle d-flex align-items-center justify-content-center position-absolute" style="width: 70px; height: 70px; top: 40%; right: 60%; animation: float 3s ease-in-out infinite 2s;">
+                        <i class="fas fa-chart-line text-white fa-xl"></i>
+                    </div>
+                </div>
+                
+                <!-- Imagen principal -->
+                <div class="main-image-container">
+                    <div class="hero-image-placeholder bg-white bg-opacity-10 rounded-3 d-flex align-items-center justify-content-center reveal" style="height: 400px; backdrop-filter: blur(10px);">
+                        <div class="bg-white rounded-circle d-flex align-items-center justify-content-center" style="width: 220px; height: 220px; box-shadow: 0 10px 30px rgba(0,0,0,0.2); border: 3px solid rgb(146, 182, 42);">
+                            <img src="{% static 'img/logo-aprendeya.png' %}" alt="Aprende Ya Logo" style="width: 180px; height: 180px; object-fit: contain;">
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Elementos de fondo animados -->
+    <div class="background-elements">
+        <div class="bg-circle position-absolute" style="width: 300px; height: 300px; background: rgba(255,255,255,0.05); border-radius: 50%; top: -150px; right: -150px; animation: pulse 4s ease-in-out infinite;"></div>
+        <div class="bg-circle position-absolute" style="width: 200px; height: 200px; background: rgba(255,255,255,0.03); border-radius: 50%; bottom: -100px; left: -100px; animation: pulse 4s ease-in-out infinite 2s;"></div>
+    </div>
+</section>
+
+<!-- About APRENDE YA Section -->
+<section class="py-5 bg-white">
+    <div class="container">
+        <div class="row align-items-center g-5">
+            <!-- Imagen -->
+            <div class="col-lg-6">
+                <div class="about-image-container position-relative">
+                    <div class="about-image bg-gradient-custom rounded-3 shadow-lg" style="height: 500px;">
+                        <div class="d-flex align-items-center justify-content-center h-100">
+                            <div class="text-center text-white">
+                                <img src="{% static 'img/dest-1-hom-qs-aprd.png' %}" alt="APRENDE YA Capacitación" style="width: 100%; height: 100%; object-fit: cover; border-radius: 15px;">
+                            </div>
+                        </div>
+                    </div>
+                    <!-- Elementos decorativos -->
+                    <div class="position-absolute top-0 start-0 translate-middle">
+                        <div class="bg-mustard rounded-circle d-flex align-items-center justify-content-center" style="width: 60px; height: 60px;">
+                            <i class="fas fa-certificate text-white fa-lg"></i>
+                        </div>
+                    </div>
+                    <div class="position-absolute bottom-0 end-0 translate-middle">
+                        <div class="bg-lime rounded-circle d-flex align-items-center justify-content-center" style="width: 50px; height: 50px;">
+                            <i class="fas fa-check text-dark"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Contenido -->
+            <div class="col-lg-6">
+                <div class="about-content">
+                    <div class="mb-4">
+                        <h2 class="display-5 fw-bold text-navy mb-3">
+                            APRENDE YA: Líder en Capacitación Innovadora
+                        </h2>
+                        <div class="title-underline bg-lime" style="width: 80px; height: 4px;"></div>
+                    </div>
+                    
+                    <div class="about-text">
+                        <p class="lead text-dark mb-4">
+                            Somos <strong>APRENDEYA</strong>, una Organización Técnica de Capacitación (OTEC) fundada por la "Sociedad de Capacitación CRECER JUNTOS Limitada".
+                        </p>
+                        
+                        <p class="mb-4">
+                            <strong>APRENDE YA</strong> se erige como un referente en innovación y excelencia educativa. Fundada en marzo de 2024 por <strong>Yeamilett Valdiglesias</strong>, <strong>Felipe Lefio Carrasco</strong> y <strong>Amet Quispe Flores</strong>, nuestra organización refleja nuestro compromiso con el desarrollo personal y profesional de individuos y organizaciones.
+                        </p>
+                        
+                        <div class="location-info mb-4 p-4 bg-light rounded-3 shadow-sm">
+                            <div class="d-flex align-items-center mb-3">
+                                <div class="bg-lime bg-opacity-10 rounded-circle d-flex align-items-center justify-content-center me-3" style="width: 50px; height: 50px;">
+                                    <i class="fas fa-map-marker-alt text-lime"></i>
+                                </div>
+                                <div>
+                                    <h6 class="fw-bold mb-1">Ubicación</h6>
+                                    <p class="mb-0 text-muted">Calle La Valleja #3931, Recoleta</p>
+                                </div>
+                            </div>
+                            <p class="mb-0">
+                                La <strong>Sociedad Crecer Juntos</strong> respalda nuestra misión de impulsar el crecimiento mediante servicios educativos de primera categoría.
+                            </p>
+                        </div>
+                        
+                        <p class="mb-4">
+                            En <strong>APRENDE YA</strong> nos dedicamos a ofrecer programas que inspiran, capacitan y transforman, alimentando la creencia en el potencial ilimitado de cada ser humano.
+                        </p>
+                    </div>
+                    
+                    <!-- Botón de acción -->
+                    <div class="about-cta">
+                        <a href="{% url 'about' %}" class="btn btn-lime btn-lg px-5 py-3 fw-bold text-dark shadow-lg hover-lift">
+                            <i class="fas fa-info-circle me-3"></i>Conoce APRENDE YA
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- APRENDE YA Features Section -->
+<section class="py-5 bg-light">
+    <div class="container">
+        <div class="row text-center mb-5">
+            <div class="col-12">
+                <h2 class="display-5 fw-bold text-navy mb-3">Características de APRENDE YA</h2>
+                <p class="lead text-muted">Descubre lo que nos hace únicos en la capacitación profesional</p>
+            </div>
+        </div>
+        
+        <div class="row g-4">
+            <!-- Enfoque Personalizado -->
+            <div class="col-md-6 col-lg-3">
+                <div class="flip-card">
+                    <div class="flip-card-inner">
+                        <div class="flip-card-front bg-lime text-white rounded-3 p-4 h-100 shadow-lg">
+                            <div class="feature-icon mb-3">
+                                <div class="bg-white bg-opacity-20 rounded-circle d-inline-flex align-items-center justify-content-center" style="width: 80px; height: 80px;">
+                                    <img src="{% static 'img/ICON-EP-APRD.png' %}" alt="Enfoque Personalizado" style="width: 50px; height: 50px; object-fit: contain;">
+                                </div>
+                            </div>
+                            <h4 class="fw-bold mb-3">Enfoque Personalizado</h4>
+                            <p class="mb-0">Ofrecemos programas adaptados a las necesidades específicas de cada cliente.</p>
+                        </div>
+                        <div class="flip-card-back bg-lime text-white rounded-3 p-4 h-100 shadow-lg d-flex flex-column justify-content-center">
+                            <h5 class="fw-bold mb-3">¡Capacítate con nosotros!</h5>
+                            <p class="mb-0">Aseguramos calidad y cumplimiento normativo.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Equipo de Expertos -->
+            <div class="col-md-6 col-lg-3">
+                <div class="flip-card">
+                    <div class="flip-card-inner">
+                        <div class="flip-card-front bg-mustard text-white rounded-3 p-4 h-100 shadow-lg">
+                            <div class="feature-icon mb-3">
+                                <div class="bg-white bg-opacity-20 rounded-circle d-inline-flex align-items-center justify-content-center" style="width: 80px; height: 80px;">
+                                    <img src="{% static 'img/ICON-EX-APRD.png' %}" alt="Equipo de Expertos" style="width: 50px; height: 50px; object-fit: contain;">
+                                </div>
+                            </div>
+                            <h4 class="fw-bold mb-3">Equipo de Expertos</h4>
+                            <p class="mb-0">Contamos con un equipo de consultores altamente cualificados.</p>
+                        </div>
+                        <div class="flip-card-back bg-mustard text-white rounded-3 p-4 h-100 shadow-lg d-flex flex-column justify-content-center">
+                            <h5 class="fw-bold mb-3">¡Capacítate con nosotros!</h5>
+                            <p class="mb-0">Garantizamos excelencia en tu formación profesional.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Tecnología Avanzada -->
+            <div class="col-md-6 col-lg-3">
+                <div class="flip-card">
+                    <div class="flip-card-inner">
+                        <div class="flip-card-front bg-red-dark text-white rounded-3 p-4 h-100 shadow-lg">
+                            <div class="feature-icon mb-3">
+                                <div class="bg-white bg-opacity-20 rounded-circle d-inline-flex align-items-center justify-content-center" style="width: 80px; height: 80px;">
+                                    <img src="{% static 'img/ICON-TA-APRD.png' %}" alt="Tecnología Avanzada" style="width: 50px; height: 50px; object-fit: contain;">
+                                </div>
+                            </div>
+                            <h4 class="fw-bold mb-3">Tecnología Avanzada</h4>
+                            <p class="mb-0">Utilizamos las últimas tecnologías en nuestras plataformas de e-learning.</p>
+                        </div>
+                        <div class="flip-card-back bg-red-dark text-white rounded-3 p-4 h-100 shadow-lg d-flex flex-column justify-content-center">
+                            <h5 class="fw-bold mb-3">¡Capacítate con nosotros!</h5>
+                            <p class="mb-0">Ofrecemos una experiencia de usuario superior.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Certificación -->
+            <div class="col-md-6 col-lg-3">
+                <div class="flip-card">
+                    <div class="flip-card-inner">
+                        <div class="flip-card-front bg-navy text-white rounded-3 p-4 h-100 shadow-lg">
+                            <div class="feature-icon mb-3">
+                                <div class="bg-white bg-opacity-20 rounded-circle d-inline-flex align-items-center justify-content-center" style="width: 80px; height: 80px;">
+                                    <img src="{% static 'img/ICON-CRT-APRD.png' %}" alt="Certificación" style="width: 50px; height: 50px; object-fit: contain;">
+                                </div>
+                            </div>
+                            <h4 class="fw-bold mb-3">Certificación NCH2728:2015</h4>
+                            <p class="mb-0">Todos nuestros programas están certificados bajo la norma NCH2728:2015</p>
+                        </div>
+                        <div class="flip-card-back bg-navy text-white rounded-3 p-4 h-100 shadow-lg d-flex flex-column justify-content-center">
+                            <h5 class="fw-bold mb-3">¡Capacítate con nosotros!</h5>
+                            <p class="mb-0">Aseguramos una experiencia de aprendizaje relevante y efectiva.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- APRENDE YA Transform Section -->
+<section class="py-5 bg-white">
+    <div class="container">
+        <div class="row align-items-center g-5">
+            <!-- Contenido -->
+            <div class="col-lg-6">
+                <div class="transform-content">
+                    <div class="mb-4">
+                        <h2 class="display-5 fw-bold text-navy mb-3">
+                            APRENDE YA: Transformamos tu Potencial
+                        </h2>
+                        <div class="title-underline bg-lime" style="width: 80px; height: 4px;"></div>
+                    </div>
+                    
+                    <div class="transform-text">
+                        <p class="lead text-dark mb-4">
+                            En <strong>APRENDEYA</strong> nos posicionamos como catalizadores del cambio, promoviendo el aprendizaje continuo como piedra angular para la evolución del mercado.
+                        </p>
+                        
+                        <p class="mb-4">
+                            Aspiramos a liderar en la entrega de programas educativos innovadores, inspirando a las personas a alcanzar sus metas más audaces y creando un impacto duradero en sus vidas.
+                        </p>
+                        
+                        <div class="mission-info mb-4 p-4 bg-light rounded-3 shadow-sm">
+                            <div class="d-flex align-items-center mb-3">
+                                <div class="bg-navy bg-opacity-10 rounded-circle d-flex align-items-center justify-content-center me-3" style="width: 50px; height: 50px;">
+                                    <i class="fas fa-lightbulb text-navy"></i>
+                                </div>
+                                <div>
+                                    <h6 class="fw-bold mb-1">Nuestra Misión</h6>
+                                    <p class="mb-0 text-muted">Catalizadores del cambio educativo</p>
+                                </div>
+                            </div>
+                            <p class="mb-0">
+                                Reconociendo los desafíos presentes, nos comprometemos a hacer que el aprendizaje sea <strong>accesible, relevante y transformador</strong> para todos.
+                            </p>
+                        </div>
+                        
+                        <p class="mb-4">
+                            Nuestro compromiso es crear un impacto duradero en la vida de cada persona que confía en nosotros para su desarrollo profesional y personal.
+                        </p>
+                    </div>
+                    
+                    <!-- Botón de acción -->
+                    <div class="transform-cta">
+                        <a href="{% url 'contact' %}" class="btn btn-navy btn-lg px-5 py-3 fw-bold text-white shadow-lg hover-lift">
+                            <i class="fas fa-phone me-3"></i>¡Quiero que me contacten!
+                        </a>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Imagen -->
+            <div class="col-lg-6">
+                <div class="transform-image-container position-relative">
+                    <div class="transform-image bg-gradient-custom rounded-3 shadow-lg" style="height: 500px;">
+                        <div class="d-flex align-items-center justify-content-center h-100">
+                            <div class="text-center text-white">
+                                <img src="{% static 'img/dest2-qs-APRD.png' %}" alt="APRENDE YA Transformación" style="width: 100%; height: 100%; object-fit: cover; border-radius: 15px;">
+                            </div>
+                        </div>
+                    </div>
+                    <!-- Elementos decorativos -->
+                    <div class="position-absolute top-0 start-0 translate-middle">
+                        <div class="bg-lime rounded-circle d-flex align-items-center justify-content-center" style="width: 60px; height: 60px;">
+                            <i class="fas fa-rocket text-dark fa-lg"></i>
+                        </div>
+                    </div>
+                    <div class="position-absolute bottom-0 end-0 translate-middle">
+                        <div class="bg-mustard rounded-circle d-flex align-items-center justify-content-center" style="width: 50px; height: 50px;">
+                            <i class="fas fa-star text-dark"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- APRENDE YA Features Grid Section -->
+<section class="py-5 bg-gradient-light">
+    <div class="container">
+        <!-- Header Section -->
+        <div class="row text-center mb-5">
+            <div class="col-lg-8 mx-auto">
+                <div class="section-header">
+                    <h2 class="display-4 fw-bold text-navy mb-4">
+                        ¡Crece con <span class="text-lime">APRENDE YA</span>!
+                    </h2>
+                    <div class="title-underline bg-lime mx-auto mb-4" style="width: 100px; height: 4px;"></div>
+                    <p class="lead text-muted fs-5">Descubre las características que nos hacen únicos en la capacitación profesional</p>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Features Grid -->
+        <div class="row g-4">
+            <!-- Programas Adaptables -->
+            <div class="col-md-6 col-lg-4">
+                <div class="modern-feature-card">
+                    <div class="card-icon">
+                        <div class="icon-wrapper bg-lime">
+                            <i class="fas fa-network-wired"></i>
+                        </div>
+                    </div>
+                    <div class="card-content">
+                        <h4 class="card-title">Programas Adaptables</h4>
+                        <p class="card-description">Ofrecemos flexibilidad en horarios y modalidades para adaptarnos a tus necesidades.</p>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Red de Apoyo -->
+            <div class="col-md-6 col-lg-4">
+                <div class="modern-feature-card">
+                    <div class="card-icon">
+                        <div class="icon-wrapper bg-mustard">
+                            <i class="fas fa-seedling"></i>
+                        </div>
+                    </div>
+                    <div class="card-content">
+                        <h4 class="card-title">Red de Apoyo</h4>
+                        <p class="card-description">Brindamos un ambiente de aprendizaje colaborativo y apoyo continuo.</p>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Certificaciones Reconocidas -->
+            <div class="col-md-6 col-lg-4">
+                <div class="modern-feature-card">
+                    <div class="card-icon">
+                        <div class="icon-wrapper bg-red-dark">
+                            <i class="fas fa-shield-check"></i>
+                        </div>
+                    </div>
+                    <div class="card-content">
+                        <h4 class="card-title">Certificaciones Reconocidas</h4>
+                        <p class="card-description">Ofrecemos capacitaciones con certificaciones altamente valoradas en el mercado.</p>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Desarrollo Integral -->
+            <div class="col-md-6 col-lg-4">
+                <div class="modern-feature-card">
+                    <div class="card-icon">
+                        <div class="icon-wrapper bg-navy">
+                            <i class="fas fa-puzzle-piece"></i>
+                        </div>
+                    </div>
+                    <div class="card-content">
+                        <h4 class="card-title">Desarrollo Integral</h4>
+                        <p class="card-description">Fomentamos tanto el crecimiento profesional como personal, creando líderes completos.</p>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Impacto Duradero -->
+            <div class="col-md-6 col-lg-4">
+                <div class="modern-feature-card">
+                    <div class="card-icon">
+                        <div class="icon-wrapper bg-lime">
+                            <i class="fas fa-cogs"></i>
+                        </div>
+                    </div>
+                    <div class="card-content">
+                        <h4 class="card-title">Impacto Duradero</h4>
+                        <p class="card-description">Proporcionamos herramientas y conocimientos que generen un impacto positivo y duradero.</p>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Metodología Innovadora -->
+            <div class="col-md-6 col-lg-4">
+                <div class="modern-feature-card">
+                    <div class="card-icon">
+                        <div class="icon-wrapper bg-mustard">
+                            <i class="fas fa-desktop"></i>
+                        </div>
+                    </div>
+                    <div class="card-content">
+                        <h4 class="card-title">Metodología Innovadora</h4>
+                        <p class="card-description">Utilizamos técnicas de enseñanza avanzadas y tecnología de punta para optimizar tu aprendizaje.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Call to Action -->
+        <div class="text-center mt-5">
+            <div class="cta-container">
+                <a href="{% url 'contact' %}" class="btn btn-navy btn-lg px-5 py-3 fw-bold text-white shadow-lg">
+                    <i class="fas fa-comments me-3"></i>Conversar
+                </a>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Aula Virtual Section -->
+<section class="py-5 bg-white">
+    <div class="container">
+        <div class="row align-items-center g-5">
+            <!-- Logo y Contenido -->
+            <div class="col-lg-6 text-center text-lg-start">
+                <div class="aula-virtual-content">
+                    <div class="logo-container mb-4">
+                                            <div class="aula-logo-circle bg-white rounded-circle d-inline-flex align-items-center justify-content-center mb-4" style="width: 150px; height: 150px; box-shadow: 0 15px 40px rgba(0,0,0,0.2); border: 4px solid rgb(146, 182, 42);">
+                        <img src="{% static 'img/logo-aprendeya.png' %}" alt="Aprende Ya Logo" style="width: 100px; height: 100px; object-fit: contain;">
+                    </div>
+                    </div>
+                    
+                    <div class="aula-text">
+                        <h2 class="display-5 fw-bold text-navy mb-4">
+                            Aula Virtual
+                        </h2>
+                        <div class="title-underline bg-lime mb-4" style="width: 80px; height: 4px;"></div>
+                        
+                        <p class="lead text-dark mb-4">
+                            Tu Formación, a un Click de Distancia
+                        </p>
+                        
+                        <p class="mb-4 text-muted">
+                            Ingresa a nuestra aula virtual y aprovecha al máximo tus cursos. 
+                            Accede a contenido multimedia, recursos interactivos y seguimiento 
+                            personalizado de tu progreso académico.
+                        </p>
+                        
+                        <div class="aula-features mb-4">
+                            <div class="row g-3">
+                                <div class="col-6">
+                                    <div class="d-flex align-items-center">
+                                        <div class="bg-lime bg-opacity-10 rounded-circle d-flex align-items-center justify-content-center me-3" style="width: 40px; height: 40px;">
+                                            <i class="fas fa-video text-lime"></i>
+                                        </div>
+                                        <span class="small fw-bold text-navy">Contenido Multimedia</span>
+                                    </div>
+                                </div>
+                                <div class="col-6">
+                                    <div class="d-flex align-items-center">
+                                        <div class="bg-mustard bg-opacity-10 rounded-circle d-flex align-items-center justify-content-center me-3" style="width: 40px; height: 40px;">
+                                            <i class="fas fa-chart-line text-mustard"></i>
+                                        </div>
+                                        <span class="small fw-bold text-navy">Seguimiento Personalizado</span>
+                                    </div>
+                                </div>
+                                <div class="col-6">
+                                    <div class="d-flex align-items-center">
+                                        <div class="bg-red-dark bg-opacity-10 rounded-circle d-flex align-items-center justify-content-center me-3" style="width: 40px; height: 40px;">
+                                            <i class="fas fa-users text-red-dark"></i>
+                                        </div>
+                                        <span class="small fw-bold text-navy">Comunidad Activa</span>
+                                    </div>
+                                </div>
+                                <div class="col-6">
+                                    <div class="d-flex align-items-center">
+                                        <div class="bg-navy bg-opacity-10 rounded-circle d-flex align-items-center justify-content-center me-3" style="width: 40px; height: 40px;">
+                                            <i class="fas fa-certificate text-navy"></i>
+                                        </div>
+                                        <span class="small fw-bold text-navy">Certificaciones</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Botón de Acceso -->
+                        <div class="aula-cta">
+                            <a href="{% url 'login' %}" class="btn btn-lime btn-lg px-5 py-3 fw-bold text-dark shadow-lg hover-lift">
+                                <i class="fas fa-sign-in-alt me-3"></i>Acceder al Aula Virtual
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Imagen del Aula Virtual -->
+            <div class="col-lg-6">
+                <div class="aula-virtual-image-container position-relative">
+                    <div class="aula-virtual-image bg-gradient-custom rounded-3 shadow-lg" style="height: 500px;">
+                        <div class="d-flex align-items-center justify-content-center h-100">
+                            <div class="text-center text-white">
+                                <div class="mb-4">
+                                    <i class="fas fa-laptop fa-4x mb-3"></i>
+                                    <h3 class="fw-bold">Aula Virtual</h3>
+                                    <p class="lead mb-0">Tu formación a un click de distancia</p>
+                                </div>
+                                
+                                <!-- Elementos decorativos del aula -->
+                                <div class="aula-decorative-elements">
+                                    <div class="position-absolute" style="top: 20%; left: 15%;">
+                                        <div class="bg-white bg-opacity-20 rounded-circle d-flex align-items-center justify-content-center" style="width: 50px; height: 50px;">
+                                            <i class="fas fa-book text-white"></i>
+                                        </div>
+                                    </div>
+                                    <div class="position-absolute" style="top: 60%; right: 20%;">
+                                        <div class="bg-white bg-opacity-20 rounded-circle d-flex align-items-center justify-content-center" style="width: 40px; height: 40px;">
+                                            <i class="fas fa-graduation-cap text-white"></i>
+                                        </div>
+                                    </div>
+                                    <div class="position-absolute" style="bottom: 30%; left: 25%;">
+                                        <div class="bg-white bg-opacity-20 rounded-circle d-flex align-items-center justify-content-center" style="width: 35px; height: 35px;">
+                                            <i class="fas fa-chalkboard-teacher text-white"></i>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Elementos decorativos externos -->
+                    <div class="position-absolute top-0 start-0 translate-middle">
+                        <div class="bg-lime rounded-circle d-flex align-items-center justify-content-center" style="width: 60px; height: 60px;">
+                            <i class="fas fa-rocket text-dark fa-lg"></i>
+                        </div>
+                    </div>
+                    <div class="position-absolute bottom-0 end-0 translate-middle">
+                        <div class="bg-mustard rounded-circle d-flex align-items-center justify-content-center" style="width: 50px; height: 50px;">
+                            <i class="fas fa-star text-dark"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- News & Events Section -->
+{% if items %}
+<section class="py-5 bg-light">
+    <div class="container">
+        <div class="row mb-4">
+            <div class="col-12">
+                <h2 class="display-5 fw-bold text-center text-navy">Noticias y Eventos</h2>
+                <p class="lead text-muted text-center">Mantente informado sobre las últimas novedades de Aprende Ya</p>
+            </div>
+        </div>
+        
+        <div class="row g-4">
+            {% for item in items %}
+            <div class="col-md-6 col-lg-4">
+                <div class="card h-100 border-0 shadow-sm hover-lift">
+                    {% if item.image %}
+                    <img src="{{ item.image.url }}" class="card-img-top" alt="{{ item.title }}" style="height: 200px; object-fit: cover;">
+                    {% else %}
+                    <div class="card-img-top bg-navy bg-opacity-10 d-flex align-items-center justify-content-center" style="height: 200px;">
+                        <i class="fas fa-newspaper fa-3x text-navy"></i>
+                    </div>
+                    {% endif %}
+                    <div class="card-body">
+                        <h5 class="card-title text-navy">{{ item.title }}</h5>
+                        <p class="card-text text-muted">{{ item.summary|truncatewords:20 }}</p>
+                        <small class="text-muted">
+                            <i class="fas fa-calendar me-1"></i>{{ item.updated_date|date:"d/m/Y" }}
+                        </small>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+        
+        <div class="text-center mt-4">
+            <a href="{% url 'login' %}" class="btn btn-lime btn-lg text-dark">
+                <i class="fas fa-newspaper me-2"></i>Ver más noticias
+            </a>
+        </div>
+    </div>
+</section>
+{% endif %}
+
+<!-- Call to Action -->
+<section class="py-5 bg-navy text-white">
+    <div class="container text-center">
+        <h2 class="display-5 fw-bold mb-4">¿Listo para transformar tu futuro?</h2>
+        <p class="lead mb-4">Únete a Aprende Ya y comienza tu camino hacia el éxito profesional.</p>
+        <div class="d-flex justify-content-center gap-3">
+            <a href="{% url 'register' %}" class="btn btn-lime btn-lg px-5 text-dark">
+                <i class="fas fa-rocket me-2"></i>¡Sí quiero capacitarme!
+            </a>
+            <a href="{% url 'contact' %}" class="btn btn-outline-light btn-lg">
+                <i class="fas fa-envelope me-2"></i>Contactar
+            </a>
+        </div>
+    </div>
+</section>
+
+<!-- Estilos CSS personalizados -->
+<style>
+/* Colores del logo APRENDE YA */
+:root {
+    --gray-dark: rgb(69, 69, 69);
+    --lime-green: rgb(146, 182, 42);
+    --navy-blue: rgb(32, 32, 68);
+    --dark-red: rgb(159, 8, 31);
+    --mustard-yellow: rgb(226, 210, 41);
+}
+
+/* Page background styles */
+.page-background {
+    pointer-events: none;
+}
+
+/* Section backgrounds with transparency */
+.bg-white {
+    background-color: rgba(255, 255, 255, 0.85) !important;
+    backdrop-filter: blur(10px);
+}
+
+.bg-light {
+    background-color: rgba(248, 249, 250, 0.8) !important;
+    backdrop-filter: blur(10px);
+}
+
+.bg-gradient-light {
+    background: linear-gradient(135deg, rgba(248, 249, 250, 0.8) 0%, rgba(233, 236, 239, 0.8) 100%) !important;
+    backdrop-filter: blur(10px);
+}
+
+/* Card backgrounds */
+.modern-feature-card {
+    background: rgba(255, 255, 255, 0.85) !important;
+    backdrop-filter: blur(10px);
+}
+
+.card {
+    background: rgba(255, 255, 255, 0.85) !important;
+    backdrop-filter: blur(10px);
+}
+
+/* Footer with transparency */
+.footer {
+    background: rgba(69, 69, 69, 0.9) !important;
+    backdrop-filter: blur(10px);
+}
+
+.bg-gradient-custom {
+    background: linear-gradient(135deg, var(--navy-blue) 0%, var(--gray-dark) 50%, var(--dark-red) 100%);
+}
+
+.bg-lime {
+    background-color: var(--lime-green) !important;
+}
+
+.text-lime {
+    color: var(--lime-green) !important;
+}
+
+.bg-navy {
+    background-color: var(--navy-blue) !important;
+}
+
+.text-navy {
+    color: var(--navy-blue) !important;
+}
+
+.bg-mustard {
+    background-color: var(--mustard-yellow) !important;
+}
+
+.text-mustard {
+    color: var(--mustard-yellow) !important;
+}
+
+.bg-red-dark {
+    background-color: var(--dark-red) !important;
+}
+
+.text-red-dark {
+    color: var(--dark-red) !important;
+}
+
+.btn-lime {
+    background-color: var(--lime-green) !important;
+    border-color: var(--lime-green) !important;
+    color: #333 !important;
+}
+
+.btn-lime:hover {
+    background-color: #a8c73a !important;
+    border-color: #a8c73a !important;
+    color: #333 !important;
+}
+
+.btn-navy {
+    background-color: var(--navy-blue) !important;
+    border-color: var(--navy-blue) !important;
+    color: white !important;
+}
+
+.btn-navy:hover {
+    background-color: #1a1a44 !important;
+    border-color: #1a1a44 !important;
+    color: white !important;
+}
+
+.min-vh-75 {
+    min-height: 75vh;
+}
+
+.text-gradient {
+    background: linear-gradient(45deg, #ffffff, #f8f9fa);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+}
+
+/* Flip card styles */
+.flip-card {
+    background-color: transparent;
+    perspective: 1000px;
+    height: 220px;
+    width: 100%;
+}
+
+.flip-card-inner {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    text-align: center;
+    transition: transform 0.8s;
+    transform-style: preserve-3d;
+}
+
+.flip-card:hover .flip-card-inner {
+    transform: rotateY(180deg);
+}
+
+.flip-card-front, .flip-card-back {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    -webkit-backface-visibility: hidden;
+    backface-visibility: hidden;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    padding: 1.5rem;
+}
+
+.flip-card-back {
+    transform: rotateY(180deg);
+}
+
+/* Ajustes específicos para el contenido de las tarjetas */
+.flip-card-front .feature-icon {
+    margin-bottom: 1rem;
+}
+
+.flip-card-front .feature-icon div {
+    width: 60px !important;
+    height: 60px !important;
+}
+
+.flip-card-front .feature-icon img {
+    width: 40px !important;
+    height: 40px !important;
+    object-fit: contain;
+}
+
+.flip-card-front h4 {
+    font-size: 1.1rem;
+    margin-bottom: 0.75rem;
+    line-height: 1.2;
+}
+
+.flip-card-front p {
+    font-size: 0.9rem;
+    line-height: 1.3;
+    margin-bottom: 0;
+}
+
+.flip-card-back h5 {
+    font-size: 1.1rem;
+    margin-bottom: 0.75rem;
+    line-height: 1.2;
+}
+
+.flip-card-back p {
+    font-size: 0.9rem;
+    line-height: 1.3;
+    margin-bottom: 0;
+}
+
+/* Feature cards styles */
+.feature-card {
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    border: none;
+}
+
+.feature-card:hover {
+    transform: translateY(-10px);
+    box-shadow: 0 20px 40px rgba(0,0,0,0.15) !important;
+}
+
+.feature-icon {
+    transition: transform 0.3s ease;
+}
+
+.feature-card:hover .feature-icon {
+    transform: scale(1.1);
+}
+
+/* Animaciones */
+.animate-fade-in {
+    animation: fadeIn 1s ease-in-out;
+}
+
+.animate-slide-up {
+    animation: slideUp 1s ease-in-out 0.5s both;
+}
+
+.animate-expand {
+    animation: expand 1s ease-in-out 1s both;
+}
+
+.animate-fade-in-delay {
+    animation: fadeIn 1s ease-in-out 0.8s both;
+}
+
+.animate-fade-in-delay-2 {
+    animation: fadeIn 1s ease-in-out 1.2s both;
+}
+
+.animate-bounce-in {
+    animation: bounceIn 1s ease-in-out 1.5s both;
+}
+
+.hover-lift {
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.hover-lift:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 15px 35px rgba(0,0,0,0.1) !important;
+}
+
+.floating-icon {
+    animation: float 3s ease-in-out infinite;
+}
+
+/* About section styles */
+.about-image-container {
+    position: relative;
+}
+
+.about-image {
+    position: relative;
+    overflow: hidden;
+}
+
+.about-image::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: linear-gradient(45deg, rgba(255,255,255,0.1) 0%, rgba(255,255,255,0.05) 100%);
+    z-index: 1;
+}
+
+.about-content {
+    padding: 2rem 0;
+}
+
+.title-underline {
+    transition: width 0.3s ease;
+}
+
+.about-content:hover .title-underline {
+    width: 120px !important;
+}
+
+.location-info {
+    border-left: 4px solid var(--lime-green);
+}
+
+/* Transform section styles */
+.transform-content {
+    padding: 2rem 0;
+}
+
+.transform-content:hover .title-underline {
+    width: 120px !important;
+}
+
+.mission-info {
+    border-left: 4px solid var(--navy-blue);
+}
+
+.transform-image-container {
+    position: relative;
+}
+
+.transform-image {
+    position: relative;
+    overflow: hidden;
+}
+
+.transform-image::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: linear-gradient(45deg, rgba(255,255,255,0.1) 0%, rgba(255,255,255,0.05) 100%);
+    z-index: 1;
+}
+
+/* Feature boxes styles */
+.feature-box {
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    border: 2px solid var(--lime-green) !important;
+}
+
+.feature-box:hover {
+    transform: translateY(-10px);
+    box-shadow: 0 15px 35px rgba(0,0,0,0.1) !important;
+    border-color: var(--navy-blue) !important;
+}
+
+.feature-box .bg-lime {
+    transition: transform 0.3s ease;
+}
+
+.feature-box:hover .bg-lime {
+    transform: scale(1.1);
+    background-color: var(--navy-blue) !important;
+}
+
+.feature-box:hover .bg-lime i {
+    color: white !important;
+}
+
+/* Modern feature cards styles */
+.modern-feature-card {
+    border-radius: 20px;
+    padding: 2rem;
+    height: 100%;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.08);
+    transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    position: relative;
+    overflow: hidden;
+    border: 1px solid rgba(0,0,0,0.05);
+}
+
+.modern-feature-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 4px;
+    background: linear-gradient(90deg, var(--lime-green), var(--navy-blue));
+    transform: scaleX(0);
+    transition: transform 0.3s ease;
+}
+
+.modern-feature-card:hover {
+    transform: translateY(-15px) scale(1.02);
+    box-shadow: 0 25px 50px rgba(0,0,0,0.15);
+}
+
+.modern-feature-card:hover::before {
+    transform: scaleX(1);
+}
+
+.card-icon {
+    margin-bottom: 1.5rem;
+    text-align: center;
+}
+
+.icon-wrapper {
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    transition: all 0.3s ease;
+    box-shadow: 0 8px 25px rgba(0,0,0,0.15);
+}
+
+.icon-wrapper i {
+    font-size: 2rem;
+    color: white;
+    transition: all 0.3s ease;
+}
+
+.modern-feature-card:hover .icon-wrapper {
+    transform: scale(1.1) rotate(5deg);
+    box-shadow: 0 15px 35px rgba(0,0,0,0.2);
+}
+
+.card-content {
+    text-align: center;
+}
+
+.card-title {
+    font-size: 1.3rem;
+    font-weight: 700;
+    color: var(--navy-blue);
+    margin-bottom: 1rem;
+    transition: color 0.3s ease;
+}
+
+.card-description {
+    color: #6c757d;
+    line-height: 1.6;
+    font-size: 0.95rem;
+    margin-bottom: 0;
+}
+
+.modern-feature-card:hover .card-title {
+    color: var(--lime-green);
+}
+
+/* Section header styles */
+.section-header {
+    position: relative;
+}
+
+.section-header h2 {
+    position: relative;
+    z-index: 2;
+}
+
+.section-header .text-lime {
+    background: linear-gradient(45deg, var(--lime-green), var(--mustard-yellow));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+}
+
+.title-underline {
+    transition: width 0.3s ease;
+}
+
+.section-header:hover .title-underline {
+    width: 150px !important;
+}
+
+/* CTA container styles */
+.cta-container {
+    position: relative;
+    display: inline-block;
+}
+
+.cta-container::before {
+    content: '';
+    position: absolute;
+    top: -10px;
+    left: -10px;
+    right: -10px;
+    bottom: -10px;
+    background: linear-gradient(45deg, var(--lime-green), var(--navy-blue));
+    border-radius: 50px;
+    z-index: -1;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+}
+
+.cta-container:hover::before {
+    opacity: 0.1;
+}
+
+/* Aula Virtual section styles */
+.aula-virtual-content {
+    padding: 2rem 0;
+}
+
+.aula-logo-circle {
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.aula-virtual-content:hover .aula-logo-circle {
+    transform: scale(1.05);
+    box-shadow: 0 20px 50px rgba(0,0,0,0.3) !important;
+}
+
+.aula-text h2 {
+    position: relative;
+    z-index: 2;
+}
+
+.aula-text .title-underline {
+    transition: width 0.3s ease;
+}
+
+.aula-virtual-content:hover .title-underline {
+    width: 120px !important;
+}
+
+.aula-features .d-flex {
+    transition: transform 0.3s ease;
+}
+
+.aula-features .d-flex:hover {
+    transform: translateX(5px);
+}
+
+.aula-features .bg-opacity-10 {
+    transition: all 0.3s ease;
+}
+
+.aula-features .d-flex:hover .bg-opacity-10 {
+    transform: scale(1.1);
+    opacity: 0.2 !important;
+}
+
+.aula-virtual-image-container {
+    position: relative;
+}
+
+.aula-virtual-image {
+    position: relative;
+    overflow: hidden;
+}
+
+.aula-virtual-image::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: linear-gradient(45deg, rgba(255,255,255,0.1) 0%, rgba(255,255,255,0.05) 100%);
+    z-index: 1;
+}
+
+.aula-decorative-elements {
+    position: relative;
+    z-index: 2;
+}
+
+.aula-decorative-elements .position-absolute {
+    animation: float 3s ease-in-out infinite;
+}
+
+.aula-decorative-elements .position-absolute:nth-child(2) {
+    animation-delay: 1s;
+}
+
+.aula-decorative-elements .position-absolute:nth-child(3) {
+    animation-delay: 2s;
+}
+
+.aula-cta {
+    margin-top: 2rem;
+}
+
+.aula-cta .btn {
+    transition: all 0.3s ease;
+}
+
+.aula-cta .btn:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 15px 35px rgba(0,0,0,0.2) !important;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
+
+@keyframes slideUp {
+    from { 
+        opacity: 0; 
+        transform: translateY(30px); 
+    }
+    to { 
+        opacity: 1; 
+        transform: translateY(0); 
+    }
+}
+
+@keyframes expand {
+    from { width: 0; }
+    to { width: 100px; }
+}
+
+@keyframes bounceIn {
+    0% { 
+        opacity: 0; 
+        transform: scale(0.3); 
+    }
+    50% { 
+        opacity: 1; 
+        transform: scale(1.05); 
+    }
+    70% { 
+        transform: scale(0.9); 
+    }
+    100% { 
+        opacity: 1; 
+        transform: scale(1); 
+    }
+}
+
+@keyframes float {
+    0%, 100% { transform: translateY(0px); }
+    50% { transform: translateY(-20px); }
+}
+
+@keyframes pulse {
+    0%, 100% { transform: scale(1); opacity: 0.5; }
+    50% { transform: scale(1.1); opacity: 0.8; }
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+    .display-3 {
+        font-size: 2.5rem;
+    }
+    .display-5 {
+        font-size: 1.8rem;
+    }
+    .min-vh-75 {
+        min-height: 60vh;
+    }
+    .about-image {
+        height: 300px !important;
+    }
+    .flip-card {
+        height: 200px;
+    }
+    .flip-card-front, .flip-card-back {
+        padding: 1rem;
+    }
+    .flip-card-front .feature-icon div {
+        width: 50px !important;
+        height: 50px !important;
+    }
+    .flip-card-front .feature-icon img {
+        width: 35px !important;
+        height: 35px !important;
+    }
+    .flip-card-front h4 {
+        font-size: 1rem;
+        margin-bottom: 0.5rem;
+    }
+    .flip-card-front p {
+        font-size: 0.85rem;
+    }
+    .flip-card-back h5 {
+        font-size: 1rem;
+        margin-bottom: 0.5rem;
+    }
+    .flip-card-back p {
+        font-size: 0.85rem;
+    }
+}
+</style>
+{% endblock %} 

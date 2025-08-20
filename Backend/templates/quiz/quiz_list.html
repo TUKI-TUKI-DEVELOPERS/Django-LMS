@@ -1,0 +1,542 @@
+{% extends 'base.html' %}
+{% load i18n %}
+{% block title %}{{ title }} | Sistema de Gestión Académica{% endblock title %}
+{% load i18n %}
+{% load static %}
+
+{% block content %}
+
+<style>
+	/* Modern Quiz List Styles 2025 */
+	:root {
+		--gray-dark: rgb(69, 69, 69);
+		--lime-green: rgb(146, 182, 42);
+		--navy-blue: rgb(32, 32, 68);
+		--dark-red: rgb(159, 8, 31);
+		--mustard-yellow: rgb(226, 210, 41);
+	}
+
+	/* Page background with transparency */
+	body {
+		background: url('{% static "img/pic-8.png" %}') center/cover no-repeat fixed;
+		background-attachment: fixed;
+	}
+
+	.quiz-list-container {
+		background: rgba(255, 255, 255, 0.95);
+		backdrop-filter: blur(20px);
+		border-radius: 20px;
+		box-shadow: 0 8px 32px rgba(0,0,0,0.08);
+		margin: 1rem;
+		padding: 2rem;
+		border: 1px solid rgba(146, 182, 42, 0.1);
+	}
+
+	/* Breadcrumb - Elegant */
+	.breadcrumb {
+		background: transparent;
+		padding: 0;
+		margin-bottom: 2rem;
+	}
+
+	.breadcrumb-item a {
+		color: var(--lime-green);
+		text-decoration: none;
+		font-weight: 500;
+		transition: color 0.3s ease;
+	}
+
+	.breadcrumb-item a:hover {
+		color: #a8c73a;
+	}
+
+	.breadcrumb-item.active {
+		color: #6c757d;
+	}
+
+	/* Page Header */
+	.page-header {
+		margin-bottom: 2rem;
+		padding-bottom: 1rem;
+		border-bottom: 1px solid rgba(146, 182, 42, 0.1);
+	}
+
+	.page-title {
+		font-size: 2.2rem;
+		font-weight: 700;
+		color: var(--navy-blue);
+		margin: 0;
+		background: linear-gradient(135deg, var(--navy-blue) 0%, var(--lime-green) 100%);
+		-webkit-background-clip: text;
+		-webkit-text-fill-color: transparent;
+		background-clip: text;
+		display: flex;
+		align-items: center;
+	}
+
+	.page-title i {
+		margin-right: 1rem;
+		font-size: 2rem;
+		background: linear-gradient(135deg, var(--lime-green) 0%, #a8c73a 100%);
+		-webkit-background-clip: text;
+		-webkit-text-fill-color: transparent;
+		background-clip: text;
+	}
+
+	.course-info {
+		background: rgba(146, 182, 42, 0.1);
+		border-radius: 12px;
+		padding: 1rem 1.5rem;
+		margin-bottom: 2rem;
+		border-left: 4px solid var(--lime-green);
+	}
+
+	.course-info h4 {
+		color: var(--navy-blue);
+		margin: 0 0 0.5rem 0;
+		font-weight: 600;
+	}
+
+	.course-info p {
+		color: #6c757d;
+		margin: 0;
+		font-size: 0.95rem;
+	}
+
+	/* Alert Styles */
+	.alert {
+		border: none;
+		border-radius: 12px;
+		padding: 1rem 1.5rem;
+		margin-bottom: 1.5rem;
+		backdrop-filter: blur(10px);
+	}
+
+	.alert-success {
+		background: rgba(146, 182, 42, 0.1);
+		color: #2d5016;
+		border-left: 4px solid var(--lime-green);
+	}
+
+	.alert-danger {
+		background: rgba(220, 53, 69, 0.1);
+		color: #721c24;
+		border-left: 4px solid #dc3545;
+	}
+
+	.alert i {
+		margin-right: 0.5rem;
+	}
+
+	/* Add Quiz Button */
+	.add-quiz-section {
+		margin-bottom: 2rem;
+		text-align: right;
+	}
+
+	.btn-add-quiz {
+		background: linear-gradient(135deg, var(--lime-green) 0%, #a8c73a 100%);
+		border: none;
+		color: white;
+		padding: 0.8rem 1.5rem;
+		border-radius: 12px;
+		font-weight: 600;
+		transition: all 0.3s ease;
+		box-shadow: 0 4px 15px rgba(146, 182, 42, 0.3);
+		text-decoration: none;
+		display: inline-flex;
+		align-items: center;
+	}
+
+	.btn-add-quiz:hover {
+		transform: translateY(-2px);
+		box-shadow: 0 8px 25px rgba(146, 182, 42, 0.4);
+		color: white;
+	}
+
+	.btn-add-quiz i {
+		margin-right: 0.5rem;
+	}
+
+	/* Quiz Cards */
+	.quiz-card {
+		background: rgba(255, 255, 255, 0.98);
+		border: 1px solid rgba(146, 182, 42, 0.1);
+		border-radius: 16px;
+		box-shadow: 0 4px 20px rgba(0,0,0,0.06);
+		padding: 1.5rem;
+		margin-bottom: 1.5rem;
+		transition: all 0.3s ease;
+		position: relative;
+		overflow: hidden;
+		height: 100%;
+	}
+
+	/* Completed state styles */
+	.quiz-card.completed {
+		filter: grayscale(100%);
+		opacity: 0.6;
+	}
+
+	.quiz-card.completed .btn-start-quiz {
+		background: #adb5bd;
+		box-shadow: none;
+		cursor: not-allowed;
+		pointer-events: none;
+	}
+
+	.quiz-card::before {
+		content: '';
+		position: absolute;
+		top: 0;
+		left: 0;
+		right: 0;
+		height: 3px;
+		background: linear-gradient(135deg, var(--lime-green) 0%, #a8c73a 100%);
+		opacity: 1;
+	}
+
+	.quiz-card:hover {
+		transform: translateY(-4px);
+		box-shadow: 0 12px 40px rgba(146, 182, 42, 0.15);
+		border-color: rgba(146, 182, 42, 0.3);
+	}
+
+	/* Quiz Header */
+	.quiz-header {
+		display: flex;
+		justify-content: space-between;
+		align-items: center;
+		margin-bottom: 1rem;
+		padding-bottom: 0.8rem;
+		border-bottom: 1px solid rgba(146, 182, 42, 0.1);
+	}
+
+	.quiz-category {
+		color: var(--lime-green);
+		font-weight: 600;
+		font-size: 0.9rem;
+		text-transform: uppercase;
+		letter-spacing: 0.5px;
+	}
+
+	.quiz-questions-count {
+		background: linear-gradient(135deg, var(--dark-red) 0%, #c82333 100%);
+		color: white;
+		padding: 0.3rem 0.8rem;
+		border-radius: 20px;
+		font-size: 0.8rem;
+		font-weight: 600;
+		box-shadow: 0 2px 8px rgba(159, 8, 31, 0.3);
+	}
+
+	/* Quiz Title */
+	.quiz-title {
+		font-size: 1.3rem;
+		font-weight: 700;
+		color: var(--navy-blue);
+		margin-bottom: 1rem;
+		line-height: 1.3;
+	}
+
+	/* Quiz Description */
+	.quiz-description {
+		color: #6c757d;
+		font-size: 0.95rem;
+		line-height: 1.5;
+		margin-bottom: 1rem;
+		min-height: 3rem;
+	}
+
+	.no-description {
+		color: #adb5bd;
+		font-style: italic;
+	}
+
+	/* Single Attempt Warning */
+	.single-attempt-warning {
+		background: rgba(226, 210, 41, 0.1);
+		border: 1px solid rgba(226, 210, 41, 0.3);
+		border-radius: 8px;
+		padding: 0.8rem;
+		margin-bottom: 1rem;
+		color: #856404;
+		font-size: 0.9rem;
+		display: flex;
+		align-items: center;
+	}
+
+	.single-attempt-warning i {
+		margin-right: 0.5rem;
+		color: var(--mustard-yellow);
+	}
+
+	/* Quiz Actions */
+	.quiz-actions {
+		display: flex;
+		align-items: center;
+		gap: 0.5rem;
+		margin-top: auto;
+	}
+
+	.btn-start-quiz {
+		background: linear-gradient(135deg, var(--lime-green) 0%, #a8c73a 100%);
+		border: none;
+		color: white;
+		padding: 0.8rem 1.5rem;
+		border-radius: 12px;
+		font-weight: 600;
+		transition: all 0.3s ease;
+		box-shadow: 0 4px 15px rgba(146, 182, 42, 0.3);
+		text-decoration: none;
+		display: inline-flex;
+		align-items: center;
+		flex: 1;
+		justify-content: center;
+	}
+
+	.btn-start-quiz:hover {
+		transform: translateY(-2px);
+		box-shadow: 0 8px 25px rgba(146, 182, 42, 0.4);
+		color: white;
+	}
+
+	.btn-start-quiz i {
+		margin-right: 0.5rem;
+	}
+
+	/* Dropdown Menu */
+	.dropdown-toggle {
+		background: linear-gradient(135deg, #6c757d 0%, #5a6268 100%);
+		border: none;
+		color: white;
+		padding: 0.8rem;
+		border-radius: 12px;
+		transition: all 0.3s ease;
+		box-shadow: 0 4px 15px rgba(108, 117, 125, 0.3);
+	}
+
+	.dropdown-toggle:hover {
+		transform: translateY(-2px);
+		box-shadow: 0 8px 25px rgba(108, 117, 125, 0.4);
+		color: white;
+	}
+
+	.dropdown-menu {
+		border: none;
+		border-radius: 12px;
+		box-shadow: 0 8px 25px rgba(0,0,0,0.15);
+		background: rgba(255, 255, 255, 0.98);
+		backdrop-filter: blur(10px);
+	}
+
+	.dropdown-item {
+		padding: 0.8rem 1.2rem;
+		transition: all 0.3s ease;
+		border-radius: 8px;
+		margin: 0.2rem;
+	}
+
+	.dropdown-item:hover {
+		background: rgba(146, 182, 42, 0.1);
+	}
+
+	.dropdown-item a {
+		color: var(--navy-blue);
+		text-decoration: none;
+		display: flex;
+		align-items: center;
+		font-weight: 500;
+	}
+
+	.dropdown-item a i {
+		margin-right: 0.5rem;
+		color: var(--lime-green);
+	}
+
+	.dropdown-item.delete a {
+		color: var(--dark-red);
+	}
+
+	.dropdown-item.delete a i {
+		color: var(--dark-red);
+	}
+
+	/* Empty State */
+	.empty-state {
+		text-align: center;
+		padding: 4rem 2rem;
+		color: #6c757d;
+	}
+
+	.empty-state i {
+		font-size: 4rem;
+		color: var(--lime-green);
+		margin-bottom: 1rem;
+		opacity: 0.5;
+	}
+
+	.empty-state h4 {
+		color: var(--navy-blue);
+		margin-bottom: 1rem;
+		font-weight: 600;
+	}
+
+	.empty-state p {
+		color: #6c757d;
+		font-size: 1.1rem;
+		margin: 0;
+	}
+
+	/* Responsive */
+	@media (max-width: 768px) {
+		.quiz-list-container {
+			margin: 0.5rem;
+			padding: 1rem;
+		}
+		
+		.page-title {
+			font-size: 1.8rem;
+		}
+		
+		.quiz-card {
+			padding: 1.2rem;
+		}
+		
+		.quiz-actions {
+			flex-direction: column;
+		}
+		
+		.btn-start-quiz {
+			width: 100%;
+		}
+		
+		.add-quiz-section {
+			text-align: center;
+		}
+	}
+</style>
+
+<div class="quiz-list-container">
+	<nav style="--bs-breadcrumb-divider: '>';" aria-label="breadcrumb">
+		<ol class="breadcrumb">
+			<li class="breadcrumb-item"><a href="/">Inicio</a></li>
+			{% if request.user.is_student %}
+			<li class="breadcrumb-item"><a href="{% url 'course:user_course_list' %}">Mis Cursos</a></li>
+			{% else %}
+			<li class="breadcrumb-item"><a href="{% url 'course:programs' %}">Programas</a></li>
+			{% endif %}
+			<li class="breadcrumb-item"><a href="{% url 'course:program_detail' pk=1 %}">{{ course.program }}</a></li>
+			<li class="breadcrumb-item"><a href="{{ course.get_absolute_url }}">{{ course }}</a></li>
+			<li class="breadcrumb-item active" aria-current="page">Exámenes</li>
+		</ol>
+	</nav>
+
+	<div class="page-header">
+		<h1 class="page-title">
+			<i class="fas fa-question-circle"></i>
+			Exámenes [{{ course|truncatechars:25 }}]
+		</h1>
+	</div>
+
+	<div class="course-info">
+		<h4><i class="fas fa-book"></i> {{ course }}</h4>
+		<p><i class="fas fa-project-diagram"></i> Programa: {{ course.program }}</p>
+	</div>
+
+	{% if request.user.is_superuser or request.user.is_lecturer %}
+	<div class="add-quiz-section">
+        <a class="btn-add-quiz" href="{% url 'quiz:quiz_create' course.slug %}">
+			<i class="fas fa-plus"></i>Agregar Examen
+		</a>
+	</div>
+	{% endif %}
+
+	{% include 'snippets/messages.html' %}
+
+	<div class="container">
+		<div class="row">
+			{% for quiz in quizzes %}
+			<div class="col-md-4 mb-4">
+				{# Grey out if quiz is single-attempt and completed by this user #}
+				<div class="quiz-card {% if quiz.id in completed_quiz_ids and quiz.single_attempt %}completed{% endif %}">
+					<div class="quiz-header">
+						<span class="quiz-category">{{ quiz.category|title }} Examen</span>
+						<span class="quiz-questions-count">{{ quiz.get_questions.count }} Preguntas</span>
+					</div>
+
+					<h6 class="quiz-title">{{ quiz.title|title }}</h6>
+
+					{% if quiz.description %}
+					<p class="quiz-description">{{ quiz.description }}</p>
+					{% else %}
+					<p class="quiz-description no-description">No se ha establecido una descripción.</p>
+					{% endif %}
+
+					{% if quiz.single_attempt %}
+					<div class="single-attempt-warning">
+						<i class="fas fa-exclamation-triangle"></i>
+						Solo tendrás un intento en este examen.
+					</div>
+					{% endif %}
+
+					<div class="quiz-actions">
+						{% if quiz.id in completed_quiz_ids and quiz.single_attempt %}
+							<a class="btn-start-quiz" aria-disabled="true">
+								<i class="fas fa-check-circle"></i> Completado
+							</a>
+						{% else %}
+							<a class="btn-start-quiz" href="{% url 'quiz:quiz_take' pk=course.pk slug=quiz.slug %}">
+								<i class="fas fa-play"></i>Iniciar Examen
+							</a>
+						{% endif %}
+
+						{% if request.user.is_superuser or request.user.is_lecturer %}
+						<div class="dropup">
+							<button class="btn dropdown-toggle" type="button" data-bs-toggle="dropdown">
+								<i class="fas fa-ellipsis-v"></i>
+							</button>
+							<div class="dropdown-menu">
+								<div class="dropdown-item">
+                                    <a href="{% url 'quiz:quiz_update' slug=course.slug pk=quiz.id %}">
+										<i class="fas fa-pencil-alt"></i>Editar
+									</a>
+								</div>
+								<div class="dropdown-item delete">
+                                    <a href="{% url 'quiz:quiz_delete' slug=course.slug pk=quiz.id %}">
+										<i class="fas fa-trash-alt"></i>Eliminar
+									</a>
+								</div>
+							</div>
+						</div>
+						{% endif %}
+					</div>
+				</div>
+			</div>
+			{% empty %}
+			<div class="col-12">
+				<div class="empty-state">
+					<i class="fa-regular fa-folder-open"></i>
+					<h4>No hay exámenes disponibles</h4>
+					<p>Los exámenes del curso aparecerán aquí cuando sean creados.</p>
+				</div>
+			</div>
+			{% endfor %}
+		</div>
+	</div>
+</div>
+
+{% endblock %}
+
+{% block js %}
+<script>
+	// #####################################
+	// loader
+	// document.getElementById('progress-main').style.display = 'none';
+	var timer = setInterval(function(){
+		document.getElementById('progress-card').style.display = 'none';
+		document.getElementById('progress-main').style.display = 'block';
+		clearInterval(timer)
+	}, 8000);           
+</script>
+{% endblock js %}

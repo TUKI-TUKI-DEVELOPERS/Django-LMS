@@ -1,0 +1,201 @@
+{% extends "base.html" %}
+{% load i18n %}
+{% load static %}
+
+{% block title %} Página de Progreso | Sistema de Gestión Académica {% endblock %}
+{% block description %} Página de Progreso del Usuario {% endblock %}
+
+{% block content %}
+
+<style>
+	/* Progreso - estilo fino y consistente */
+	:root {
+		--lime-green: rgb(146, 182, 42);
+		--lime-green-dark: #7a9a2a;
+		--gray-dark: #454545;
+		--gray-600: #6c757d;
+		--light-gray: #f8f9fa;
+		--white: #ffffff;
+		--shadow-soft: 0 8px 32px rgba(0,0,0,0.08);
+		--shadow-hover: 0 12px 32px rgba(146, 182, 42, 0.20);
+	}
+
+	/* Fondo translúcido sobre imagen */
+	body {
+		background: url('{% static "img/pic-8.png" %}') center/cover no-repeat fixed;
+		background-attachment: fixed;
+	}
+
+	/* Contenedor principal (glassmorphism) */
+	.progress-container {
+		max-width: 1400px;
+		margin: 1rem auto;
+		padding: 1.5rem;
+		background: rgba(255, 255, 255, 0.95);
+		backdrop-filter: blur(18px);
+		border-radius: 18px;
+		box-shadow: var(--shadow-soft);
+		border: 1px solid rgba(146, 182, 42, 0.12);
+	}
+
+	/* Breadcrumb minimal */
+	.breadcrumb { background: transparent; padding: 0; margin-bottom: 0.9rem; }
+	.breadcrumb-item a { color: var(--lime-green); text-decoration: none; font-weight: 600; transition: color 0.25s ease; }
+	.breadcrumb-item a:hover { color: #a8c73a; }
+	.breadcrumb-item.active { color: var(--gray-600); }
+
+	/* Encabezado minimalista */
+	.page-header { display: flex; align-items: center; justify-content: space-between; padding-bottom: 0.75rem; margin-bottom: 1.25rem; border-bottom: 1px solid rgba(146, 182, 42, 0.15); }
+	.page-title {
+		font-size: 2rem;
+		font-weight: 800;
+		margin: 0;
+		line-height: 1.1;
+		background: linear-gradient(135deg, var(--lime-green) 0%, #a8c73a 100%);
+		-webkit-background-clip: text;
+		-webkit-text-fill-color: transparent;
+		background-clip: text;
+	}
+
+	/* Secciones */
+	.section-header { display: flex; flex-direction: column; gap: 0.3rem; margin-bottom: 1rem; padding-bottom: 0.75rem; border-bottom: 1px solid rgba(146, 182, 42, 0.15); }
+	.section-title { font-size: 1.2rem; font-weight: 800; color: var(--gray-dark); margin: 0; display: flex; align-items: center; gap: 0.6rem; }
+	.section-subtitle { font-size: 0.92rem; color: var(--gray-600); margin: 0; font-weight: 600; }
+
+	/* Tarjetas (categorías y exámenes) */
+	.category-card, .exam-card { background: rgba(255,255,255,0.98); border: 1px solid rgba(146, 182, 42, 0.12); border-radius: 14px; box-shadow: 0 6px 22px rgba(0,0,0,0.06); padding: 1rem; margin-bottom: 1rem; transition: transform 0.25s ease, box-shadow 0.25s ease, border-color 0.25s ease; position: relative; overflow: hidden; }
+	.category-card:hover, .exam-card:hover { transform: translateY(-2px); box-shadow: 0 12px 28px rgba(0,0,0,0.08); border-color: rgba(146,182,42,0.3); }
+	.category-card::before, .exam-card::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 3px; background: linear-gradient(135deg, var(--lime-green) 0%, #a8c73a 100%); opacity: 0; transition: opacity 0.25s ease; }
+	.category-card:hover::before, .exam-card:hover::before { opacity: 1; }
+
+	/* Categorías */
+	.category-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.8rem; }
+	.category-name { font-size: 1.05rem; font-weight: 800; color: var(--gray-dark); margin: 0; }
+	.category-score { background: linear-gradient(135deg, var(--lime-green) 0%, var(--lime-green-dark) 100%); color: var(--white); padding: 0.35rem 0.8rem; border-radius: 14px; font-weight: 800; font-size: 0.82rem; letter-spacing: 0.3px; }
+	.category-stats { display: flex; gap: 1.2rem; flex-wrap: wrap; }
+	.category-stat { display: flex; align-items: center; gap: 0.5rem; }
+	.category-stat i { color: var(--lime-green); font-size: 0.9rem; }
+	.category-stat-label { font-size: 0.85rem; color: var(--gray-600); font-weight: 600; }
+	.category-stat-value { font-size: 0.92rem; color: var(--gray-dark); font-weight: 800; }
+
+	/* Exámenes */
+	.exam-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 0.8rem; }
+	.exam-number { background: linear-gradient(135deg, var(--lime-green) 0%, #a8c73a 100%); color: var(--white); width: 32px; height: 32px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 0.95rem; font-weight: 800; margin-right: 0.8rem; flex-shrink: 0; }
+	.exam-info { flex-grow: 1; }
+	.exam-title { font-size: 1.05rem; font-weight: 800; color: var(--gray-dark); margin: 0 0 0.4rem 0; }
+	.exam-stats { display: flex; gap: 1.2rem; flex-wrap: wrap; }
+	.exam-stat { display: flex; align-items: center; gap: 0.5rem; }
+	.exam-stat i { color: var(--lime-green); font-size: 0.9rem; }
+	.exam-stat-label { font-size: 0.85rem; color: var(--gray-600); font-weight: 600; }
+	.exam-stat-value { font-size: 0.92rem; color: var(--gray-dark); font-weight: 800; }
+	.exam-score { background: linear-gradient(135deg, var(--lime-green) 0%, #a8c73a 100%); color: var(--white); padding: 0.35rem 0.8rem; border-radius: 14px; font-weight: 800; font-size: 0.82rem; }
+
+	/* Resumen */
+	.stats-summary { background: rgba(255,255,255,0.98); border: 1px solid rgba(146, 182, 42, 0.12); border-radius: 12px; padding: 0.8rem 1rem; margin-bottom: 1rem; display: flex; align-items: center; justify-content: space-between; box-shadow: 0 4px 16px rgba(0,0,0,0.05); }
+	.stats-text { color: var(--gray-dark); font-weight: 800; font-size: 1rem; margin: 0; }
+	.stats-count { background: linear-gradient(135deg, var(--lime-green) 0%, var(--lime-green-dark) 100%); color: var(--white); padding: 0.35rem 0.8rem; border-radius: 14px; font-weight: 800; font-size: 0.82rem; }
+
+	/* Empty State */
+	.empty-state { text-align: center; padding: 2.2rem 1.2rem; color: var(--gray-600); background: rgba(255,255,255,0.95); border-radius: 16px; border: 1px dashed rgba(146, 182, 42, 0.3); backdrop-filter: blur(8px); }
+	.empty-state i { font-size: 3rem; color: var(--lime-green); margin-bottom: 0.9rem; opacity: 0.8; }
+	.empty-state h3 { color: var(--gray-dark); margin-bottom: 0.4rem; font-size: 1.2rem; font-weight: 800; }
+	.empty-state p { margin-bottom: 0; opacity: 0.9; font-size: 0.95rem; }
+
+	/* Responsive */
+	@media (max-width: 768px) {
+		.progress-container { padding: 1rem; }
+		.page-title { font-size: 1.8rem; }
+		.category-stats, .exam-stats { flex-direction: column; gap: 0.8rem; align-items: flex-start; }
+	}
+</style>
+
+<div class="progress-container">
+    <nav style="--bs-breadcrumb-divider: '>';" aria-label="breadcrumb">
+		<ol class="breadcrumb">
+			<li class="breadcrumb-item"><a href="/">Inicio</a></li>
+			<li class="breadcrumb-item active" aria-current="page">Progreso</li>
+		</ol>
+	</nav>
+
+	<div class="page-header">
+		<h1 class="page-title">Progreso</h1>
+	</div>
+
+	{% if cat_scores %}
+	<div class="section-header">
+		<h2 class="section-title">Puntuaciones por Categoría de Preguntas</h2>
+		<p class="section-subtitle">Tu rendimiento por categorías de preguntas</p>
+	</div>
+
+	{% for cat, value in cat_scores.items %}
+	<div class="category-card">
+		<div class="category-header">
+			<h3 class="category-name">{{ cat }}</h3>
+			<span class="category-score">{{ value.2 }}%</span>
+		</div>
+		<div class="category-stats">
+			<div class="category-stat">
+				<i class="fas fa-check-circle"></i>
+				<span class="category-stat-label">Respondidas correctamente:</span>
+				<span class="category-stat-value">{{ value.0 }}</span>
+			</div>
+			<div class="category-stat">
+				<i class="fas fa-times-circle"></i>
+				<span class="category-stat-label">Incorrectas:</span>
+				<span class="category-stat-value">{{ value.1 }}</span>
+			</div>
+		</div>
+	</div>
+	{% endfor %}
+	{% endif %}
+
+	{% if exams %}
+	<div class="section-header">
+		<h2 class="section-title">Exámenes Anteriores</h2>
+		<p class="section-subtitle">A continuación se muestran los resultados de los exámenes que has realizado.</p>
+	</div>
+
+	<div class="stats-summary">
+		<p class="stats-text">Total de exámenes completados</p>
+		<span class="stats-count">{{ exams_counter }}</span>
+	</div>
+
+	{% for exam in exams %}
+	<div class="exam-card">
+		<div class="exam-header">
+			<div class="exam-number">{{ forloop.counter }}</div>
+			<div class="exam-info">
+				<h3 class="exam-title">{{ exam.quiz.title }}</h3>
+				<div class="exam-stats">
+					<div class="exam-stat">
+						<i class="fas fa-trophy"></i>
+						<span class="exam-stat-label">Puntuación:</span>
+						<span class="exam-stat-value">{{ exam.current_score }}</span>
+					</div>
+					<div class="exam-stat">
+						<i class="fas fa-star"></i>
+						<span class="exam-stat-label">Puntuación Posible:</span>
+						<span class="exam-stat-value">{{ exam.get_max_score }}</span>
+					</div>
+					<div class="exam-stat">
+						<i class="fas fa-chart-line"></i>
+						<span class="exam-stat-label">De 100%:</span>
+						<span class="exam-score">{{ exam.get_percent_correct }}%</span>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+	{% endfor %}
+	{% endif %}
+
+	{% if not cat_scores and not exams %}
+	<div class="empty-state">
+		<i class="far fa-frown"></i>
+		<h3>Sin Registros Aún</h3>
+		<p>No hay registros aún. Intenta realizar algunos exámenes en tu curso.</p>
+	</div>
+	{% endif %}
+</div>
+
+{% endblock %}

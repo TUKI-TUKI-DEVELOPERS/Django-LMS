@@ -1,0 +1,50 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block title %}Certificados (Admin){% endblock %}
+{% block content %}
+<div class="content-wrapper" style="max-width:1200px;margin:1rem auto;padding:1.5rem;background:#fff;border-radius:16px;box-shadow:0 8px 32px rgba(0,0,0,0.08);">
+  <nav style="--bs-breadcrumb-divider: '>';" aria-label="breadcrumb">
+    <ol class="breadcrumb">
+      <li class="breadcrumb-item"><a href="/">Inicio</a></li>
+      <li class="breadcrumb-item active" aria-current="page">Certificados (Admin)</li>
+    </ol>
+  </nav>
+  {% include 'snippets/messages.html' %}
+
+  <h1 class="h4 mb-3">Certificados emitidos</h1>
+
+  <div class="table-responsive">
+    <table class="table table-sm align-middle">
+      <thead>
+        <tr>
+          <th>#</th>
+          <th>Alumno</th>
+          <th>Curso</th>
+          <th>Total</th>
+          <th>Estado</th>
+          <th>Acciones</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for tc in passed %}
+        <tr>
+          <td>{{ forloop.counter }}</td>
+          <td>{{ tc.student.student.get_full_name }}</td>
+          <td>{{ tc.course.title }} ({{ tc.course.code }})</td>
+          <td>{{ tc.total }}</td>
+          <td>{{ tc.comment }}</td>
+          <td>
+            <a href="{% url 'certificate_admin_detail' tc.id %}" class="btn btn-sm btn-outline-primary">Detalle</a>
+            <a href="{% url 'certificate_pdf_view' tc.id %}" class="btn btn-sm btn-success" target="_blank">PDF</a>
+          </td>
+        </tr>
+        {% empty %}
+        <tr><td colspan="6" class="text-center text-muted">Sin certificados</td></tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+{% endblock %}
+
+

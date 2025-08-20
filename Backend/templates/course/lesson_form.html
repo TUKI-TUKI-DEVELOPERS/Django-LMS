@@ -1,0 +1,357 @@
+{% extends 'base.html' %}
+{% load static %}
+{% load crispy_forms_tags %}
+
+{% block title %}{{ title }} - {{ module.title }}{% endblock %}
+
+{% block content %}
+<div class="lesson-form-container">
+    <div class="container">
+        <div class="content-wrapper">
+            <!-- Header -->
+            <div class="page-header">
+                <div class="header-content">
+                    <div class="header-title">
+                        <h1><i class="fas fa-book"></i> {{ title }}</h1>
+                        <p class="subtitle">Módulo: {{ module.title }} - Curso: {{ course.title }}</p>
+                    </div>
+                    <div class="header-actions">
+                        <a href="{% url 'course:module_detail' slug=course.slug module_id=module.id %}" class="btn btn-secondary">
+                            <i class="fas fa-arrow-left"></i> Volver al Módulo
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Form -->
+            <div class="form-section">
+                <div class="form-card">
+                    <div class="form-header">
+                        <h3><i class="fas fa-edit"></i> {{ title }}</h3>
+                        <p>Completa la información de la lección</p>
+                    </div>
+                    
+                    <form method="post" class="lesson-form">
+                        {% csrf_token %}
+                        
+                        <div class="form-row">
+                            <div class="form-group col-md-8">
+                                <label for="{{ form.title.id_for_label }}">{{ form.title.label }}</label>
+                                {{ form.title }}
+                                {% if form.title.errors %}
+                                    <div class="invalid-feedback">{{ form.title.errors.0 }}</div>
+                                {% endif %}
+                            </div>
+                            <div class="form-group col-md-4">
+                                <label for="{{ form.order.id_for_label }}">{{ form.order.label }}</label>
+                                {{ form.order }}
+                                {% if form.order.errors %}
+                                    <div class="invalid-feedback">{{ form.order.errors.0 }}</div>
+                                {% endif %}
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="{{ form.description.id_for_label }}">{{ form.description.label }}</label>
+                            {{ form.description }}
+                            {% if form.description.errors %}
+                                <div class="invalid-feedback">{{ form.description.errors.0 }}</div>
+                            {% endif %}
+                        </div>
+
+                        <div class="form-row">
+                            <div class="form-group col-md-4">
+                                <label for="{{ form.lesson_type.id_for_label }}">{{ form.lesson_type.label }}</label>
+                                {{ form.lesson_type }}
+                                {% if form.lesson_type.errors %}
+                                    <div class="invalid-feedback">{{ form.lesson_type.errors.0 }}</div>
+                                {% endif %}
+                                <small class="form-text text-muted">
+                                    Selecciona el tipo de lección. Podrás agregar contenido específico después de crear la lección.
+                                </small>
+                            </div>
+                            <div class="form-group col-md-4">
+                                <label for="{{ form.duration_minutes.id_for_label }}">{{ form.duration_minutes.label }}</label>
+                                {{ form.duration_minutes }}
+                                {% if form.duration_minutes.errors %}
+                                    <div class="invalid-feedback">{{ form.duration_minutes.errors.0 }}</div>
+                                {% endif %}
+                            </div>
+                            <div class="form-group col-md-4">
+                                <div class="form-check">
+                                    {{ form.is_required }}
+                                    <label class="form-check-label" for="{{ form.is_required.id_for_label }}">
+                                        {{ form.is_required.label }}
+                                    </label>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Información sobre tipos de lección -->
+                        <div class="lesson-type-info" style="margin-top: 1rem;">
+                            <div class="alert alert-info">
+                                <h6><i class="fas fa-info-circle"></i> Tipos de Lección Disponibles:</h6>
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        <ul class="list-unstyled">
+                                            <li><i class="fas fa-video text-primary"></i> <strong>Video:</strong> Videos de YouTube, Vimeo o archivos locales</li>
+                                            <li><i class="fas fa-font text-success"></i> <strong>Texto:</strong> Contenido de texto enriquecido</li>
+                                            <li><i class="fas fa-question-circle text-warning"></i> <strong>Cuestionario:</strong> Quiz interactivo con múltiples tipos de preguntas</li>
+                                            <li><i class="fas fa-tasks text-info"></i> <strong>Actividad Práctica:</strong> Ejercicios y proyectos</li>
+                                            <li><i class="fas fa-clipboard-list text-secondary"></i> <strong>Tarea:</strong> Asignaciones para entregar</li>
+                                        </ul>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="next-steps">
+                                            <h6><i class="fas fa-arrow-right"></i> Próximos Pasos:</h6>
+                                            <p class="mb-1">1. <strong>Completa este formulario</strong> con la información básica</p>
+                                            <p class="mb-1">2. <strong>Haz clic en "Guardar Lección"</strong></p>
+                                            <p class="mb-0">3. <strong>Serás redirigido al Canvas</strong> donde podrás agregar contenido rico (videos, texto, cuestionarios, imágenes, presentaciones, etc.)</p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <div class="form-check">
+                                {{ form.is_active }}
+                                <label class="form-check-label" for="{{ form.is_active.id_for_label }}">
+                                    {{ form.is_active.label }}
+                                </label>
+                            </div>
+                        </div>
+
+                        <div class="form-actions">
+                            <button type="submit" class="btn btn-primary">
+                                <i class="fas fa-arrow-right"></i> Crear Lección y Ir al Canvas
+                            </button>
+                            <a href="{% url 'course:module_detail' slug=course.slug module_id=module.id %}" class="btn btn-secondary">
+                                <i class="fas fa-times"></i> Cancelar
+                            </a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+:root {
+    --primary-color: #204444;
+    --secondary-color: #92b62a;
+    --accent-color: #9f081f;
+    --warning-color: #e2d229;
+    --dark-gray: #454545;
+    --light-gray: #f8f9fa;
+    --white: #ffffff;
+    --glass-bg: rgba(255, 255, 255, 0.1);
+    --glass-border: rgba(255, 255, 255, 0.2);
+    --shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+    --border-radius: 12px;
+}
+
+.lesson-form-container {
+    min-height: 100vh;
+    background: linear-gradient(135deg, var(--primary-color) 0%, var(--dark-gray) 100%);
+    padding: 2rem 0;
+}
+
+.content-wrapper {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 1rem;
+}
+
+.page-header {
+    background: var(--glass-bg);
+    backdrop-filter: blur(10px);
+    border: 1px solid var(--glass-border);
+    border-radius: var(--border-radius);
+    padding: 2rem;
+    margin-bottom: 2rem;
+    box-shadow: var(--shadow);
+}
+
+.header-content {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 1rem;
+}
+
+.header-title h1 {
+    color: var(--white);
+    margin: 0;
+    font-size: 2rem;
+    font-weight: 700;
+}
+
+.header-title .subtitle {
+    color: var(--secondary-color);
+    margin: 0.5rem 0 0 0;
+    font-size: 1.1rem;
+}
+
+.header-actions .btn {
+    background: var(--secondary-color);
+    border: none;
+    color: var(--white);
+    padding: 0.75rem 1.5rem;
+    border-radius: var(--border-radius);
+    text-decoration: none;
+    transition: all 0.3s ease;
+    font-weight: 600;
+}
+
+.header-actions .btn:hover {
+    background: #7a9a22;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(146, 182, 42, 0.3);
+}
+
+.form-section {
+    background: var(--glass-bg);
+    backdrop-filter: blur(10px);
+    border: 1px solid var(--glass-border);
+    border-radius: var(--border-radius);
+    padding: 2rem;
+    box-shadow: var(--shadow);
+}
+
+.form-card {
+    background: var(--white);
+    border-radius: var(--border-radius);
+    padding: 2rem;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+}
+
+.form-header {
+    text-align: center;
+    margin-bottom: 2rem;
+    padding-bottom: 1rem;
+    border-bottom: 2px solid var(--light-gray);
+}
+
+.form-header h3 {
+    color: var(--primary-color);
+    margin: 0;
+    font-size: 1.5rem;
+    font-weight: 700;
+}
+
+.form-header p {
+    color: var(--dark-gray);
+    margin: 0.5rem 0 0 0;
+}
+
+.lesson-form .form-group {
+    margin-bottom: 1.5rem;
+}
+
+.lesson-form label {
+    color: var(--primary-color);
+    font-weight: 600;
+    margin-bottom: 0.5rem;
+    display: block;
+}
+
+.lesson-form .form-control {
+    border: 2px solid #e9ecef;
+    border-radius: var(--border-radius);
+    padding: 0.75rem 1rem;
+    font-size: 1rem;
+    transition: all 0.3s ease;
+}
+
+.lesson-form .form-control:focus {
+    border-color: var(--secondary-color);
+    box-shadow: 0 0 0 0.2rem rgba(146, 182, 42, 0.25);
+}
+
+.lesson-form .form-check-input {
+    width: 1.2rem;
+    height: 1.2rem;
+    margin-right: 0.5rem;
+}
+
+.lesson-form .form-check-label {
+    color: var(--dark-gray);
+    font-weight: 500;
+}
+
+.form-actions {
+    display: flex;
+    gap: 1rem;
+    justify-content: center;
+    margin-top: 2rem;
+    padding-top: 2rem;
+    border-top: 2px solid var(--light-gray);
+}
+
+.form-actions .btn {
+    padding: 0.75rem 2rem;
+    border-radius: var(--border-radius);
+    font-weight: 600;
+    text-decoration: none;
+    transition: all 0.3s ease;
+    border: none;
+}
+
+.form-actions .btn-primary {
+    background: var(--secondary-color);
+    color: var(--white);
+}
+
+.form-actions .btn-primary:hover {
+    background: #7a9a22;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(146, 182, 42, 0.3);
+}
+
+.form-actions .btn-secondary {
+    background: var(--dark-gray);
+    color: var(--white);
+}
+
+.form-actions .btn-secondary:hover {
+    background: #333;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(69, 69, 69, 0.3);
+}
+
+.invalid-feedback {
+    color: var(--accent-color);
+    font-size: 0.875rem;
+    margin-top: 0.25rem;
+}
+
+@media (max-width: 768px) {
+    .header-content {
+        flex-direction: column;
+        text-align: center;
+    }
+    
+    .form-actions {
+        flex-direction: column;
+    }
+    
+    .form-actions .btn {
+        width: 100%;
+    }
+}
+</style>
+<style>
+  /* Unified white + lime skin overrides for lesson form */
+  :root { --lime-green: rgb(146, 182, 42); --lime-green-dark: #7a9a2a; }
+  body { background: url('{% static "img/pic-8.png" %}') center/cover no-repeat fixed; background-attachment: fixed; }
+  .form-control, .form-select,
+  input[type="text"], input[type="email"], input[type="tel"], textarea, select { border: 1px solid rgba(146,182,42,0.2); border-radius: 10px; padding: 0.65rem 0.9rem; background: rgba(255,255,255,0.95); transition: all 0.2s ease; }
+  .form-control:focus, .form-select:focus,
+  input[type="text"]:focus, input[type="email"]:focus, input[type="tel"]:focus, input[type="url"]:focus, textarea:focus, select:focus { outline: none; border-color: var(--lime-green); box-shadow: 0 0 0 3px rgba(146,182,42,0.12); }
+  .btn, .btn-primary, .btn-secondary { background: linear-gradient(135deg, var(--lime-green) 0%, var(--lime-green-dark) 100%) !important; color: #fff !important; border: none !important; box-shadow: 0 4px 14px rgba(146,182,42,0.28) !important; }
+  .btn:hover, .btn-primary:hover, .btn-secondary:hover { transform: translateY(-1px); box-shadow: 0 6px 18px rgba(146,182,42,0.22) !important; color: #fff !important; }
+</style>
+{% endblock %}

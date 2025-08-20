@@ -1,0 +1,47 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block title %}Detalle Certificado{% endblock %}
+{% block content %}
+<div class="content-wrapper" style="max-width:900px;margin:1rem auto;padding:1.5rem;background:#fff;border-radius:16px;box-shadow:0 8px 32px rgba(0,0,0,0.08);">
+  <nav style="--bs-breadcrumb-divider: '>';" aria-label="breadcrumb">
+    <ol class="breadcrumb">
+      <li class="breadcrumb-item"><a href="/">Inicio</a></li>
+      <li class="breadcrumb-item"><a href="{% url 'certificate_admin_list' %}">Certificados (Admin)</a></li>
+      <li class="breadcrumb-item active" aria-current="page">Detalle</li>
+    </ol>
+  </nav>
+
+  <h1 class="h4 mb-3">Detalle del Certificado</h1>
+  <div class="card shadow-sm">
+    <div class="card-body">
+      <p><strong>Alumno:</strong> {{ tc.student.student.get_full_name }}</p>
+      <p><strong>Curso:</strong> {{ tc.course.title }} ({{ tc.course.code }})</p>
+      <p><strong>Total:</strong> {{ tc.total }} | <strong>Estado:</strong> {{ tc.comment }}</p>
+      {% if cert %}
+      <p><strong>Serial:</strong> {{ cert.serial_number }}</p>
+      <p><strong>Emitido:</strong> {{ cert.issued_at|date:"d/m/Y H:i" }}</p>
+      <p><strong>Estado:</strong> 
+        {% if cert.status == 'SUSPENDED' %}
+          <span class="badge bg-danger">Suspendido</span>
+        {% else %}
+          <span class="badge bg-success">Activo</span>
+        {% endif %}
+      </p>
+      <form method="post" class="d-inline">
+        {% csrf_token %}
+        {% if cert.status == 'SUSPENDED' %}
+          <button class="btn btn-sm btn-primary" name="action" value="activate"><i class="fas fa-toggle-on"></i> Activar</button>
+        {% else %}
+          <button class="btn btn-sm btn-warning" name="action" value="suspend"><i class="fas fa-toggle-off"></i> Suspender</button>
+        {% endif %}
+      </form>
+      {% else %}
+      <p class="text-muted">Aún no se ha generado el certificado (se crea al guardar notas con PASS).</p>
+      {% endif %}
+      <a class="btn btn-success" href="{% url 'certificate_pdf_view' tc.id %}" target="_blank"><i class="fas fa-file-pdf"></i> Ver PDF</a>
+    </div>
+  </div>
+</div>
+{% endblock %}
+
+

@@ -1,0 +1,243 @@
+{% extends 'base.html' %}
+{% load i18n %}
+{% load static %}
+{% block title %}Resultados de Evaluación | Sistema de Gestión Académica{% endblock title %}
+
+{% block content %}
+
+<style>
+  :root {
+    --lime-green: rgb(146, 182, 42);
+    --lime-green-dark: #7a9a2a;
+    --gray-dark: #454545;
+    --gray-600: #6c757d;
+    --light-gray: #f8f9fa;
+    --white: #ffffff;
+    --dark-red: #c82333;
+    --shadow-soft: 0 8px 32px rgba(0,0,0,0.08);
+    --shadow-hover: 0 12px 32px rgba(146, 182, 42, 0.20);
+  }
+
+  body { background: url('{% static "img/pic-8.png" %}') center/cover no-repeat fixed; background-attachment: fixed; }
+
+  .content-wrapper { max-width: 1400px; margin: 1rem auto; padding: 1.5rem; background: rgba(255, 255, 255, 0.95); backdrop-filter: blur(18px); border-radius: 18px; box-shadow: var(--shadow-soft); border: 1px solid rgba(146, 182, 42, 0.12); }
+
+  .breadcrumb { background: transparent; padding: 0; margin-bottom: 0.9rem; }
+  .breadcrumb-item a { color: var(--lime-green); text-decoration: none; font-weight: 700; transition: color 0.25s ease; }
+  .breadcrumb-item a:hover { color: #a8c73a; }
+  .breadcrumb-item.active { color: var(--gray-600); }
+
+  .page-header { display: flex; align-items: center; justify-content: space-between; padding-bottom: 0.75rem; margin-bottom: 1.25rem; border-bottom: 1px solid rgba(146, 182, 42, 0.15); }
+  .page-title { font-size: 2rem; font-weight: 800; margin: 0; line-height: 1.1; background: linear-gradient(135deg, var(--lime-green) 0%, #a8c73a 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
+  .page-subtitle { color: var(--gray-600); margin: 0; font-weight: 600; }
+
+  .student-info { background: linear-gradient(135deg, rgba(146, 182, 42, 0.08) 0%, rgba(146, 182, 42, 0.14) 100%); border: 1px solid rgba(146, 182, 42, 0.22); border-radius: 12px; padding: 1rem 1.25rem; margin-bottom: 1rem; }
+  .student-level { color: var(--gray-dark); font-size: 1rem; font-weight: 800; margin: 0; }
+
+  .content-section { background: rgba(255,255,255,0.98); border-radius: 12px; padding: 1.25rem; margin-bottom: 1rem; box-shadow: 0 4px 18px rgba(0,0,0,0.05); border: 1px solid rgba(146, 182, 42, 0.12); }
+  .section-title { font-size: 1.2rem; font-weight: 800; color: var(--gray-dark); display: flex; align-items: center; gap: 0.6rem; padding-bottom: 0.75rem; border-bottom: 1px solid rgba(146, 182, 42, 0.15); margin-bottom: 1rem; }
+  .section-title i { color: var(--lime-green); }
+
+  .table-container { background: rgba(255,255,255,0.98); border-radius: 14px; overflow: hidden; box-shadow: 0 6px 22px rgba(0,0,0,0.06); border: 1px solid rgba(146, 182, 42, 0.12); }
+  .table { margin: 0; width: 100%; }
+  .table thead th { background: rgba(146,182,42,0.08); color: var(--gray-dark); border: none; padding: 0.9rem 0.9rem; font-weight: 800; font-size: 0.85rem; text-transform: uppercase; letter-spacing: 0.5px; }
+  .table tbody tr { transition: all 0.2s ease; border-bottom: 1px solid rgba(146, 182, 42, 0.10); }
+  .table tbody tr:hover { background: rgba(146, 182, 42, 0.05); }
+  .table tbody td { padding: 0.9rem 0.9rem; border: none; color: var(--gray-600); vertical-align: middle; font-size: 0.92rem; }
+
+  .course-link { color: var(--gray-dark); text-decoration: none; font-weight: 800; transition: color 0.2s ease; }
+  .course-link:hover { color: var(--lime-green-dark); text-decoration: none; }
+
+  .score-cell { font-weight: 700; padding: 0.3rem 0.7rem; border-radius: 10px; text-align: center; font-size: 0.88rem; border: 1px solid rgba(146,182,42,0.18); }
+  .score-pass { background: linear-gradient(135deg, var(--lime-green) 0%, #a8c73a 100%); color: var(--white); border-color: transparent; }
+  .score-fail { background: linear-gradient(135deg, #e74c3c 0%, var(--dark-red) 100%); color: var(--white); border-color: transparent; }
+  .score-neutral { background: linear-gradient(135deg, rgba(146,182,42,0.06) 0%, rgba(146,182,42,0.12) 100%); color: var(--gray-dark); }
+
+  .badge-credit { background: linear-gradient(135deg, var(--lime-green) 0%, #a8c73a 100%); color: var(--white); padding: 0.25rem 0.65rem; border-radius: 14px; font-size: 0.78rem; font-weight: 800; }
+  .badge-code { background: linear-gradient(135deg, rgba(146,182,42,0.12) 0%, rgba(146,182,42,0.16) 100%); color: var(--gray-dark); padding: 0.25rem 0.65rem; border-radius: 14px; font-size: 0.78rem; font-weight: 800; border: 1px solid rgba(146, 182, 42, 0.28); }
+
+  .alert { border-radius: 12px; border: none; padding: 0.9rem 1.2rem; margin-bottom: 1rem; }
+  .alert-success { background: linear-gradient(135deg, rgba(146, 182, 42, 0.10) 0%, rgba(146, 182, 42, 0.16) 100%); border: 1px solid rgba(146, 182, 42, 0.22); color: var(--gray-dark); }
+  .alert-danger { background: linear-gradient(135deg, rgba(231, 76, 60, 0.10) 0%, rgba(231, 76, 60, 0.16) 100%); border: 1px solid rgba(231, 76, 60, 0.28); color: var(--dark-red); }
+
+  @keyframes fadeIn { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+  .content-section { animation: fadeIn 0.5s ease-out; }
+
+  @media (max-width: 768px) {
+    .content-wrapper { padding: 1rem; }
+    .page-title { font-size: 1.8rem; }
+    .table-responsive { font-size: 0.9rem; }
+    .table thead th, .table tbody td { padding: 0.75rem 0.6rem; }
+  }
+</style>
+
+<div class="content-wrapper">
+	<div class="container">
+		
+		<!-- Breadcrumb -->
+		<nav style="--bs-breadcrumb-divider: '>';" aria-label="breadcrumb">
+			<ol class="breadcrumb">
+				<li class="breadcrumb-item"><a href="/">Inicio</a></li>
+				<li class="breadcrumb-item active" aria-current="page">Resultados de Evaluación</li>
+			</ol>
+		</nav>
+
+		<div class="page-header">
+			<h1 class="page-title">Resultados de Evaluación</h1>
+			<p class="page-subtitle">Puntuaciones detalladas por curso</p>
+		</div>
+
+		<!-- Student Info -->
+		<div class="student-info">
+			<p class="student-level">
+				<i class="fas fa-user-graduate me-2"></i>{{ student.level }} - Resultados
+			</p>
+		</div>
+
+		<!-- Messages -->
+		{% if messages %}
+			{% for message in messages %}
+				{% if message.tags == 'error' %}
+					<div class="alert alert-danger">
+						<i class="fas fa-exclamation-circle me-2"></i>{{ message }}
+					</div>
+				{% else %}
+					<div class="alert alert-success">
+						<i class="fas fa-check-circle me-2"></i>{{ message }}
+					</div>
+				{% endif %}
+			{% endfor %}
+		{% endif %}
+
+		<!-- First Semester Section -->
+		<div class="content-section">
+			<h3 class="section-title">
+				<i class="fas fa-calendar-alt"></i>Primer Semestre
+			</h3>
+			
+			<div class="table-container">
+				<div class="table-responsive">
+					<table class="table">
+						<thead>
+							<tr>
+								<th>#</th>
+								<th>Título del Curso</th>
+								<th>Código</th>
+								<th>Créditos</th>
+								<th>Tareas</th>
+								<th>Examen Medio</th>
+								<th>Quiz</th>
+								<th>Asistencia</th>
+								<th>Examen Final</th>
+								<th>Total</th>
+							</tr>
+						</thead>
+						<tbody>
+              {% for course in courses_first %}
+							<tr>
+								<td>{{ forloop.counter }}</td>
+								<td>
+									<a href="{{ course.course.get_absolute_url }}" class="course-link">
+										{{ course.course.title }}
+									</a>
+								</td>
+								<td><span class="badge-code">{{ course.course.code }}</span></td>
+								<td><span class="badge-credit">{{ course.course.credit }}</span></td>
+								<td><span class="score-cell score-neutral">{{ course.assignment }}</span></td>
+								<td><span class="score-cell score-neutral">{{ course.mid_exam }}</span></td>
+								<td><span class="score-cell score-neutral">{{ course.quiz }}</span></td>
+								<td><span class="score-cell score-neutral">{{ course.attendance }}</span></td>
+								<td><span class="score-cell score-neutral">{{ course.final_exam }}</span></td>
+								<td>
+									{% if course.total >= 45 %}
+										<span class="score-cell score-pass">
+											<i class="fas fa-check-circle me-1"></i>{{ course.total }}
+										</span>
+									{% else %}
+										<span class="score-cell score-fail">
+											<i class="fas fa-exclamation-circle me-1"></i>{{ course.total }}
+										</span>
+									{% endif %}
+								</td>
+							</tr>
+              {% empty %}
+							<tr>
+								<td colspan="10" class="text-center text-muted">
+									<i class="fas fa-info-circle me-2"></i>No hay cursos disponibles para el primer semestre
+								</td>
+							</tr>
+              {% endfor %}
+						</tbody>
+					</table>
+				</div>
+			</div>
+		</div>
+
+		<!-- Second Semester Section -->
+		<div class="content-section">
+			<h3 class="section-title">
+				<i class="fas fa-calendar-check"></i>Segundo Semestre
+			</h3>
+			
+			<div class="table-container">
+				<div class="table-responsive">
+					<table class="table">
+						<thead>
+							<tr>
+								<th>#</th>
+								<th>Título del Curso</th>
+								<th>Código</th>
+								<th>Créditos</th>
+								<th>Tareas</th>
+								<th>Examen Medio</th>
+								<th>Quiz</th>
+								<th>Asistencia</th>
+								<th>Examen Final</th>
+								<th>Total</th>
+							</tr>
+						</thead>
+						<tbody>
+              {% for course in courses_second %}
+							<tr>
+								<td>{{ forloop.counter }}</td>
+								<td>
+									<a href="{{ course.course.get_absolute_url }}" class="course-link">
+										{{ course.course.title }}
+									</a>
+								</td>
+								<td><span class="badge-code">{{ course.course.code }}</span></td>
+								<td><span class="badge-credit">{{ course.course.credit }}</span></td>
+								<td><span class="score-cell score-neutral">{{ course.assignment }}</span></td>
+								<td><span class="score-cell score-neutral">{{ course.mid_exam }}</span></td>
+								<td><span class="score-cell score-neutral">{{ course.quiz }}</span></td>
+								<td><span class="score-cell score-neutral">{{ course.attendance }}</span></td>
+								<td><span class="score-cell score-neutral">{{ course.final_exam }}</span></td>
+								<td>
+									{% if course.total >= 45 %}
+										<span class="score-cell score-pass">
+											<i class="fas fa-check-circle me-1"></i>{{ course.total }}
+										</span>
+									{% else %}
+										<span class="score-cell score-fail">
+											<i class="fas fa-exclamation-circle me-1"></i>{{ course.total }}
+										</span>
+									{% endif %}
+								</td>
+							</tr>
+              {% empty %}
+							<tr>
+								<td colspan="10" class="text-center text-muted">
+									<i class="fas fa-info-circle me-2"></i>No hay cursos disponibles para el segundo semestre
+								</td>
+							</tr>
+              {% endfor %}
+						</tbody>
+					</table>
+				</div>
+			</div>
+		</div>
+
+	</div>
+</div>
+
+{% endblock content %}

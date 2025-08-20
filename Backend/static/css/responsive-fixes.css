@@ -1,0 +1,76 @@
+/* Fixes adicionales para responsive design */
+
+/* Prevenir overflow horizontal global */
+html, body {
+    overflow-x: hidden;
+    max-width: 100vw;
+}
+
+/* Asegurar que todos los contenedores principales no causen overflow */
+.container, .container-fluid {
+    max-width: 100%;
+    overflow-x: hidden;
+}
+
+/* Fix para tablas responsivas */
+.table-responsive {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+}
+
+/* Fix para cards y elementos que puedan causar overflow */
+.card, .glass-surface {
+    max-width: 100%;
+    overflow: hidden;
+}
+
+/* Fix para formularios */
+form {
+    max-width: 100%;
+}
+
+/* Fix para botones y elementos interactivos */
+.btn, .dropdown-menu {
+    max-width: 100%;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+/* Fix para imágenes */
+img {
+    max-width: 100%;
+    height: auto;
+}
+
+/* Fix para texto largo */
+.text-truncate {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+/* Media queries adicionales para pantallas muy pequeñas */
+@media (max-width: 480px) {
+    .container-fluid {
+        padding-left: 0.5rem;
+        padding-right: 0.5rem;
+    }
+    
+    .card {
+        margin-left: 0.25rem;
+        margin-right: 0.25rem;
+    }
+}
+
+@media (max-width: 360px) {
+    .container-fluid {
+        padding-left: 0.25rem;
+        padding-right: 0.25rem;
+    }
+    
+    .btn {
+        padding: 0.5rem 0.75rem;
+        font-size: 0.875rem;
+    }
+}

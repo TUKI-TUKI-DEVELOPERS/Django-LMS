@@ -1,0 +1,37 @@
+:root{
+  --gray-dark: rgb(69,69,69);
+  --lime-green: rgb(146,182,42);
+  --navy-blue: rgb(32,32,68);
+}
+
+/* Reveal on scroll */
+.reveal{opacity:0;transform:translateY(18px);transition:opacity .6s ease,transform .6s ease}
+.reveal-visible{opacity:1;transform:none}
+.reveal-delay-1{transition-delay:.12s}
+.reveal-delay-2{transition-delay:.24s}
+.reveal-delay-3{transition-delay:.36s}
+
+/* Micro interactions */
+.hover-lift{transition:transform .2s ease,box-shadow .2s ease}
+.hover-lift:hover{transform:translateY(-4px);box-shadow:0 12px 28px rgba(0,0,0,.12)!important}
+.tilt-hover{transition:transform .25s ease}
+.tilt-hover:hover{transform:perspective(700px) rotateX(2deg) rotateY(-2deg)}
+
+/* Top navbar scrolled state */
+#top-navbar.scrolled{box-shadow:0 6px 22px rgba(0,0,0,.08);padding:.5rem 0}
+
+/* Dropdown subtle animation */
+.dropdown-menu{transform-origin:top right;animation:dropdownFade .18s ease}
+@keyframes dropdownFade{from{opacity:0;transform:scale(.98)}to{opacity:1;transform:none}}
+
+/* Aside active accent */
+.main-menu ul li.active a{position:relative}
+.main-menu ul li.active a::after{content:"";position:absolute;left:0;top:10px;bottom:10px;width:4px;border-radius:2px;background:linear-gradient(180deg,var(--lime-green),#a8c73a)}
+
+/* Reduce motion */
+@media (prefers-reduced-motion: reduce){
+  *{animation:none!important;transition:none!important}
+  .reveal{opacity:1;transform:none}
+}
+
+

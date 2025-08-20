@@ -1,0 +1,588 @@
+{% extends 'base_public.html' %}
+{% load static %}
+
+{% block title %}Contáctanos - Aprende Ya{% endblock %}
+
+{% block content %}
+<!-- Background Pattern -->
+<div class="page-bg-2025"></div>
+
+<!-- Hero Section -->
+<section class="hero-section hero-2025 position-relative overflow-hidden bg-head-aprd">
+    <div class="container">
+        <div class="row align-items-center min-vh-50">
+            <div class="col-lg-8 text-center text-lg-start">
+                <!-- Logo -->
+                <div class="logo-container mb-4">
+                    <div class="logo-circle bg-white rounded-circle d-inline-flex align-items-center justify-content-center mb-4" style="width: 120px; height: 120px; box-shadow: 0 10px 30px rgba(0,0,0,0.2); border: 3px solid rgb(146, 182, 42);">
+                        <img src="{% static 'img/logo-aprendeya.png' %}" alt="Aprende Ya Logo" style="width: 80px; height: 80px; object-fit: contain;">
+                    </div>
+                    <h1 class="display-3 fw-bold mb-3 reveal">Contáctanos</h1>
+                </div>
+                
+                <!-- Slogan -->
+                <div class="slogan-container mb-5">
+                    <h2 class="display-5 fw-light reveal reveal-delay-1">
+                        <span class="text-gradient">Estamos aquí para ayudarte</span>
+                    </h2>
+                    <div class="slogan-underline bg-white mx-auto mt-3 reveal reveal-delay-2" style="width: 100px; height: 3px;"></div>
+                </div>
+                
+                <!-- Descripción -->
+                <p class="lead mb-5 reveal reveal-delay-3">
+                    En APRENDE YA nos comprometemos a brindarte la mejor atención y soporte. 
+                    Nuestro equipo está listo para responder todas tus consultas y ayudarte en tu camino de aprendizaje.
+                </p>
+            </div>
+            
+            <div class="col-lg-4 text-center">
+                <!-- Elementos decorativos animados -->
+                <div class="floating-elements">
+                    <div class="floating-icon bg-white bg-opacity-10 rounded-circle d-flex align-items-center justify-content-center position-absolute" style="width: 80px; height: 80px; top: 20%; right: 20%; animation: float 3s ease-in-out infinite;">
+                        <i class="fas fa-phone text-white fa-2x"></i>
+                    </div>
+                    <div class="floating-icon bg-white bg-opacity-10 rounded-circle d-flex align-items-center justify-content-center position-absolute" style="width: 60px; height: 60px; top: 60%; right: 10%; animation: float 3s ease-in-out infinite 1s;">
+                        <i class="fas fa-envelope text-white fa-lg"></i>
+                    </div>
+                    <div class="floating-icon bg-white bg-opacity-10 rounded-circle d-flex align-items-center justify-content-center position-absolute" style="width: 70px; height: 70px; top: 40%; right: 60%; animation: float 3s ease-in-out infinite 2s;">
+                        <i class="fas fa-map-marker-alt text-white fa-xl"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Elementos de fondo animados -->
+    <div class="background-elements">
+        <div class="bg-circle position-absolute" style="width: 300px; height: 300px; background: rgba(255,255,255,0.05); border-radius: 50%; top: -150px; right: -150px; animation: pulse 4s ease-in-out infinite;"></div>
+        <div class="bg-circle position-absolute" style="width: 200px; height: 200px; background: rgba(255,255,255,0.03); border-radius: 50%; bottom: -100px; left: -100px; animation: pulse 4s ease-in-out infinite 2s;"></div>
+    </div>
+</section>
+
+<!-- Contact Content Section -->
+<section class="py-5 bg-white">
+    <div class="container">
+        <div class="row g-5">
+            <!-- Contact Form -->
+            <div class="col-lg-8">
+                <div class="contact-form-card bg-white rounded-3 shadow-lg border-0" style="backdrop-filter: blur(10px);">
+                    <div class="card-body p-5">
+                        <div class="form-header mb-4">
+                            <h3 class="fw-bold text-navy mb-2">Envíanos un Mensaje</h3>
+                            <div class="title-underline bg-lime" style="width: 60px; height: 3px;"></div>
+                            <p class="text-muted mt-3">Completa el formulario y te responderemos en menos de 24 horas.</p>
+                        </div>
+                        
+                        <form class="contact-form">
+                            <div class="row g-3">
+                                <div class="col-md-6">
+                                    <div class="form-floating">
+                                        <input type="text" class="form-control" id="firstName" placeholder="Tu nombre" required>
+                                        <label for="firstName">Nombre</label>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="form-floating">
+                                        <input type="text" class="form-control" id="lastName" placeholder="Tu apellido" required>
+                                        <label for="lastName">Apellido</label>
+                                    </div>
+                                </div>
+                                <div class="col-12">
+                                    <div class="form-floating">
+                                        <input type="email" class="form-control" id="email" placeholder="tu@email.com" required>
+                                        <label for="email">Correo Electrónico</label>
+                                    </div>
+                                </div>
+                                <div class="col-12">
+                                    <div class="form-floating">
+                                        <select class="form-select" id="subject" required>
+                                            <option value="">Selecciona un asunto</option>
+                                            <option value="general">Consulta General</option>
+                                            <option value="technical">Soporte Técnico</option>
+                                            <option value="billing">Facturación</option>
+                                            <option value="feature">Sugerencia de Funcionalidad</option>
+                                            <option value="other">Otro</option>
+                                        </select>
+                                        <label for="subject">Asunto</label>
+                                    </div>
+                                </div>
+                                <div class="col-12">
+                                    <div class="form-floating">
+                                        <textarea class="form-control" id="message" style="height: 120px" placeholder="Escribe tu mensaje aquí..." required></textarea>
+                                        <label for="message">Mensaje</label>
+                                    </div>
+                                </div>
+                                <div class="col-12">
+                                    <button type="submit" class="btn btn-lime btn-lg px-5 py-3 fw-bold text-dark shadow-lg hover-lift">
+                                        <i class="fas fa-paper-plane me-2"></i>Enviar Mensaje
+                                    </button>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Contact Information -->
+            <div class="col-lg-4">
+                <div class="contact-info-card bg-white rounded-3 shadow-lg border-0 h-100" style="backdrop-filter: blur(10px);">
+                    <div class="card-body p-5">
+                        <div class="info-header mb-4">
+                            <h3 class="fw-bold text-navy mb-2">Información de Contacto</h3>
+                            <div class="title-underline bg-lime" style="width: 60px; height: 3px;"></div>
+                        </div>
+                        
+                        <div class="contact-info-list">
+                            <!-- Dirección -->
+                            <div class="contact-item mb-4">
+                                <div class="d-flex align-items-start">
+                                    <div class="contact-icon bg-lime bg-opacity-10 rounded-circle d-flex align-items-center justify-content-center me-3" style="width: 50px; height: 50px; min-width: 50px;">
+                                        <i class="fas fa-map-marker-alt text-lime"></i>
+                                    </div>
+                                    <div class="contact-details">
+                                        <h6 class="fw-bold mb-1 text-navy">Dirección</h6>
+                                        <p class="text-muted mb-0">Calle La Valleja #3931<br>Recoleta, Santiago<br>Chile</p>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <!-- Teléfono -->
+                            <div class="contact-item mb-4">
+                                <div class="d-flex align-items-start">
+                                    <div class="contact-icon bg-navy bg-opacity-10 rounded-circle d-flex align-items-center justify-content-center me-3" style="width: 50px; height: 50px; min-width: 50px;">
+                                        <i class="fas fa-phone text-navy"></i>
+                                    </div>
+                                    <div class="contact-details">
+                                        <h6 class="fw-bold mb-1 text-navy">Teléfono</h6>
+                                        <p class="text-muted mb-0">+56 9 1234 5678<br>+56 2 2345 6789</p>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <!-- Email -->
+                            <div class="contact-item mb-4">
+                                <div class="d-flex align-items-start">
+                                    <div class="contact-icon bg-mustard bg-opacity-10 rounded-circle d-flex align-items-center justify-content-center me-3" style="width: 50px; height: 50px; min-width: 50px;">
+                                        <i class="fas fa-envelope text-mustard"></i>
+                                    </div>
+                                    <div class="contact-details">
+                                        <h6 class="fw-bold mb-1 text-navy">Correo Electrónico</h6>
+                                        <p class="text-muted mb-0">info@aprendeya.cl<br>soporte@aprendeya.cl</p>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <!-- Horarios -->
+                            <div class="contact-item mb-4">
+                                <div class="d-flex align-items-start">
+                                    <div class="contact-icon bg-red-dark bg-opacity-10 rounded-circle d-flex align-items-center justify-content-center me-3" style="width: 50px; height: 50px; min-width: 50px;">
+                                        <i class="fas fa-clock text-red-dark"></i>
+                                    </div>
+                                    <div class="contact-details">
+                                        <h6 class="fw-bold mb-1 text-navy">Horarios de Atención</h6>
+                                        <p class="text-muted mb-0">Lunes - Viernes: 8:00 AM - 6:00 PM<br>Sábados: 9:00 AM - 2:00 PM</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Social Media -->
+                        <div class="social-media-section mt-4 pt-4 border-top">
+                            <h6 class="fw-bold text-navy mb-3">Síguenos en Redes Sociales</h6>
+                            <div class="d-flex gap-2">
+                                <a href="#" class="social-icon bg-lime bg-opacity-10 rounded-circle d-flex align-items-center justify-content-center" style="width: 40px; height: 40px; transition: all 0.3s ease;">
+                                    <i class="fab fa-facebook-f text-lime"></i>
+                                </a>
+                                <a href="#" class="social-icon bg-navy bg-opacity-10 rounded-circle d-flex align-items-center justify-content-center" style="width: 40px; height: 40px; transition: all 0.3s ease;">
+                                    <i class="fab fa-twitter text-navy"></i>
+                                </a>
+                                <a href="#" class="social-icon bg-red-dark bg-opacity-10 rounded-circle d-flex align-items-center justify-content-center" style="width: 40px; height: 40px; transition: all 0.3s ease;">
+                                    <i class="fab fa-instagram text-red-dark"></i>
+                                </a>
+                                <a href="#" class="social-icon bg-navy bg-opacity-10 rounded-circle d-flex align-items-center justify-content-center" style="width: 40px; height: 40px; transition: all 0.3s ease;">
+                                    <i class="fab fa-linkedin-in text-navy"></i>
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- FAQ Section -->
+<section class="py-5 bg-light">
+    <div class="container">
+        <div class="row text-center mb-5">
+            <div class="col-12">
+                <h2 class="display-5 fw-bold text-navy mb-3">Preguntas Frecuentes</h2>
+                <div class="title-underline bg-lime mx-auto mb-4" style="width: 80px; height: 4px;"></div>
+                <p class="lead text-muted">Encuentra respuestas a las preguntas más comunes</p>
+            </div>
+        </div>
+        
+        <div class="row g-4">
+            <div class="col-lg-6">
+                <div class="accordion" id="faqAccordion">
+                    <div class="accordion-item border-0 shadow-sm mb-3 rounded-3">
+                        <h2 class="accordion-header" id="faq1">
+                            <button class="accordion-button rounded-3" type="button" data-bs-toggle="collapse" data-bs-target="#collapse1">
+                                <i class="fas fa-question-circle text-lime me-2"></i>
+                                ¿Cómo puedo registrarme en el sistema?
+                            </button>
+                        </h2>
+                        <div id="collapse1" class="accordion-collapse collapse show" data-bs-parent="#faqAccordion">
+                            <div class="accordion-body">
+                                Puedes registrarte haciendo clic en el botón "Registrarse" en la parte superior de la página. Necesitarás proporcionar información básica como nombre, correo electrónico y contraseña.
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="accordion-item border-0 shadow-sm mb-3 rounded-3">
+                        <h2 class="accordion-header" id="faq2">
+                            <button class="accordion-button collapsed rounded-3" type="button" data-bs-toggle="collapse" data-bs-target="#collapse2">
+                                <i class="fas fa-users text-navy me-2"></i>
+                                ¿Qué tipos de usuarios pueden usar el sistema?
+                            </button>
+                        </h2>
+                        <div id="collapse2" class="accordion-collapse collapse" data-bs-parent="#faqAccordion">
+                            <div class="accordion-body">
+                                El sistema está diseñado para tres tipos principales de usuarios: estudiantes, profesores y administradores. Cada uno tiene acceso a funcionalidades específicas según su rol.
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="accordion-item border-0 shadow-sm mb-3 rounded-3">
+                        <h2 class="accordion-header" id="faq3">
+                            <button class="accordion-button collapsed rounded-3" type="button" data-bs-toggle="collapse" data-bs-target="#collapse3">
+                                <i class="fas fa-mobile-alt text-mustard me-2"></i>
+                                ¿Puedo acceder al sistema desde mi móvil?
+                            </button>
+                        </h2>
+                        <div id="collapse3" class="accordion-collapse collapse" data-bs-parent="#faqAccordion">
+                            <div class="accordion-body">
+                                Sí, el sistema es completamente responsive y funciona perfectamente en dispositivos móviles, tablets y computadoras de escritorio.
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="col-lg-6">
+                <div class="accordion" id="faqAccordion2">
+                    <div class="accordion-item border-0 shadow-sm mb-3 rounded-3">
+                        <h2 class="accordion-header" id="faq4">
+                            <button class="accordion-button rounded-3" type="button" data-bs-toggle="collapse" data-bs-target="#collapse4">
+                                <i class="fas fa-key text-red-dark me-2"></i>
+                                ¿Cómo puedo recuperar mi contraseña?
+                            </button>
+                        </h2>
+                        <div id="collapse4" class="accordion-collapse collapse show" data-bs-parent="#faqAccordion2">
+                            <div class="accordion-body">
+                                En la página de inicio de sesión, haz clic en "¿Olvidaste tu contraseña?" y sigue las instrucciones que recibirás por correo electrónico.
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="accordion-item border-0 shadow-sm mb-3 rounded-3">
+                        <h2 class="accordion-header" id="faq5">
+                            <button class="accordion-button collapsed rounded-3" type="button" data-bs-toggle="collapse" data-bs-target="#collapse5">
+                                <i class="fas fa-shield-alt text-lime me-2"></i>
+                                ¿Es seguro el sistema?
+                            </button>
+                        </h2>
+                        <div id="collapse5" class="accordion-collapse collapse" data-bs-parent="#faqAccordion2">
+                            <div class="accordion-body">
+                                Absolutamente. Implementamos las mejores prácticas de seguridad, incluyendo encriptación de datos, autenticación segura y protección contra ataques comunes.
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="accordion-item border-0 shadow-sm mb-3 rounded-3">
+                        <h2 class="accordion-header" id="faq6">
+                            <button class="accordion-button collapsed rounded-3" type="button" data-bs-toggle="collapse" data-bs-target="#collapse6">
+                                <i class="fas fa-headset text-navy me-2"></i>
+                                ¿Ofrecen soporte técnico?
+                            </button>
+                        </h2>
+                        <div id="collapse6" class="accordion-collapse collapse" data-bs-parent="#faqAccordion2">
+                            <div class="accordion-body">
+                                Sí, ofrecemos soporte técnico completo. Puedes contactarnos por correo electrónico, teléfono o a través del formulario de contacto en esta página.
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Call to Action Section -->
+<section class="py-5 bg-dark text-white">
+    <div class="container text-center">
+        <div class="row justify-content-center">
+            <div class="col-lg-8">
+                <h2 class="display-6 fw-bold mb-4">¿Necesitas ayuda inmediata?</h2>
+                <p class="lead mb-4">Nuestro equipo de soporte está disponible para ayudarte con cualquier consulta sobre nuestros programas de capacitación.</p>
+                <div class="d-flex justify-content-center gap-3 flex-wrap">
+                    <a href="{% url 'login' %}" class="btn btn-lime btn-lg px-5 py-3 fw-bold text-dark shadow-lg hover-lift">
+                        <i class="fas fa-sign-in-alt me-2"></i>Acceder al Sistema
+                    </a>
+                    <a href="{% url 'register' %}" class="btn btn-outline-light btn-lg px-5 py-3 fw-bold shadow-lg hover-lift">
+                        <i class="fas fa-user-plus me-2"></i>Crear Cuenta
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Estilos CSS personalizados -->
+<style>
+/* Colores del logo APRENDE YA */
+:root {
+    --gray-dark: rgb(69, 69, 69);
+    --lime-green: rgb(146, 182, 42);
+    --navy-blue: rgb(32, 32, 68);
+    --dark-red: rgb(159, 8, 31);
+    --mustard-yellow: rgb(226, 210, 41);
+}
+
+/* Page background styles */
+.page-background {
+    pointer-events: none;
+}
+
+/* Section backgrounds with transparency */
+.bg-white {
+    background-color: rgba(255, 255, 255, 0.85) !important;
+    backdrop-filter: blur(10px);
+}
+
+.bg-light {
+    background-color: rgba(248, 249, 250, 0.8) !important;
+    backdrop-filter: blur(10px);
+}
+
+/* Color classes */
+.bg-lime {
+    background-color: var(--lime-green) !important;
+}
+
+.text-lime {
+    color: var(--lime-green) !important;
+}
+
+.bg-navy {
+    background-color: var(--navy-blue) !important;
+}
+
+.text-navy {
+    color: var(--navy-blue) !important;
+}
+
+.bg-mustard {
+    background-color: var(--mustard-yellow) !important;
+}
+
+.text-mustard {
+    color: var(--mustard-yellow) !important;
+}
+
+.bg-red-dark {
+    background-color: var(--dark-red) !important;
+}
+
+.text-red-dark {
+    color: var(--dark-red) !important;
+}
+
+/* Contact form styles */
+.contact-form-card,
+.contact-info-card {
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.contact-form-card:hover,
+.contact-info-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 20px 40px rgba(0,0,0,0.1) !important;
+}
+
+.form-floating > .form-control,
+.form-floating > .form-select {
+    border: 2px solid rgba(146, 182, 42, 0.2);
+    border-radius: 12px;
+    transition: all 0.3s ease;
+}
+
+.form-floating > .form-control:focus,
+.form-floating > .form-select:focus {
+    border-color: var(--lime-green);
+    box-shadow: 0 0 0 0.2rem rgba(146, 182, 42, 0.25);
+}
+
+.form-floating > label {
+    color: var(--navy-blue);
+    font-weight: 500;
+}
+
+/* Contact info styles */
+.contact-item {
+    transition: transform 0.3s ease;
+}
+
+.contact-item:hover {
+    transform: translateX(5px);
+}
+
+.contact-icon {
+    transition: all 0.3s ease;
+}
+
+.contact-item:hover .contact-icon {
+    transform: scale(1.1);
+}
+
+/* Social media icons */
+.social-icon:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+}
+
+/* Accordion styles */
+.accordion-button {
+    background: linear-gradient(135deg, rgba(255,255,255,0.9) 0%, rgba(248,249,250,0.9) 100%);
+    border: none;
+    font-weight: 600;
+    color: var(--navy-blue);
+}
+
+.accordion-button:not(.collapsed) {
+    background: linear-gradient(135deg, var(--lime-green) 0%, rgba(146, 182, 42, 0.8) 100%);
+    color: white;
+}
+
+.accordion-button:focus {
+    box-shadow: 0 0 0 0.25rem rgba(146, 182, 42, 0.25);
+}
+
+/* Animation classes */
+.animate-fade-in {
+    animation: fadeIn 1s ease-in;
+}
+
+.animate-slide-up {
+    animation: slideUp 1s ease-out;
+}
+
+.animate-expand {
+    animation: expand 1.5s ease-in-out forwards;
+}
+
+.animate-fade-in-delay {
+    animation: fadeIn 1s ease-in 0.5s both;
+}
+
+.animate-fade-in-delay-2 {
+    animation: fadeIn 1s ease-in 1s both;
+}
+
+.animate-bounce-in {
+    animation: bounceIn 1s ease-out 1.5s both;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
+
+@keyframes slideUp {
+    from { 
+        opacity: 0;
+        transform: translateY(30px);
+    }
+    to { 
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@keyframes expand {
+    to { width: 100px; }
+}
+
+@keyframes bounceIn {
+    0% {
+        opacity: 0;
+        transform: scale(0.3);
+    }
+    50% {
+        opacity: 1;
+        transform: scale(1.05);
+    }
+    70% {
+        transform: scale(0.9);
+    }
+    100% {
+        opacity: 1;
+        transform: scale(1);
+    }
+}
+
+@keyframes float {
+    0%, 100% { transform: translateY(0px); }
+    50% { transform: translateY(-20px); }
+}
+
+@keyframes pulse {
+    0%, 100% { transform: scale(1); opacity: 0.5; }
+    50% { transform: scale(1.1); opacity: 0.3; }
+}
+
+/* Hover effects */
+.hover-lift {
+    transition: all 0.3s ease;
+}
+
+.hover-lift:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 10px 25px rgba(0,0,0,0.2) !important;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+    .hero-section {
+        min-height: 60vh;
+    }
+    
+    .contact-form-card,
+    .contact-info-card {
+        margin-bottom: 2rem;
+    }
+    
+    .d-flex.justify-content-center.gap-3 {
+        flex-direction: column;
+        align-items: center;
+    }
+    
+    .d-flex.justify-content-center.gap-3 .btn {
+        width: 100%;
+        max-width: 300px;
+    }
+}
+</style>
+
+<script>
+// Animate slogan underline on page load
+document.addEventListener('DOMContentLoaded', function() {
+    setTimeout(function() {
+        const underline = document.querySelector('.slogan-underline');
+        if (underline) {
+            underline.style.width = '100px';
+        }
+    }, 1000);
+});
+</script>
+{% endblock %} 

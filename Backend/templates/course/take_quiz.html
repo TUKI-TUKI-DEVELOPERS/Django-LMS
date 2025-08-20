@@ -1,0 +1,642 @@
+{% extends 'base.html' %}
+{% load i18n %}
+{% block title %}{{ quiz.title }} | {{ lesson.title }}{% endblock title %}
+{% load static %}
+
+{% block content %}
+
+<style>
+:root {
+    --navy-blue: #202044;
+    --lime-green: #92b62a;
+    --dark-red: #9f081f;
+    --mustard-yellow: #e2d229;
+    --dark-gray: #454545;
+    --white: #ffffff;
+    --light-gray: #f8f9fa;
+}
+
+.quiz-container {
+    min-height: 100vh;
+    background: linear-gradient(135deg, rgba(255, 255, 255, 0.95) 0%, rgba(146, 182, 42, 0.05) 100%);
+    padding: 2rem 0;
+    backdrop-filter: blur(20px);
+}
+
+.content-wrapper {
+    background: rgba(255, 255, 255, 0.95);
+    border-radius: 20px;
+    backdrop-filter: blur(20px);
+    box-shadow: 0 20px 40px rgba(32, 32, 68, 0.1);
+    border: 1px solid rgba(146, 182, 42, 0.1);
+    overflow: hidden;
+}
+
+.page-header {
+    background: linear-gradient(135deg, var(--navy-blue) 0%, #2a2a5a 100%);
+    color: white;
+    padding: 3rem 2rem;
+    text-align: center;
+    position: relative;
+    overflow: hidden;
+}
+
+.page-header::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><defs><pattern id="grain" width="100" height="100" patternUnits="userSpaceOnUse"><circle cx="25" cy="25" r="1" fill="white" opacity="0.1"/><circle cx="75" cy="75" r="1" fill="white" opacity="0.1"/></pattern></defs><rect width="100" height="100" fill="url(%23grain)"/></svg>');
+}
+
+.page-title {
+    font-size: 2.5rem;
+    font-weight: 700;
+    margin-bottom: 1rem;
+    position: relative;
+    z-index: 1;
+}
+
+.page-subtitle {
+    font-size: 1.2rem;
+    opacity: 0.9;
+    position: relative;
+    z-index: 1;
+}
+
+.quiz-info {
+    padding: 2rem;
+    background: linear-gradient(135deg, var(--light-gray) 0%, white 100%);
+    border-bottom: 1px solid rgba(146, 182, 42, 0.1);
+}
+
+.quiz-stats {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 1.5rem;
+    margin-bottom: 2rem;
+}
+
+.stat-card {
+    background: white;
+    border-radius: 15px;
+    padding: 1.5rem;
+    box-shadow: 0 8px 25px rgba(32, 32, 68, 0.1);
+    border: 1px solid rgba(146, 182, 42, 0.1);
+    transition: all 0.3s ease;
+    position: relative;
+    overflow: hidden;
+}
+
+.stat-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 4px;
+    background: linear-gradient(90deg, var(--lime-green), #a8c73a);
+}
+
+.stat-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 15px 35px rgba(32, 32, 68, 0.15);
+}
+
+.stat-icon {
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 1rem;
+    font-size: 1.2rem;
+    color: white;
+}
+
+.stat-icon.questions { background: linear-gradient(135deg, var(--lime-green), #a8c73a); }
+.stat-icon.passing { background: linear-gradient(135deg, var(--navy-blue), #2a2a5a); }
+.stat-icon.time { background: linear-gradient(135deg, var(--mustard-yellow), #f0e68c); }
+.stat-icon.points { background: linear-gradient(135deg, var(--dark-red), #c82333); }
+
+.stat-value {
+    font-size: 1.8rem;
+    font-weight: 700;
+    color: var(--navy-blue);
+    margin-bottom: 0.5rem;
+}
+
+.stat-label {
+    color: var(--dark-gray);
+    font-size: 0.9rem;
+    font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.quiz-content {
+    padding: 2rem;
+}
+
+.quiz-form {
+    background: white;
+    border-radius: 15px;
+    padding: 2rem;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.06);
+    border: 1px solid rgba(146, 182, 42, 0.1);
+    margin-bottom: 2rem;
+    transition: all 0.3s ease;
+    position: relative;
+    overflow: hidden;
+}
+
+.quiz-form::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 3px;
+    background: linear-gradient(135deg, var(--lime-green), #a8c73a);
+    opacity: 1;
+}
+
+.quiz-form:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 32px rgba(146, 182, 42, 0.15);
+    border-color: rgba(146, 182, 42, 0.3);
+}
+
+.quiz-description {
+    background: linear-gradient(135deg, rgba(226, 210, 41, 0.1) 0%, rgba(226, 210, 41, 0.05) 100%);
+    border: 1px solid rgba(226, 210, 41, 0.2);
+    border-radius: 10px;
+    padding: 1.5rem;
+    margin-bottom: 2rem;
+}
+
+.quiz-title {
+    font-size: 1.5rem;
+    font-weight: 600;
+    color: var(--navy-blue);
+    margin-bottom: 1rem;
+    display: flex;
+    align-items: center;
+    gap: 0.8rem;
+}
+
+.quiz-title i {
+    color: var(--mustard-yellow);
+}
+
+.quiz-description-text {
+    color: var(--dark-gray);
+    line-height: 1.6;
+    margin-bottom: 0;
+}
+
+.question-section {
+    margin-bottom: 2rem;
+    padding: 1.5rem;
+    background: var(--light-gray);
+    border-radius: 10px;
+    border: 1px solid rgba(146, 182, 42, 0.1);
+}
+
+.question-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1rem;
+}
+
+.question-number {
+    background: var(--lime-green);
+    color: white;
+    padding: 0.3rem 0.8rem;
+    border-radius: 15px;
+    font-size: 0.9rem;
+    font-weight: 600;
+}
+
+.question-points {
+    background: var(--mustard-yellow);
+    color: var(--navy-blue);
+    padding: 0.3rem 0.8rem;
+    border-radius: 15px;
+    font-size: 0.9rem;
+    font-weight: 600;
+}
+
+.question-text {
+    font-size: 1.1rem;
+    font-weight: 600;
+    color: var(--navy-blue);
+    margin-bottom: 1rem;
+    line-height: 1.5;
+}
+
+.question-type {
+    font-size: 0.9rem;
+    color: var(--dark-gray);
+    margin-bottom: 1rem;
+    font-style: italic;
+}
+
+.options-list {
+    display: flex;
+    flex-direction: column;
+    gap: 0.8rem;
+}
+
+.option-item {
+    display: flex;
+    align-items: center;
+    gap: 0.8rem;
+    padding: 1rem;
+    background: white;
+    border: 2px solid rgba(146, 182, 42, 0.2);
+    border-radius: 10px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.option-item:hover {
+    border-color: var(--lime-green);
+    background: rgba(146, 182, 42, 0.05);
+}
+
+.option-item input[type="radio"],
+.option-item input[type="checkbox"] {
+    width: 18px;
+    height: 18px;
+    accent-color: var(--lime-green);
+}
+
+.option-text {
+    flex: 1;
+    font-size: 1rem;
+    color: var(--dark-gray);
+    line-height: 1.4;
+}
+
+.text-answer {
+    width: 100%;
+    padding: 0.75rem;
+    border: 2px solid rgba(146, 182, 42, 0.2);
+    border-radius: 8px;
+    font-size: 1rem;
+    transition: all 0.3s ease;
+    resize: vertical;
+    min-height: 100px;
+}
+
+.text-answer:focus {
+    outline: none;
+    border-color: var(--lime-green);
+    box-shadow: 0 0 0 3px rgba(146, 182, 42, 0.1);
+}
+
+.quiz-actions {
+    display: flex;
+    gap: 1rem;
+    margin-top: 2rem;
+    flex-wrap: wrap;
+}
+
+.btn-quiz {
+    padding: 0.75rem 2rem;
+    border-radius: 10px;
+    font-size: 1rem;
+    font-weight: 600;
+    text-decoration: none;
+    text-align: center;
+    transition: all 0.3s ease;
+    border: none;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.btn-primary {
+    background: linear-gradient(135deg, var(--lime-green), #a8c73a);
+    color: white;
+}
+
+.btn-primary:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 5px 15px rgba(146, 182, 42, 0.3);
+    color: white;
+}
+
+.btn-secondary {
+    background: var(--light-gray);
+    color: var(--navy-blue);
+    border: 1px solid rgba(146, 182, 42, 0.2);
+}
+
+.btn-secondary:hover {
+    background: var(--lime-green);
+    color: white;
+    transform: translateY(-2px);
+}
+
+.btn-warning {
+    background: linear-gradient(135deg, var(--mustard-yellow), #f0e68c);
+    color: var(--navy-blue);
+}
+
+.btn-warning:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 5px 15px rgba(226, 210, 41, 0.3);
+    color: var(--navy-blue);
+}
+
+.timer-section {
+    background: linear-gradient(135deg, rgba(159, 8, 31, 0.1) 0%, rgba(159, 8, 31, 0.05) 100%);
+    border: 1px solid rgba(159, 8, 31, 0.2);
+    border-radius: 10px;
+    padding: 1rem;
+    margin-bottom: 2rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+}
+
+.timer-icon {
+    color: var(--dark-red);
+    font-size: 1.2rem;
+}
+
+.timer-text {
+    color: var(--dark-red);
+    font-weight: 600;
+    font-size: 1.1rem;
+}
+
+.empty-state {
+    text-align: center;
+    padding: 3rem 2rem;
+    color: var(--dark-gray);
+}
+
+.empty-state i {
+    font-size: 4rem;
+    color: var(--lime-green);
+    margin-bottom: 1rem;
+    opacity: 0.5;
+}
+
+.empty-state h4 {
+    color: var(--navy-blue);
+    margin-bottom: 0.5rem;
+    font-size: 1.3rem;
+}
+
+.empty-state p {
+    margin-bottom: 0;
+    opacity: 0.8;
+    font-size: 1rem;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .quiz-container {
+        padding: 1rem 0;
+    }
+    
+    .page-title {
+        font-size: 2rem;
+    }
+    
+    .quiz-stats {
+        grid-template-columns: 1fr;
+    }
+    
+    .quiz-actions {
+        flex-direction: column;
+    }
+    
+    .quiz-content {
+        padding: 1.5rem;
+    }
+    
+    .question-header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 0.5rem;
+    }
+}
+
+/* Animaciones */
+@keyframes fadeInUp {
+    from { opacity: 0; transform: translateY(30px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+.question-section {
+    animation: fadeInUp 0.6s ease-out;
+}
+
+.question-section:nth-child(1) { animation-delay: 0.1s; }
+.question-section:nth-child(2) { animation-delay: 0.2s; }
+.question-section:nth-child(3) { animation-delay: 0.3s; }
+.question-section:nth-child(4) { animation-delay: 0.4s; }
+</style>
+<style>
+  /* Unified white + lime skin overrides for take_quiz */
+  :root { --lime-green: rgb(146, 182, 42); --lime-green-dark: #7a9a2a; }
+  body { background: url('{% static "img/pic-8.png" %}') center/cover no-repeat fixed; background-attachment: fixed; }
+  .form-control, .form-select,
+  input[type="text"], input[type="email"], input[type="tel"], textarea, select { border: 1px solid rgba(146,182,42,0.2); border-radius: 10px; padding: 0.65rem 0.9rem; background: rgba(255,255,255,0.95); transition: all 0.2s ease; }
+  .form-control:focus, .form-select:focus,
+  input[type="text"]:focus, input[type="email"]:focus, input[type="tel"]:focus, textarea:focus, select:focus { outline: none; border-color: var(--lime-green); box-shadow: 0 0 0 3px rgba(146,182,42,0.12); }
+  .btn-primary, .btn-secondary, .btn-warning { background: linear-gradient(135deg, var(--lime-green), var(--lime-green-dark)); color: #fff !important; border: none; }
+  .btn-primary:hover, .btn-secondary:hover, .btn-warning:hover { transform: translateY(-1px); box-shadow: 0 6px 18px rgba(146,182,42,0.22); }
+</style>
+
+<div class="quiz-container">
+    <div class="container">
+        <div class="content-wrapper">
+            
+            <!-- Header -->
+            <div class="page-header">
+                <h1 class="page-title">
+                    <i class="fas fa-question-circle"></i>{{ quiz.title }}
+                </h1>
+                <p class="page-subtitle">
+                    {{ lesson.title }} - {{ module.title }}
+                </p>
+            </div>
+
+            <!-- Información del cuestionario -->
+            <div class="quiz-info">
+                <div class="quiz-stats">
+                    <div class="stat-card">
+                        <div class="stat-icon questions">
+                            <i class="fas fa-question-circle"></i>
+                        </div>
+                        <div class="stat-value">{{ quiz.questions_count }}</div>
+                        <div class="stat-label">Preguntas</div>
+                    </div>
+                    
+                    <div class="stat-card">
+                        <div class="stat-icon passing">
+                            <i class="fas fa-percentage"></i>
+                        </div>
+                        <div class="stat-value">{{ quiz.passing_score }}%</div>
+                        <div class="stat-label">Puntuación Mínima</div>
+                    </div>
+                    
+                    {% if quiz.time_limit_minutes > 0 %}
+                    <div class="stat-card">
+                        <div class="stat-icon time">
+                            <i class="fas fa-clock"></i>
+                        </div>
+                        <div class="stat-value">{{ quiz.time_limit_minutes }} min</div>
+                        <div class="stat-label">Límite de Tiempo</div>
+                    </div>
+                    {% endif %}
+                    
+                    <div class="stat-card">
+                        <div class="stat-icon points">
+                            <i class="fas fa-star"></i>
+                        </div>
+                        <div class="stat-value">
+                            {% with total_points=0 %}
+                                {% for question in quiz.questions.all %}
+                                    {% with total_points=total_points|add:question.points %}{% endwith %}
+                                {% endfor %}
+                                {{ total_points }}
+                            {% endwith %}
+                        </div>
+                        <div class="stat-label">Puntos Totales</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Contenido del cuestionario -->
+            <div class="quiz-content">
+                
+                {% if quiz.questions.all %}
+                <form method="POST" class="quiz-form">
+                    {% csrf_token %}
+                    
+                    <!-- Descripción del cuestionario -->
+                    {% if quiz.description %}
+                    <div class="quiz-description">
+                        <div class="quiz-title">
+                            <i class="fas fa-info-circle"></i>Instrucciones
+                        </div>
+                        <div class="quiz-description-text">
+                            {{ quiz.description }}
+                        </div>
+                    </div>
+                    {% endif %}
+                    
+                    <!-- Timer si hay límite de tiempo -->
+                    {% if quiz.time_limit_minutes > 0 %}
+                    <div class="timer-section">
+                        <i class="fas fa-clock timer-icon"></i>
+                        <span class="timer-text">Tiempo restante: <span id="timer">{{ quiz.time_limit_minutes }}:00</span></span>
+                    </div>
+                    {% endif %}
+                    
+                    <!-- Preguntas -->
+                    {% for question in quiz.questions.all %}
+                    <div class="question-section">
+                        <div class="question-header">
+                            <div class="question-number">Pregunta {{ forloop.counter }}</div>
+                            <div class="question-points">{{ question.points }} puntos</div>
+                        </div>
+                        
+                        <div class="question-text">
+                            {{ question.question_text }}
+                        </div>
+                        
+                        <div class="question-type">
+                            Tipo: {{ question.get_question_type_display }}
+                        </div>
+                        
+                        {% if question.question_type == 'multiple_choice' %}
+                        <div class="options-list">
+                            {% for option in question.options.all %}
+                            <label class="option-item">
+                                <input type="radio" name="question_{{ question.id }}" value="{{ option.id }}" required>
+                                <span class="option-text">{{ option.option_text }}</span>
+                            </label>
+                            {% endfor %}
+                        </div>
+                        {% elif question.question_type == 'true_false' %}
+                        <div class="options-list">
+                            <label class="option-item">
+                                <input type="radio" name="question_{{ question.id }}" value="true" required>
+                                <span class="option-text">Verdadero</span>
+                            </label>
+                            <label class="option-item">
+                                <input type="radio" name="question_{{ question.id }}" value="false" required>
+                                <span class="option-text">Falso</span>
+                            </label>
+                        </div>
+                        {% elif question.question_type == 'short_answer' %}
+                        <textarea name="question_{{ question.id }}" class="text-answer" placeholder="Escribe tu respuesta aquí..." required></textarea>
+                        {% elif question.question_type == 'essay' %}
+                        <textarea name="question_{{ question.id }}" class="text-answer" placeholder="Escribe tu ensayo aquí..." rows="6" required></textarea>
+                        {% endif %}
+                    </div>
+                    {% endfor %}
+                    
+                    <!-- Acciones del cuestionario -->
+                    <div class="quiz-actions">
+                        <button type="submit" class="btn-quiz btn-primary">
+                            <i class="fas fa-paper-plane"></i> Enviar Cuestionario
+                        </button>
+                        <a href="{% url 'course:lesson_detail' slug=course.slug module_id=module.id lesson_id=lesson.id %}" class="btn-quiz btn-secondary">
+                            <i class="fas fa-arrow-left"></i> Volver a la Lección
+                        </a>
+                    </div>
+                </form>
+                {% else %}
+                <div class="empty-state">
+                    <i class="fas fa-question-circle"></i>
+                    <h4>No hay preguntas disponibles</h4>
+                    <p>Este cuestionario aún no tiene preguntas configuradas.</p>
+                </div>
+                {% endif %}
+                
+            </div>
+
+        </div>
+    </div>
+</div>
+
+{% if quiz.time_limit_minutes > 0 %}
+<script>
+// Timer functionality
+let timeLeft = {{ quiz.time_limit_minutes }} * 60; // Convert to seconds
+const timerElement = document.getElementById('timer');
+
+function updateTimer() {
+    const minutes = Math.floor(timeLeft / 60);
+    const seconds = timeLeft % 60;
+    timerElement.textContent = `${minutes}:${seconds.toString().padStart(2, '0')}`;
+    
+    if (timeLeft <= 0) {
+        // Auto-submit the form when time runs out
+        document.querySelector('.quiz-form').submit();
+    } else {
+        timeLeft--;
+        setTimeout(updateTimer, 1000);
+    }
+}
+
+updateTimer();
+</script>
+{% endif %}
+
+{% endblock content %}

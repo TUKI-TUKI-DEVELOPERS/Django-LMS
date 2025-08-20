@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8" />
+  <style>
+    body { font-family: DejaVu Sans, sans-serif; }
+    .page { padding: 36px 36px 28px 36px; position: relative; }
+    /* Left branding column */
+    .left-col { position: absolute; top: 36px; left: 36px; bottom: 28px; width: 96px; background: #4b4f57; color: #fff; }
+    .left-col-inner { position: absolute; bottom: 24px; left: 10px; right: 10px; text-align: center; font-size: 9px; line-height: 1.4; }
+    .left-logo { width: 60px; height: 60px; margin: 0 auto 6px auto; }
+    /* Evitar border-radius complejos con xhtml2pdf */
+    .curve { position: absolute; bottom: 0; right: 0; width: 60%; height: 140px; background: #004d40; }
+
+    /* Header */
+    /* xhtml2pdf: evitar flex */
+    .header { margin-left: 140px; }
+    .brand { display: flex; align-items: center; gap: 10px; }
+    .brand-title { font-size: 12px; color: #4b4f57; }
+    .brand-name { font-size: 18px; font-weight: bold; color: #00796b; }
+    .header-logo { width: 56px; height: 56px; }
+
+    .cert-title { margin: 8px 0 2px 140px; font-size: 26px; font-weight: bold; color: #111; }
+    .cert-subtitle { margin: 0 0 10px 140px; font-size: 11px; color: #6c757d; }
+    /* xhtml2pdf no soporta calc(), usar porcentaje fijo */
+    .divider { height: 2px; background: #92b62a; margin: 6px 0 16px 140px; width: 80%; }
+
+    /* Body */
+    .content { margin-left: 140px; font-size: 13px; line-height: 1.7; color: #222; }
+    .participant { font-size: 18px; font-weight: bold; margin: 8px 0 2px 0; }
+    .identity { font-size: 11px; color: #616161; margin-bottom: 10px; }
+    .course { font-weight: bold; }
+    .meta { margin-top: 10px; font-size: 11px; color: #444; }
+
+    /* Footer */
+    .footer { margin-left: 140px; margin-top: 30px; font-size: 11px; }
+    .sign-block { text-align: left; display: inline-block; width: 50%; vertical-align: top; }
+    .sign-line { width: 220px; height: 1px; background: #333; margin: 8px auto 4px auto; }
+    .serial { text-align: right; color: #616161; display: inline-block; width: 48%; vertical-align: bottom; }
+  </style>
+  <title>Certificado</title>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+  <meta http-equiv="Content-Language" content="es"/>
+  <meta http-equiv="Content-Style-Type" content="text/css"/>
+  <meta http-equiv="Content-Script-Type" content="text/javascript"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+</head>
+<body>
+  <div class="page">
+    <div class="left-col">
+      <div class="left-col-inner">
+        {% if logo_path %}
+        <img src="{{ logo_path }}" class="left-logo" />
+        {% else %}
+        <div class="left-logo"></div>
+        {% endif %}
+        <div><strong>{{ company_name }}</strong></div>
+        <div>{{ company_city }}</div>
+        <div>www.aprendeya.cl</div>
+      </div>
+    </div>
+    <div class="curve"></div>
+
+    <div class="header">
+      <div class="brand">
+        <div class="brand-title">CERTIFICADO</div>
+      </div>
+      {% if logo_path %}
+      <img class="header-logo" src="{{ logo_path }}" />
+      {% endif %}
+    </div>
+    <div class="cert-title">Otorgado al participante</div>
+    <div class="cert-subtitle">{{ company_name }} certifica la siguiente acreditación</div>
+    <div class="divider"></div>
+
+    <div class="content">
+      <div>Se certifica que</div>
+      <div class="participant">{{ taken_course.student.student.get_full_name }}</div>
+      <div class="identity">ID: {{ taken_course.student.student.username }}</div>
+      <div>ha sido capacitado(a), evaluado(a) y aprobado(a) en la actividad de</div>
+      <div class="course">{{ taken_course.course.title }} ({{ taken_course.course.code }})</div>
+      <div class="meta">Duración: 110 horas totales (referencial) • Modalidad: E-learning</div>
+      <div class="meta">Sede: {{ company_city }} • Resultado final: {{ taken_course.total }} ({{ taken_course.comment }})</div>
+    </div>
+
+    <div class="footer">
+      <div class="sign-block">
+        <div class="sign-line"></div>
+        <div>Firma Autorizada</div>
+        <div>{{ legal_rep_name }}</div>
+        <div>{{ legal_rep_id }}</div>
+      </div>
+      <div class="serial">
+        {% if certificate %}
+          <div><strong>N° de Serie:</strong> {{ certificate.serial_number }}</div>
+          <div><strong>Emitido:</strong> {{ certificate.issued_at|date:"d/m/Y" }}</div>
+        {% else %}
+          <div><strong>Emitido:</strong> {{ taken_course.student.student.date_joined|date:"d/m/Y" }}</div>
+        {% endif %}
+      </div>
+    </div>
+  </div>
+</body>
+</html>
+
+

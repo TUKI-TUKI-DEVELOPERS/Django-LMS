@@ -1,0 +1,1222 @@
+{% extends 'base.html' %}
+{% load static %}
+{% load i18n %}
+
+{% block title %}{{ title }} - Canvas de Lección{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/video.css' %}">
+{% endblock %}
+
+{% block content %}
+<div class="lesson-canvas-container">
+    <!-- Header Navigation -->
+    <div class="canvas-header">
+        <nav aria-label="breadcrumb">
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item"><a href="{% url 'course:course_modules' slug=course.slug %}">{{ course.title }}</a></li>
+                <li class="breadcrumb-item"><a href="{% url 'course:module_detail' slug=course.slug module_id=module.id %}">{{ module.title }}</a></li>
+                <li class="breadcrumb-item active" aria-current="page">{{ lesson.title }} - Canvas</li>
+            </ol>
+        </nav>
+        
+        <div class="canvas-actions">
+            <button class="btn btn-outline-primary" onclick="previewLesson()">
+                <i class="fas fa-eye"></i> Vista Previa
+            </button>
+            <button class="btn btn-success" onclick="saveLesson()">
+                <i class="fas fa-save"></i> Guardar
+            </button>
+            <a href="{% url 'course:module_detail' slug=course.slug module_id=module.id %}" class="btn btn-secondary">
+                <i class="fas fa-arrow-left"></i> Volver al Módulo
+            </a>
+        </div>
+    </div>
+
+    <!-- Canvas Main Content -->
+    <div class="canvas-main">
+        <!-- Toolbar -->
+        <div class="canvas-toolbar">
+            <div class="toolbar-section">
+                <h3><i class="fas fa-plus-circle"></i> Agregar Contenido</h3>
+                <div class="content-blocks">
+                    <button class="block-btn" data-type="text" title="Bloque de Texto">
+                        <i class="fas fa-font"></i>
+                        <span>Texto</span>
+                    </button>
+                    <button class="block-btn" data-type="video" title="Video">
+                        <i class="fas fa-video"></i>
+                        <span>Video</span>
+                    </button>
+                    <button class="block-btn" data-type="image" title="Imagen">
+                        <i class="fas fa-image"></i>
+                        <span>Imagen</span>
+                    </button>
+                    <button class="block-btn" data-type="quiz" title="Cuestionario">
+                        <i class="fas fa-question-circle"></i>
+                        <span>Quiz</span>
+                    </button>
+                    <button class="block-btn" data-type="file" title="Archivo/Documento">
+                        <i class="fas fa-file-alt"></i>
+                        <span>Archivo</span>
+                    </button>
+                    <button class="block-btn" data-type="presentation" title="Presentación">
+                        <i class="fas fa-presentation"></i>
+                        <span>Presentación</span>
+                    </button>
+                    <button class="block-btn" data-type="code" title="Código">
+                        <i class="fas fa-code"></i>
+                        <span>Código</span>
+                    </button>
+                    <button class="block-btn" data-type="audio" title="Audio">
+                        <i class="fas fa-music"></i>
+                        <span>Audio</span>
+                    </button>
+                    <button class="block-btn" data-type="embed" title="Contenido Embebido">
+                        <i class="fas fa-external-link-alt"></i>
+                        <span>Embeber</span>
+                    </button>
+                    <button class="block-btn" data-type="divider" title="Separador">
+                        <i class="fas fa-minus"></i>
+                        <span>Separador</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Canvas Area -->
+        <div class="canvas-area">
+            <div class="lesson-header">
+                <h1 class="lesson-title">{{ lesson.title }}</h1>
+                <p class="lesson-description">{{ lesson.description|default:"Agrega una descripción para esta lección..." }}</p>
+                <div class="lesson-meta">
+                    <span class="lesson-type">
+                        <i class="fas fa-tag"></i> {{ lesson.get_lesson_type_display }}
+                    </span>
+                    <span class="lesson-duration">
+                        <i class="fas fa-clock"></i> {{ lesson.duration_minutes }} min
+                    </span>
+                </div>
+            </div>
+
+            <!-- Content Blocks -->
+            <div class="content-blocks-area" id="contentBlocks">
+                {% for block in blocks %}
+                <div class="content-block" data-block-id="{{ block.id }}" data-block-type="{{ block.block_type }}">
+                    <div class="block-header">
+                        <div class="block-info">
+                            <i class="fas {% if block.block_type == 'text' %}fa-font{% elif block.block_type == 'video' %}fa-video{% elif block.block_type == 'image' %}fa-image{% elif block.block_type == 'quiz' %}fa-question-circle{% elif block.block_type == 'file' %}fa-file-alt{% elif block.block_type == 'presentation' %}fa-chalkboard{% elif block.block_type == 'code' %}fa-code{% elif block.block_type == 'audio' %}fa-music{% elif block.block_type == 'embed' %}fa-external-link-alt{% else %}fa-minus{% endif %}"></i>
+                            <span class="block-type">{{ block.get_block_type_display }}</span>
+                            {% if block.title %}
+                            <span class="block-title">- {{ block.title }}</span>
+                            {% endif %}
+                        </div>
+                        <div class="block-actions">
+                            <button class="btn-sm btn-outline-primary" onclick="editBlock({{ block.id }})" title="Editar">
+                                <i class="fas fa-edit"></i>
+                            </button>
+                            <button class="btn-sm btn-outline-danger" onclick="deleteBlock({{ block.id }})" title="Eliminar">
+                                <i class="fas fa-trash"></i>
+                            </button>
+                            <button class="btn-sm btn-outline-secondary drag-handle" title="Arrastrar">
+                                <i class="fas fa-grip-vertical"></i>
+                            </button>
+                        </div>
+                    </div>
+                    
+                    <div class="block-content">
+                        {% if block.block_type == 'text' %}
+                            <div class="text-content">
+                                {{ block.text_content|safe|default:"<p>Contenido de texto vacío. Haz clic en editar para agregar contenido.</p>" }}
+                            </div>
+                        {% elif block.block_type == 'video' %}
+                            <div class="video-content">
+                                {% if block.video_url %}
+                                    <div class="video-container">
+                                        <iframe 
+                                            src="{{ block.video_url }}"
+                                            frameborder="0"
+                                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                                            allowfullscreen>
+                                        </iframe>
+                                    </div>
+                                {% elif block.video_file %}
+                                    <video width="100%" controls>
+                                        <source src="{{ block.video_file.url }}" type="video/mp4">
+                                        Tu navegador no soporta el elemento video.
+                                    </video>
+                                {% else %}
+                                    <div class="empty-content">
+                                        <i class="fas fa-video fa-3x"></i>
+                                        <p>No hay video configurado. Haz clic en editar para agregar un video.</p>
+                                    </div>
+                                {% endif %}
+                            </div>
+                        {% elif block.block_type == 'image' %}
+                            <div class="image-content">
+                                {% if block.image %}
+                                    <img src="{{ block.image.url }}" alt="{{ block.title|default:'Imagen' }}" class="img-fluid">
+                                {% else %}
+                                    <div class="empty-content">
+                                        <i class="fas fa-image fa-3x"></i>
+                                        <p>No hay imagen configurada. Haz clic en editar para agregar una imagen.</p>
+                                    </div>
+                                {% endif %}
+                            </div>
+                        {% elif block.block_type == 'quiz' %}
+                            <div class="quiz-content">
+                                {% if block.quiz_block %}
+                                    <div class="quiz-preview">
+                                        <h4><i class="fas fa-question-circle"></i> {{ block.quiz_block.title }}</h4>
+                                        <p>{{ block.quiz_block.description|default:"Sin descripción" }}</p>
+                                        <div class="quiz-meta">
+                                            <span><i class="fas fa-clock"></i> 
+                                                {% if block.quiz_block.time_limit_minutes > 0 %}
+                                                    {{ block.quiz_block.time_limit_minutes }} minutos
+                                                {% else %}
+                                                    Sin límite de tiempo
+                                                {% endif %}
+                                            </span>
+                                            <span><i class="fas fa-redo"></i> {{ block.quiz_block.attempts_allowed }} intento(s)</span>
+                                            <span><i class="fas fa-percentage"></i> {{ block.quiz_block.passing_score }}% para aprobar</span>
+                                            <span><i class="fas fa-list"></i> {{ block.quiz_block.questions_count }} pregunta(s)</span>
+                                        </div>
+                                    </div>
+                                {% else %}
+                                    <div class="empty-content">
+                                        <i class="fas fa-question-circle fa-3x"></i>
+                                        <p>Cuestionario no configurado. Haz clic en editar para configurar.</p>
+                                    </div>
+                                {% endif %}
+                            </div>
+                        {% elif block.block_type == 'file' %}
+                            <div class="file-content">
+                                {% if block.file %}
+                                    <div class="file-preview">
+                                        <i class="fas fa-file-alt fa-2x"></i>
+                                        <div class="file-info">
+                                            <strong>{{ block.title|default:"Archivo" }}</strong>
+                                            <br>
+                                            <a href="{{ block.file.url }}" target="_blank" class="btn btn-sm btn-primary">
+                                                <i class="fas fa-download"></i> Descargar
+                                            </a>
+                                        </div>
+                                    </div>
+                                {% else %}
+                                    <div class="empty-content">
+                                        <i class="fas fa-file-alt fa-3x"></i>
+                                        <p>No hay archivo configurado. Haz clic en editar para subir un archivo.</p>
+                                    </div>
+                                {% endif %}
+                            </div>
+                        {% elif block.block_type == 'embed' %}
+                            <div class="embed-content">
+                                {% if block.embed_code %}
+                                    {{ block.embed_code|safe }}
+                                {% elif block.embed_url %}
+                                    <iframe src="{{ block.embed_url }}" width="100%" height="400" frameborder="0"></iframe>
+                                {% else %}
+                                    <div class="empty-content">
+                                        <i class="fas fa-external-link-alt fa-3x"></i>
+                                        <p>No hay contenido embebido. Haz clic en editar para agregar código o URL.</p>
+                                    </div>
+                                {% endif %}
+                            </div>
+                        {% elif block.block_type == 'presentation' %}
+                            <div class="presentation-content">
+                                {% if block.embed_code %}
+                                    {{ block.embed_code|safe }}
+                                {% elif block.embed_url %}
+                                    <iframe src="{{ block.embed_url }}" width="100%" height="480" frameborder="0" allowfullscreen></iframe>
+                                {% else %}
+                                    <div class="empty-content">
+                                        <i class="fas fa-chalkboard fa-3x"></i>
+                                        <p>No hay presentación configurada. Haz clic en editar para agregar una URL o código de embebido (Prezi, Canva, SlideShare, Google Slides).</p>
+                                    </div>
+                                {% endif %}
+                            </div>
+                        {% elif block.block_type == 'divider' %}
+                            <div class="divider-content">
+                                <hr class="divider-line">
+                            </div>
+                        {% endif %}
+                    </div>
+                </div>
+                {% empty %}
+                <div class="empty-lesson">
+                    <div class="empty-state">
+                        <i class="fas fa-plus-circle fa-4x"></i>
+                        <h3>Lección Vacía</h3>
+                        <p>Comienza agregando bloques de contenido usando la barra de herramientas de la izquierda.</p>
+                        <button class="btn btn-primary btn-lg" onclick="showAddBlockModal('text')">
+                            <i class="fas fa-plus"></i> Agregar Primer Bloque
+                        </button>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal para agregar/editar bloques -->
+<div class="modal fade" id="blockModal" tabindex="-1" aria-labelledby="blockModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="blockModalLabel">Agregar Bloque</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form id="blockForm" enctype="multipart/form-data">
+                    {% csrf_token %}
+                    <input type="hidden" id="blockId" name="block_id">
+                    <input type="hidden" id="blockType" name="block_type">
+                    
+                    <!-- Campos comunes -->
+                    <div class="mb-3">
+                        <label for="blockTitle" class="form-label">Título del Bloque (Opcional)</label>
+                        <input type="text" class="form-control" id="blockTitle" name="title">
+                    </div>
+                    
+                    <!-- Campos específicos por tipo de bloque -->
+                    <div id="blockFields">
+                        <!-- Se llenan dinámicamente según el tipo de bloque -->
+                    </div>
+                    
+                    <!-- Configuración visual -->
+                    <div class="row">
+                        <div class="col-md-4">
+                            <label for="blockWidth" class="form-label">Ancho</label>
+                            <select class="form-control" id="blockWidth" name="width">
+                                <option value="100%">100% (Ancho completo)</option>
+                                <option value="75%">75%</option>
+                                <option value="50%">50%</option>
+                                <option value="25%">25%</option>
+                            </select>
+                        </div>
+                        <div class="col-md-4">
+                            <label for="blockHeight" class="form-label">Alto (Opcional)</label>
+                            <input type="text" class="form-control" id="blockHeight" name="height" placeholder="ej: 300px">
+                        </div>
+                        <div class="col-md-4">
+                            <label for="blockBgColor" class="form-label">Color de Fondo</label>
+                            <input type="color" class="form-control" id="blockBgColor" name="background_color" value="#ffffff">
+                        </div>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                <button type="button" class="btn btn-primary" onclick="saveBlock()">Guardar Bloque</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+/* Canvas Styles 2025 */
+:root {
+    --primary-color: #204444;
+    --secondary-color: #92b62a;
+    --accent-color: #9f081f;
+    --warning-color: #e2d229;
+    --dark-gray: #454545;
+    --light-gray: #f8f9fa;
+    --white: #ffffff;
+    --glass-bg: rgba(255, 255, 255, 0.95);
+    --glass-border: rgba(255, 255, 255, 0.2);
+    --shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+    --border-radius: 12px;
+}
+
+.lesson-canvas-container {
+    min-height: 100vh;
+    background: linear-gradient(135deg, var(--primary-color) 0%, var(--dark-gray) 100%);
+    font-family: 'Inter', sans-serif;
+}
+
+.canvas-header {
+    background: var(--glass-bg);
+    backdrop-filter: blur(10px);
+    border-bottom: 1px solid var(--glass-border);
+    padding: 1rem 2rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    position: sticky;
+    top: 0;
+    z-index: 1000;
+}
+
+.breadcrumb {
+    background: transparent;
+    padding: 0;
+    margin: 0;
+}
+
+.breadcrumb-item a {
+    color: var(--secondary-color);
+    text-decoration: none;
+    font-weight: 500;
+    transition: color 0.3s ease;
+}
+
+.breadcrumb-item a:hover {
+    color: #7a9a2a;
+}
+
+.breadcrumb-item.active {
+    color: var(--dark-gray);
+    font-weight: 600;
+}
+
+.canvas-actions {
+    display: flex;
+    gap: 0.5rem;
+}
+
+.canvas-actions .btn {
+    padding: 0.5rem 1rem;
+    border-radius: var(--border-radius);
+    font-weight: 600;
+    transition: all 0.3s ease;
+}
+
+.canvas-main {
+    display: flex;
+    height: calc(100vh - 80px);
+}
+
+.canvas-toolbar {
+    width: 280px;
+    background: var(--glass-bg);
+    backdrop-filter: blur(10px);
+    border-right: 1px solid var(--glass-border);
+    padding: 1.5rem;
+    overflow-y: auto;
+}
+
+.toolbar-section h3 {
+    color: var(--primary-color);
+    font-size: 1.1rem;
+    font-weight: 700;
+    margin-bottom: 1rem;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.content-blocks {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 0.75rem;
+}
+
+.block-btn {
+    background: var(--white);
+    border: 2px solid rgba(146, 182, 42, 0.2);
+    border-radius: var(--border-radius);
+    padding: 1rem 0.5rem;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.5rem;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    font-weight: 600;
+    color: var(--dark-gray);
+}
+
+.block-btn:hover {
+    border-color: var(--secondary-color);
+    background: rgba(146, 182, 42, 0.1);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(146, 182, 42, 0.2);
+}
+
+.block-btn i {
+    font-size: 1.5rem;
+    color: var(--secondary-color);
+}
+
+.block-btn span {
+    font-size: 0.85rem;
+}
+
+.canvas-area {
+    flex: 1;
+    background: var(--white);
+    overflow-y: auto;
+    padding: 2rem;
+}
+
+.lesson-header {
+    background: var(--glass-bg);
+    backdrop-filter: blur(10px);
+    border: 1px solid var(--glass-border);
+    border-radius: var(--border-radius);
+    padding: 2rem;
+    margin-bottom: 2rem;
+    box-shadow: var(--shadow);
+}
+
+.lesson-title {
+    color: var(--primary-color);
+    font-size: 2.5rem;
+    font-weight: 700;
+    margin-bottom: 0.5rem;
+}
+
+.lesson-description {
+    color: var(--dark-gray);
+    font-size: 1.2rem;
+    margin-bottom: 1rem;
+    line-height: 1.6;
+}
+
+.lesson-meta {
+    display: flex;
+    gap: 2rem;
+    color: var(--dark-gray);
+    font-weight: 500;
+}
+
+.lesson-meta span {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.lesson-meta i {
+    color: var(--secondary-color);
+}
+
+.content-blocks-area {
+    min-height: 400px;
+}
+
+.content-block {
+    background: var(--white);
+    border: 2px solid rgba(146, 182, 42, 0.1);
+    border-radius: var(--border-radius);
+    margin-bottom: 1.5rem;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
+    transition: all 0.3s ease;
+}
+
+.content-block:hover {
+    border-color: rgba(146, 182, 42, 0.3);
+    box-shadow: 0 8px 30px rgba(146, 182, 42, 0.15);
+}
+
+.block-header {
+    background: var(--light-gray);
+    padding: 1rem 1.5rem;
+    border-bottom: 1px solid rgba(146, 182, 42, 0.1);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-radius: var(--border-radius) var(--border-radius) 0 0;
+}
+
+.block-info {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    color: var(--dark-gray);
+    font-weight: 600;
+}
+
+.block-info i {
+    color: var(--secondary-color);
+    font-size: 1.1rem;
+}
+
+.block-actions {
+    display: flex;
+    gap: 0.5rem;
+}
+
+.block-actions .btn-sm {
+    padding: 0.25rem 0.5rem;
+    border-radius: 6px;
+    font-size: 0.875rem;
+    border: 1px solid;
+    background: transparent;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.btn-outline-primary {
+    color: var(--secondary-color);
+    border-color: var(--secondary-color);
+}
+
+.btn-outline-primary:hover {
+    background: var(--secondary-color);
+    color: var(--white);
+}
+
+.btn-outline-danger {
+    color: var(--accent-color);
+    border-color: var(--accent-color);
+}
+
+.btn-outline-danger:hover {
+    background: var(--accent-color);
+    color: var(--white);
+}
+
+.btn-outline-secondary {
+    color: var(--dark-gray);
+    border-color: var(--dark-gray);
+}
+
+.btn-outline-secondary:hover {
+    background: var(--dark-gray);
+    color: var(--white);
+}
+
+.block-content {
+    padding: 1.5rem;
+}
+
+.empty-content {
+    text-align: center;
+    padding: 3rem 1rem;
+    color: #adb5bd;
+}
+
+.empty-content i {
+    color: #dee2e6;
+    margin-bottom: 1rem;
+}
+
+.empty-content p {
+    margin: 0;
+    font-style: italic;
+}
+
+.text-content {
+    line-height: 1.6;
+    color: var(--dark-gray);
+}
+
+.video-content video,
+.video-content iframe {
+    border-radius: var(--border-radius);
+    max-width: 100%;
+}
+
+.image-content img {
+    border-radius: var(--border-radius);
+    max-width: 100%;
+    height: auto;
+}
+
+.quiz-preview {
+    background: rgba(146, 182, 42, 0.05);
+    border: 2px solid rgba(146, 182, 42, 0.2);
+    border-radius: var(--border-radius);
+    padding: 1.5rem;
+}
+
+.quiz-preview h4 {
+    color: var(--primary-color);
+    margin-bottom: 0.5rem;
+}
+
+.quiz-meta {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1rem;
+    margin-top: 1rem;
+    font-size: 0.875rem;
+    color: var(--dark-gray);
+}
+
+.quiz-meta span {
+    display: flex;
+    align-items: center;
+    gap: 0.3rem;
+}
+
+.quiz-meta i {
+    color: var(--secondary-color);
+}
+
+.file-preview {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    padding: 1rem;
+    background: var(--light-gray);
+    border-radius: var(--border-radius);
+}
+
+.file-preview i {
+    color: var(--secondary-color);
+}
+
+.divider-line {
+    border: none;
+    height: 2px;
+    background: linear-gradient(90deg, transparent, var(--secondary-color), transparent);
+    margin: 2rem 0;
+}
+
+.empty-lesson {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 400px;
+}
+
+.empty-state {
+    text-align: center;
+    color: #adb5bd;
+}
+
+.empty-state i {
+    color: #dee2e6;
+    margin-bottom: 1rem;
+}
+
+.empty-state h3 {
+    color: var(--dark-gray);
+    margin-bottom: 0.5rem;
+}
+
+.empty-state p {
+    margin-bottom: 2rem;
+    font-size: 1.1rem;
+}
+
+/* Modal Styles */
+.modal-content {
+    border-radius: var(--border-radius);
+    border: none;
+    box-shadow: var(--shadow);
+}
+
+.modal-header {
+    background: var(--light-gray);
+    border-bottom: 1px solid rgba(146, 182, 42, 0.1);
+    border-radius: var(--border-radius) var(--border-radius) 0 0;
+}
+
+.modal-title {
+    color: var(--primary-color);
+    font-weight: 700;
+}
+
+.form-label {
+    color: var(--dark-gray);
+    font-weight: 600;
+    margin-bottom: 0.5rem;
+}
+
+.form-control {
+    border: 2px solid rgba(146, 182, 42, 0.2);
+    border-radius: var(--border-radius);
+    padding: 0.75rem 1rem;
+    transition: all 0.3s ease;
+}
+
+.form-control:focus {
+    border-color: var(--secondary-color);
+    box-shadow: 0 0 0 0.2rem rgba(146, 182, 42, 0.25);
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .canvas-main {
+        flex-direction: column;
+        height: auto;
+    }
+    
+    .canvas-toolbar {
+        width: 100%;
+        padding: 1rem;
+    }
+    
+    .content-blocks {
+        grid-template-columns: repeat(3, 1fr);
+    }
+    
+    .canvas-header {
+        flex-direction: column;
+        gap: 1rem;
+        padding: 1rem;
+    }
+    
+    .lesson-title {
+        font-size: 2rem;
+    }
+    
+    .quiz-meta {
+        flex-direction: column;
+        gap: 0.5rem;
+    }
+}
+
+/* Drag and Drop Styles */
+.content-block.dragging {
+    opacity: 0.5;
+    transform: rotate(5deg);
+}
+
+.content-blocks-area.drag-over {
+    background: rgba(146, 182, 42, 0.1);
+    border: 2px dashed var(--secondary-color);
+    border-radius: var(--border-radius);
+}
+
+.drag-handle {
+    cursor: grab;
+}
+
+.drag-handle:active {
+    cursor: grabbing;
+}
+
+/* Animation for new blocks */
+@keyframes slideInUp {
+    from {
+        opacity: 0;
+        transform: translateY(30px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.content-block.new-block {
+    animation: slideInUp 0.5s ease-out;
+}
+</style>
+
+<script>
+// Canvas JavaScript Functions
+let currentBlockType = '';
+let editingBlockId = null;
+
+// Block type field templates
+const blockFieldTemplates = {
+    text: `
+        <div class="mb-3">
+            <label for="textContent" class="form-label">Contenido de Texto</label>
+            <textarea class="form-control rich-editor" id="textContent" name="text_content" rows="8" placeholder="Escribe tu contenido aquí..."></textarea>
+        </div>
+        <div class="row">
+            <div class="col-md-6">
+                <label for="blockWidth" class="form-label">Ancho del Bloque</label>
+                <select class="form-control" id="blockWidth" name="width">
+                    <option value="100%">100% (Ancho completo)</option>
+                    <option value="75%">75%</option>
+                    <option value="50%">50%</option>
+                    <option value="25%">25%</option>
+                </select>
+            </div>
+        </div>
+    `,
+    video: `
+        <div class="mb-3">
+            <label for="videoUrl" class="form-label">URL del Video (YouTube, Vimeo, etc.)</label>
+            <input type="url" class="form-control" id="videoUrl" name="video_url" placeholder="https://www.youtube.com/watch?v=...">
+        </div>
+        <div class="mb-3">
+            <label for="videoFile" class="form-label">O subir archivo de video</label>
+            <input type="file" class="form-control" id="videoFile" name="video_file" accept="video/*">
+        </div>
+        <div class="row">
+            <div class="col-md-6">
+                <label for="blockWidth" class="form-label">Ancho del Bloque</label>
+                <select class="form-control" id="blockWidth" name="width">
+                    <option value="100%">100% (Ancho completo)</option>
+                    <option value="75%">75%</option>
+                    <option value="50%">50%</option>
+                    <option value="25%">25%</option>
+                </select>
+            </div>
+        </div>
+    `,
+    image: `
+        <div class="mb-3">
+            <label for="imageFile" class="form-label">Subir Imagen</label>
+            <input type="file" class="form-control" id="imageFile" name="image" accept="image/*">
+        </div>
+    `,
+    quiz: `
+        <div class="mb-3">
+            <label for="quizTitle" class="form-label">Título del Cuestionario</label>
+            <input type="text" class="form-control" id="quizTitle" name="quiz_title" placeholder="Título del cuestionario">
+        </div>
+        <div class="mb-3">
+            <label for="quizDescription" class="form-label">Descripción</label>
+            <textarea class="form-control" id="quizDescription" name="quiz_description" rows="3" placeholder="Descripción del cuestionario"></textarea>
+        </div>
+        <div class="row">
+            <div class="col-md-4">
+                <label for="passingScore" class="form-label">Puntuación para Aprobar (%)</label>
+                <input type="number" class="form-control" id="passingScore" name="passing_score" value="70" min="0" max="100">
+            </div>
+            <div class="col-md-4">
+                <label for="timeLimit" class="form-label">Límite de Tiempo (min)</label>
+                <input type="number" class="form-control" id="timeLimit" name="time_limit_minutes" value="0" min="0" placeholder="0 = sin límite">
+            </div>
+            <div class="col-md-4">
+                <label for="attemptsAllowed" class="form-label">Intentos Permitidos</label>
+                <input type="number" class="form-control" id="attemptsAllowed" name="attempts_allowed" value="1" min="1">
+            </div>
+        </div>
+        <div class="row mt-3">
+            <div class="col-md-6">
+                <div class="form-check">
+                    <input class="form-check-input" type="checkbox" id="showResults" name="show_results" checked>
+                    <label class="form-check-label" for="showResults">
+                        Mostrar resultados al finalizar
+                    </label>
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="form-check">
+                    <input class="form-check-input" type="checkbox" id="randomizeQuestions" name="randomize_questions">
+                    <label class="form-check-label" for="randomizeQuestions">
+                        Aleatorizar preguntas
+                    </label>
+                </div>
+            </div>
+        </div>
+    `,
+    file: `
+        <div class="mb-3">
+            <label for="fileUpload" class="form-label">Subir Archivo</label>
+            <input type="file" class="form-control" id="fileUpload" name="file">
+        </div>
+    `,
+    presentation: `
+        <div class="mb-3">
+            <label for="embedUrl" class="form-label">URL de la Presentación (Prezi, SlideShare, etc.)</label>
+            <input type="url" class="form-control" id="embedUrl" name="embed_url" placeholder="https://prezi.com/...">
+        </div>
+        <div class="mb-3">
+            <label for="embedCode" class="form-label">O código de embebido</label>
+            <textarea class="form-control" id="embedCode" name="embed_code" rows="4" placeholder="<iframe src=... ></iframe>"></textarea>
+        </div>
+    `,
+    code: `
+        <div class="mb-3">
+            <label for="codeContent" class="form-label">Código</label>
+            <textarea class="form-control" id="codeContent" name="text_content" rows="8" placeholder="// Tu código aquí..." style="font-family: monospace;"></textarea>
+        </div>
+    `,
+    audio: `
+        <div class="mb-3">
+            <label for="audioFile" class="form-label">Subir Archivo de Audio</label>
+            <input type="file" class="form-control" id="audioFile" name="audio_file" accept="audio/*">
+        </div>
+    `,
+    embed: `
+        <div class="mb-3">
+            <label for="embedUrl" class="form-label">URL para Embeber</label>
+            <input type="url" class="form-control" id="embedUrl" name="embed_url" placeholder="https://example.com">
+        </div>
+        <div class="mb-3">
+            <label for="embedCode" class="form-label">O código HTML para embeber</label>
+            <textarea class="form-control" id="embedCode" name="embed_code" rows="4" placeholder="<iframe src=... ></iframe>"></textarea>
+        </div>
+    `,
+    divider: `
+        <p class="text-muted">Los separadores no requieren configuración adicional.</p>
+    `
+};
+
+// Event listeners para botones de bloque
+document.addEventListener('DOMContentLoaded', function() {
+    // Add block buttons
+    document.querySelectorAll('.block-btn').forEach(btn => {
+        btn.addEventListener('click', function() {
+            const blockType = this.dataset.type;
+            showAddBlockModal(blockType);
+        });
+    });
+
+    // Make blocks sortable
+    initializeDragAndDrop();
+});
+
+function showAddBlockModal(blockType) {
+    currentBlockType = blockType;
+    editingBlockId = null;
+    
+    const modal = new bootstrap.Modal(document.getElementById('blockModal'));
+    const modalTitle = document.getElementById('blockModalLabel');
+    const blockTypeInput = document.getElementById('blockType');
+    const blockFields = document.getElementById('blockFields');
+    
+    modalTitle.textContent = `Agregar Bloque de ${getBlockTypeName(blockType)}`;
+    blockTypeInput.value = blockType;
+    blockFields.innerHTML = blockFieldTemplates[blockType] || '';
+    
+    // Clear form
+    const form = document.getElementById('blockForm');
+    form.reset();
+    form.querySelector('#blockType').value = blockType;
+    
+    // Configurar el formulario para manejar la subida
+    form.onsubmit = function(e) {
+        e.preventDefault();
+        const formData = new FormData(form);
+        const csrfToken = document.querySelector('[name=csrfmiddlewaretoken]').value;
+        
+        fetch(form.action, {
+            method: 'POST',
+            body: formData,
+            headers: {
+                'X-CSRFToken': csrfToken,
+            },
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                // Cerrar el modal
+                modal.hide();
+                
+                // Agregar el nuevo bloque al canvas
+                const blocksContainer = document.getElementById('contentBlocks');
+                const newBlockHtml = createBlockHtml(data.block);
+                blocksContainer.insertAdjacentHTML('beforeend', newBlockHtml);
+                
+                // Mostrar mensaje de éxito
+                showAlert('success', data.message);
+                
+                // Si hay una advertencia, mostrarla
+                if (data.warning) {
+                    showAlert('warning', data.warning);
+                }
+                
+                // Refrescar Drag & Drop
+                initializeDragAndDrop();
+            } else {
+                // Mostrar errores
+                let errorMessage = 'Error al crear el bloque: ';
+                if (data.errors) {
+                    errorMessage += Object.entries(data.errors)
+                        .map(([field, errors]) => `${field}: ${errors.join(', ')}`)
+                        .join('; ');
+                } else if (data.error) {
+                    errorMessage += data.error;
+                }
+                showAlert('error', errorMessage);
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            showAlert('error', 'Error al procesar la solicitud');
+        });
+    };
+    
+    modal.show();
+}
+
+function showAlert(type, message) {
+    const alertDiv = document.createElement('div');
+    alertDiv.className = `alert alert-${type === 'error' ? 'danger' : type} alert-dismissible fade show`;
+    alertDiv.innerHTML = `
+        ${message}
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    `;
+    document.querySelector('.canvas-header').insertAdjacentElement('afterend', alertDiv);
+    
+    // Auto-dismiss after 5 seconds
+    setTimeout(() => {
+        alertDiv.remove();
+    }, 5000);
+}
+
+function createBlockHtml(block) {
+    const iconClass = getBlockIconClass(block.type);
+    return `
+        <div class="content-block" data-block-id="${block.id}" data-block-type="${block.type}">
+            <div class="block-header">
+                <div class="block-info">
+                    <i class="fas ${iconClass}"></i>
+                    <span class="block-type">${getBlockTypeName(block.type)}</span>
+                    ${block.title ? `<span class="block-title">- ${block.title}</span>` : ''}
+                </div>
+                <div class="block-actions">
+                    <button class="btn-sm btn-outline-primary" onclick="editBlock(${block.id})" title="Editar">
+                        <i class="fas fa-edit"></i>
+                    </button>
+                    <button class="btn-sm btn-outline-danger" onclick="deleteBlock(${block.id})" title="Eliminar">
+                        <i class="fas fa-trash"></i>
+                    </button>
+                    <button class="btn-sm btn-outline-secondary drag-handle" title="Arrastrar">
+                        <i class="fas fa-grip-vertical"></i>
+                    </button>
+                </div>
+            </div>
+            <div class="block-content">
+                <p class="text-muted text-center">Bloque creado. Haz clic en editar para configurar el contenido.</p>
+            </div>
+        </div>
+    `;
+}
+
+function getBlockIconClass(blockType) {
+    const iconMap = {
+        'text': 'fa-font',
+        'video': 'fa-video',
+        'image': 'fa-image',
+        'quiz': 'fa-question-circle',
+        'file': 'fa-file-alt',
+        'presentation': 'fa-presentation',
+        'code': 'fa-code',
+        'audio': 'fa-music',
+        'embed': 'fa-external-link-alt',
+        'divider': 'fa-minus'
+    };
+    return iconMap[blockType] || 'fa-minus';
+}
+
+function editBlock(blockId) {
+    editingBlockId = blockId;
+    // TODO: Load block data and show modal
+    console.log('Edit block:', blockId);
+}
+
+function deleteBlock(blockId) {
+    if (confirm('¿Estás seguro de que quieres eliminar este bloque?')) {
+        const deleteUrl = `{% url 'course:block_delete' slug=course.slug module_id=module.id lesson_id=lesson.id block_id=999 %}`.replace('999', blockId);
+        
+        fetch(deleteUrl, {
+            method: 'POST',
+            headers: {
+                'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value,
+                'Content-Type': 'application/json',
+            },
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                location.reload();
+            } else {
+                alert('Error al eliminar el bloque');
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            alert('Error de conexión al eliminar el bloque');
+        });
+    }
+}
+
+function saveBlock() {
+    const form = document.getElementById('blockForm');
+    const formData = new FormData(form);
+    
+    // Obtener el CSRF token
+    const csrfToken = document.querySelector('[name=csrfmiddlewaretoken]').value;
+    
+    const url = editingBlockId 
+        ? `{% url 'course:block_edit' slug=course.slug module_id=module.id lesson_id=lesson.id block_id=999 %}`.replace('999', editingBlockId)
+        : `{% url 'course:block_create' slug=course.slug module_id=module.id lesson_id=lesson.id %}`;
+    
+    // Mostrar indicador de carga
+    const saveBtn = document.querySelector('#blockModal .btn-primary');
+    const originalText = saveBtn.innerHTML;
+    saveBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Guardando...';
+    saveBtn.disabled = true;
+    
+    console.log('Enviando bloque:', {
+        url: url,
+        blockType: formData.get('block_type'),
+        csrfToken: csrfToken
+    });
+    
+    fetch(url, {
+        method: 'POST',
+        body: formData,
+        headers: {
+            'X-CSRFToken': csrfToken,
+        },
+    })
+    .then(response => {
+        console.log('Respuesta del servidor:', response);
+        if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
+        }
+        return response.json();
+    })
+    .then(data => {
+        console.log('Datos recibidos:', data);
+        if (data.success) {
+            // Cerrar modal
+            const modal = bootstrap.Modal.getInstance(document.getElementById('blockModal'));
+            modal.hide();
+            
+            // Mostrar mensaje de éxito
+            alert('Bloque guardado exitosamente!');
+            
+            // Recargar página
+            location.reload();
+        } else {
+            console.error('Errores del servidor:', data.errors);
+            let errorMessage = 'Error al guardar el bloque';
+            if (data.error_message) {
+                errorMessage += ': ' + data.error_message;
+            } else if (data.errors) {
+                errorMessage += ': ' + JSON.stringify(data.errors);
+            }
+            alert(errorMessage);
+            
+            // Restaurar botón
+            saveBtn.innerHTML = originalText;
+            saveBtn.disabled = false;
+        }
+    })
+    .catch(error => {
+        console.error('Error de conexión:', error);
+        alert('Error de conexión al guardar el bloque: ' + error.message);
+        
+        // Restaurar botón
+        saveBtn.innerHTML = originalText;
+        saveBtn.disabled = false;
+    });
+}
+
+function getBlockTypeName(type) {
+    const names = {
+        text: 'Texto',
+        video: 'Video',
+        image: 'Imagen',
+        quiz: 'Cuestionario',
+        file: 'Archivo',
+        presentation: 'Presentación',
+        code: 'Código',
+        audio: 'Audio',
+        embed: 'Contenido Embebido',
+        divider: 'Separador'
+    };
+    return names[type] || 'Contenido';
+}
+
+function previewLesson() {
+    // TODO: Open lesson preview
+    window.open(`/es/programs/course/{{ course.slug }}/module/{{ module.id }}/lesson/{{ lesson.id }}/`, '_blank');
+}
+
+function saveLesson() {
+    // TODO: Auto-save lesson
+    alert('Lección guardada automáticamente');
+}
+
+function initializeDragAndDrop() {
+    // TODO: Implement drag and drop functionality
+    console.log('Drag and drop initialized');
+}
+</script>
+{% endblock %}

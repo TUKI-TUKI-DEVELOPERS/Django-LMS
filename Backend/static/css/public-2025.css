@@ -1,0 +1,74 @@
+:root{
+  --gray-dark: rgb(69,69,69);
+  --lime-green: rgb(146,182,42);
+  --navy-blue: rgb(32,32,68);
+  --dark-red: rgb(159,8,31);
+  --mustard-yellow: rgb(226,210,41);
+  --surface: rgba(255,255,255,.92);
+  --shadow-soft: 0 8px 32px rgba(0,0,0,.08);
+  --shadow-strong: 0 20px 50px rgba(0,0,0,.15);
+}
+
+/* Tipografía y escalas fluidas */
+html{scroll-behavior:smooth}
+body{font-synthesis-weight:none;text-rendering:optimizeLegibility}
+h1{font-size:clamp(2rem,4vw,3.2rem)}
+h2{font-size:clamp(1.6rem,3vw,2.4rem)}
+h3{font-size:clamp(1.25rem,2.4vw,1.6rem)}
+
+/* Utilidades */
+.glass-2025{background:var(--surface);backdrop-filter:blur(16px);border:1px solid rgba(146,182,42,.12);border-radius:16px;box-shadow:var(--shadow-soft)}
+.btn-lime{background:linear-gradient(135deg,var(--lime-green) 0%,#a8c73a 100%)!important;border:none!important;color:#fff!important;box-shadow:0 4px 15px rgba(146,182,42,.3)}
+.btn-lime:hover{transform:translateY(-2px);box-shadow:0 10px 24px rgba(146,182,42,.35)}
+.text-lime{color:var(--lime-green)!important}
+.bg-lime{background-color:var(--lime-green)!important}
+.text-navy{color:var(--navy-blue)!important}
+.bg-navy{background-color:var(--navy-blue)!important}
+
+/* Navbar avanzada */
+.navbar{background:rgba(255,255,255,.95)!important;backdrop-filter:blur(18px);border-bottom:1px solid rgba(146,182,42,.18);transition:all .25s ease}
+.navbar.scrolled{box-shadow:0 6px 24px rgba(0,0,0,.08)}
+.navbar .nav-link{position:relative;border-radius:10px}
+.navbar .nav-link.active,.navbar .nav-link:hover{color:var(--lime-green)!important;background:rgba(146,182,42,.1)}
+.navbar .nav-link.active:after{content:"";position:absolute;left:50%;bottom:-2px;height:2px;width:60%;transform:translateX(-50%);background:var(--lime-green)}
+
+/* Hero 2025 */
+.hero-2025{position:relative;min-height:60vh;display:flex;align-items:center;color:#fff;overflow:hidden}
+.hero-2025::before{content:"";position:absolute;inset:0;background:linear-gradient(rgba(32,32,68,.85),rgba(69,69,69,.7))}
+.hero-2025>.container{position:relative;z-index:2}
+
+/* Fondos con imágenes estáticas */
+.page-bg-2025{background:url('../img/pic-8.png') center/cover no-repeat fixed;position:fixed;top:0;left:0;width:100%;height:100%;z-index:-1;opacity:.3}
+.bg-head-aprd{background-image:url('../img/head-dest-aprd.jpg');background-position:center;background-size:cover}
+
+/* Animaciones por scroll (IntersectionObserver) */
+.reveal{opacity:0;transform:translateY(24px);transition:opacity .7s ease,transform .7s ease}
+.reveal-visible{opacity:1;transform:none}
+.reveal-delay-1{transition-delay:.15s}
+.reveal-delay-2{transition-delay:.3s}
+.reveal-delay-3{transition-delay:.45s}
+
+/* Micro interacciones */
+.hover-lift{transition:transform .25s ease,box-shadow .25s ease}
+.hover-lift:hover{transform:translateY(-6px);box-shadow:var(--shadow-strong)!important}
+.tilt-hover{transition:transform .25s ease}
+.tilt-hover:hover{transform:perspective(600px) rotateX(2deg) rotateY(-2deg)}
+.float-2025{animation:floatY 6s ease-in-out infinite}
+
+@keyframes floatY{0%,100%{transform:translateY(0)}50%{transform:translateY(-10px)}}
+
+/* Preferencia de reducir movimiento */
+@media (prefers-reduced-motion: reduce){
+  *{animation:none!important;transition:none!important}
+  .reveal{opacity:1;transform:none}
+}
+
+/* Secciones y tarjetas modernas */
+.section-2025{padding:4rem 0}
+.card-2025{background:#fff;border:1px solid rgba(0,0,0,.06);border-radius:16px;box-shadow:0 8px 26px rgba(0,0,0,.06);overflow:hidden;transition:transform .25s ease,box-shadow .25s ease}
+.card-2025:hover{transform:translateY(-8px);box-shadow:0 16px 42px rgba(0,0,0,.12)}
+
+/* Footer refinado */
+.footer{background:linear-gradient(135deg,var(--gray-dark) 0%,#4a4a4a 100%)!important;border-top:3px solid var(--lime-green)}
+
+

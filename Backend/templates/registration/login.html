@@ -1,0 +1,352 @@
+{% extends 'base_public.html' %}
+{% load static %}
+
+{% block title %}Aula Virtual - Aprende Ya{% endblock %}
+
+{% block content %}
+<!-- Background Pattern -->
+<div class="page-background" style="background: url('{% static 'img/pic-8.png' %}') center/cover no-repeat fixed; position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: -1; opacity: 0.3;"></div>
+
+<!-- Login Section -->
+<section class="py-5 bg-white">
+    <div class="container">
+        <div class="row justify-content-center">
+            <div class="col-lg-8 col-xl-6">
+                <div class="login-container">
+                    <!-- Header -->
+                    <div class="text-center mb-5">
+                        <div class="login-logo-container mb-4">
+                            <div class="login-logo-circle bg-white rounded-circle d-inline-flex align-items-center justify-content-center mb-4" style="width: 120px; height: 120px; box-shadow: 0 15px 40px rgba(0,0,0,0.2); border: 3px solid rgb(146, 182, 42);">
+                                <img src="{% static 'img/logo-aprendeya.png' %}" alt="Aprende Ya Logo" style="width: 80px; height: 80px; object-fit: contain;">
+                            </div>
+                        </div>
+                        <h1 class="display-5 fw-bold text-navy mb-3">Aula Virtual</h1>
+                        <h2 class="h4 text-lime mb-4">Accede a tu formación</h2>
+                        <div class="title-underline bg-lime mx-auto mb-4" style="width: 80px; height: 4px;"></div>
+                        <p class="text-muted">Ingresa tus credenciales para acceder a tu plataforma de aprendizaje</p>
+                    </div>
+
+                    <!-- Login Form -->
+                    <div class="login-form-container">
+                        <div class="card border-0 shadow-lg">
+                            <div class="card-body p-5">
+                                {% if messages %}
+                                    <div class="messages mb-4">
+                                        {% for message in messages %}
+                                            <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
+                                                {{ message }}
+                                                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                                            </div>
+                                        {% endfor %}
+                                    </div>
+                                {% endif %}
+
+                                <form method="post" class="login-form">
+                                    {% csrf_token %}
+                                    
+                                    <!-- Username Field -->
+                                    <div class="form-group mb-4">
+                                        <label for="id_username" class="form-label fw-bold text-navy">Usuario</label>
+                                        <div class="input-group">
+                                            <span class="input-group-text bg-lime border-0">
+                                                <i class="fas fa-user text-dark"></i>
+                                            </span>
+                                            <input type="text" name="username" id="id_username" class="form-control form-control-lg" placeholder="Ingresa tu nombre de usuario" required>
+                                        </div>
+                                    </div>
+
+                                    <!-- Password Field -->
+                                    <div class="form-group mb-4">
+                                        <label for="id_password" class="form-label fw-bold text-navy">Contraseña</label>
+                                        <div class="input-group">
+                                            <span class="input-group-text bg-lime border-0">
+                                                <i class="fas fa-lock text-dark"></i>
+                                            </span>
+                                            <input type="password" name="password" id="id_password" class="form-control form-control-lg" placeholder="Ingresa tu contraseña" required>
+                                        </div>
+                                    </div>
+
+                                    <!-- Error Messages -->
+                                    {% if form.errors %}
+                                        <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                                            <i class="fas fa-exclamation-triangle me-2"></i>
+                                            Usuario o contraseña incorrectos. Por favor, verifica tus credenciales.
+                                            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                                        </div>
+                                    {% endif %}
+
+                                    <!-- Remember Me -->
+                                    <div class="form-check mb-4">
+                                        <input class="form-check-input" type="checkbox" id="remember-me" name="remember_me">
+                                        <label class="form-check-label text-muted" for="remember-me">
+                                            Recordar mi sesión
+                                        </label>
+                                    </div>
+
+                                    <!-- Submit Button -->
+                                    <div class="d-grid mb-4">
+                                        <button type="submit" class="btn btn-lime btn-lg fw-bold text-dark" id="login-btn">
+                                            <i class="fas fa-sign-in-alt me-3"></i>Acceder al Aula Virtual
+                                        </button>
+                                    </div>
+
+                                    <!-- Links -->
+                                    <div class="text-center">
+                                        <div class="row g-3">
+                                            <div class="col-md-6">
+                                                <a href="{% url 'password_reset' %}" class="text-lime text-decoration-none">
+                                                    <i class="fas fa-key me-2"></i>¿Olvidaste tu contraseña?
+                                                </a>
+                                            </div>
+                                            <div class="col-md-6">
+                                                <a href="{% url 'register' %}" class="text-navy text-decoration-none">
+                                                    <i class="fas fa-user-plus me-2"></i>¿No tienes cuenta?
+                                                </a>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Additional Info -->
+                    <div class="text-center mt-4">
+                        <div class="login-features">
+                            <div class="row g-3">
+                                <div class="col-md-4">
+                                    <div class="feature-item">
+                                        <div class="bg-lime bg-opacity-10 rounded-circle d-inline-flex align-items-center justify-content-center mb-2" style="width: 50px; height: 50px;">
+                                            <i class="fas fa-graduation-cap text-lime"></i>
+                                        </div>
+                                        <p class="small text-muted mb-0">Cursos Certificados</p>
+                                    </div>
+                                </div>
+                                <div class="col-md-4">
+                                    <div class="feature-item">
+                                        <div class="bg-navy bg-opacity-10 rounded-circle d-inline-flex align-items-center justify-content-center mb-2" style="width: 50px; height: 50px;">
+                                            <i class="fas fa-users text-navy"></i>
+                                        </div>
+                                        <p class="small text-muted mb-0">Soporte 24/7</p>
+                                    </div>
+                                </div>
+                                <div class="col-md-4">
+                                    <div class="feature-item">
+                                        <div class="bg-mustard bg-opacity-10 rounded-circle d-inline-flex align-items-center justify-content-center mb-2" style="width: 50px; height: 50px;">
+                                            <i class="fas fa-certificate text-mustard"></i>
+                                        </div>
+                                        <p class="small text-muted mb-0">Certificaciones</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Estilos CSS personalizados -->
+<style>
+/* Colores del logo APRENDE YA */
+:root {
+    --gray-dark: rgb(69, 69, 69);
+    --lime-green: rgb(146, 182, 42);
+    --navy-blue: rgb(32, 32, 68);
+    --dark-red: rgb(159, 8, 31);
+    --mustard-yellow: rgb(226, 210, 41);
+}
+
+/* Page background styles */
+.page-background {
+    pointer-events: none;
+}
+
+/* Section backgrounds with transparency */
+.bg-white {
+    background-color: rgba(255, 255, 255, 0.85) !important;
+    backdrop-filter: blur(10px);
+}
+
+.bg-gradient-custom {
+    background: linear-gradient(135deg, var(--navy-blue) 0%, var(--gray-dark) 50%, var(--dark-red) 100%);
+}
+
+.bg-lime {
+    background-color: var(--lime-green) !important;
+}
+
+.text-lime {
+    color: var(--lime-green) !important;
+}
+
+.bg-navy {
+    background-color: var(--navy-blue) !important;
+}
+
+.text-navy {
+    color: var(--navy-blue) !important;
+}
+
+.bg-mustard {
+    background-color: var(--mustard-yellow) !important;
+}
+
+.text-mustard {
+    color: var(--mustard-yellow) !important;
+}
+
+.btn-lime {
+    background-color: var(--lime-green) !important;
+    border-color: var(--lime-green) !important;
+    color: #333 !important;
+    transition: all 0.3s ease;
+}
+
+.btn-lime:hover {
+    background-color: #a8c73a !important;
+    border-color: #a8c73a !important;
+    color: #333 !important;
+    transform: translateY(-2px);
+    box-shadow: 0 8px 20px rgba(146, 182, 42, 0.3);
+}
+
+/* Login specific styles */
+.login-container {
+    padding: 2rem 0;
+}
+
+.login-logo-circle {
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.login-container:hover .login-logo-circle {
+    transform: scale(1.05);
+    box-shadow: 0 20px 50px rgba(0,0,0,0.3) !important;
+}
+
+.login-form-container {
+    max-width: 500px;
+    margin: 0 auto;
+}
+
+.card {
+    background: rgba(255, 255, 255, 0.95) !important;
+    backdrop-filter: blur(10px);
+    border-radius: 20px;
+    border: 1px solid rgba(0,0,0,0.05);
+}
+
+.form-control {
+    border: 2px solid #e9ecef;
+    border-radius: 10px;
+    padding: 0.75rem 1rem;
+    font-size: 1rem;
+    transition: all 0.3s ease;
+}
+
+.form-control:focus {
+    border-color: var(--lime-green);
+    box-shadow: 0 0 0 0.2rem rgba(146, 182, 42, 0.25);
+}
+
+.input-group-text {
+    border: 2px solid #e9ecef;
+    border-right: none;
+    border-radius: 10px 0 0 10px;
+}
+
+.input-group .form-control {
+    border-left: none;
+    border-radius: 0 10px 10px 0;
+}
+
+.input-group .form-control:focus {
+    border-left: none;
+}
+
+.form-check-input:checked {
+    background-color: var(--lime-green);
+    border-color: var(--lime-green);
+}
+
+.form-check-input:focus {
+    border-color: var(--lime-green);
+    box-shadow: 0 0 0 0.2rem rgba(146, 182, 42, 0.25);
+}
+
+.title-underline {
+    transition: width 0.3s ease;
+}
+
+.login-container:hover .title-underline {
+    width: 120px !important;
+}
+
+.feature-item {
+    transition: transform 0.3s ease;
+}
+
+.feature-item:hover {
+    transform: translateY(-3px);
+}
+
+/* Alert styles */
+.alert {
+    border-radius: 10px;
+    border: none;
+}
+
+.alert-success {
+    background-color: rgba(146, 182, 42, 0.1);
+    color: var(--lime-green);
+}
+
+.alert-danger {
+    background-color: rgba(159, 8, 31, 0.1);
+    color: var(--dark-red);
+}
+
+.alert-warning {
+    background-color: rgba(226, 210, 41, 0.1);
+    color: var(--mustard-yellow);
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+    .login-form-container {
+        max-width: 100%;
+    }
+    .card-body {
+        padding: 2rem !important;
+    }
+    .display-5 {
+        font-size: 2rem;
+    }
+}
+</style>
+
+<!-- JavaScript para mejorar la experiencia del login -->
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const loginForm = document.querySelector('.login-form');
+    const loginBtn = document.getElementById('login-btn');
+    const originalBtnText = loginBtn.innerHTML;
+
+    loginForm.addEventListener('submit', function(e) {
+        // Cambiar el texto del botón para mostrar que está procesando
+        loginBtn.innerHTML = '<i class="fas fa-spinner fa-spin me-3"></i>Accediendo...';
+        loginBtn.disabled = true;
+        loginBtn.classList.add('disabled');
+    });
+
+    // Restaurar el botón si hay errores de validación
+    {% if form.errors %}
+        loginBtn.innerHTML = originalBtnText;
+        loginBtn.disabled = false;
+        loginBtn.classList.remove('disabled');
+    {% endif %}
+});
+</script>
+{% endblock %}

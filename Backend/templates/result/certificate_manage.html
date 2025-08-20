@@ -1,0 +1,221 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block title %}Gestión de Certificados{% endblock %}
+{% block content %}
+
+<style>
+  :root {
+    --lime-green: rgb(146, 182, 42);
+    --lime-green-dark: #7a9a2a;
+    --gray-dark: #454545;
+    --gray-600: #6c757d;
+    --light-gray: #f8f9fa;
+    --white: #ffffff;
+    --shadow-soft: 0 8px 32px rgba(0,0,0,0.08);
+    --shadow-hover: 0 12px 32px rgba(146, 182, 42, 0.20);
+  }
+
+  body {
+    background: url('{% static "img/pic-8.png" %}') center/cover no-repeat fixed;
+    background-attachment: fixed;
+  }
+
+  .cert-manage-container {
+    max-width: 1400px;
+    margin: 1rem auto;
+    padding: 1.5rem;
+    background: rgba(255, 255, 255, 0.95);
+    backdrop-filter: blur(18px);
+    border-radius: 18px;
+    box-shadow: var(--shadow-soft);
+    border: 1px solid rgba(146, 182, 42, 0.12);
+  }
+
+  .page-header { display: flex; align-items: center; justify-content: space-between; padding-bottom: 0.75rem; margin-bottom: 1.25rem; border-bottom: 1px solid rgba(146, 182, 42, 0.15); }
+  .page-title { font-size: 2rem; font-weight: 800; margin: 0; line-height: 1.1; background: linear-gradient(135deg, var(--lime-green) 0%, #a8c73a 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
+
+  .filter-section { background: linear-gradient(135deg, rgba(255,255,255,0.9) 0%, rgba(248,249,250,0.9) 100%); backdrop-filter: blur(8px); border: 1px solid rgba(146, 182, 42, 0.12); border-radius: 12px; padding: 1rem 1.25rem; margin-bottom: 1.25rem; box-shadow: 0 4px 18px rgba(0,0,0,0.05); }
+  .filter-title { font-size: 1.05rem; font-weight: 700; color: var(--gray-dark); margin-bottom: 1rem; display: flex; align-items: center; gap: 0.6rem; }
+  .filter-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 0.8rem; }
+  .filter-item { display: flex; flex-direction: column; gap: 0.4rem; }
+  .filter-label { font-size: 0.85rem; font-weight: 600; color: var(--gray-dark); text-transform: uppercase; letter-spacing: 0.4px; }
+  .filter-control { border: 1px solid rgba(146, 182, 42, 0.2); border-radius: 10px; padding: 0.65rem 0.9rem; font-size: 0.92rem; transition: all 0.2s ease; background: rgba(255,255,255,0.95); }
+  .filter-control:focus { outline: none; border-color: var(--lime-green); box-shadow: 0 0 0 3px rgba(146, 182, 42, 0.12); }
+  .filter-actions { display: flex; gap: 0.8rem; margin-top: 1rem; padding-top: 0.9rem; border-top: 1px solid rgba(0,0,0,0.05); }
+  .btn-apply { background: linear-gradient(135deg, var(--lime-green) 0%, var(--lime-green-dark) 100%); color: var(--white); padding: 0.6rem 1.1rem; border-radius: 10px; font-weight: 700; border: none; display: inline-flex; align-items: center; gap: 0.45rem; cursor: pointer; transition: all 0.2s ease; }
+  .btn-apply:hover { transform: translateY(-1px); box-shadow: 0 6px 18px rgba(146,182,42,0.22); }
+  .btn-clear { background: linear-gradient(135deg, rgba(255,255,255,1) 0%, rgba(245,245,245,1) 100%); color: var(--gray-600); border: 1px solid rgba(146,182,42,0.22); padding: 0.6rem 1.1rem; border-radius: 10px; font-weight: 700; }
+  .btn-clear:hover { background: linear-gradient(135deg, rgba(146,182,42,0.12) 0%, rgba(146,182,42,0.18) 100%); color: var(--lime-green-dark); border-color: rgba(146,182,42,0.35); }
+
+  .table-container { background: rgba(255,255,255,0.98); border-radius: 14px; box-shadow: 0 6px 22px rgba(0,0,0,0.06); overflow: hidden; border: 1px solid rgba(146, 182, 42, 0.12); }
+  .table { margin: 0; width: 100%; }
+  .table thead th { background: rgba(146,182,42,0.08); color: var(--gray-dark); border: none; padding: 0.9rem 0.9rem; font-weight: 800; font-size: 0.85rem; text-transform: uppercase; letter-spacing: 0.5px; }
+  .table tbody tr { transition: all 0.2s ease; border-bottom: 1px solid rgba(146, 182, 42, 0.10); }
+  .table tbody tr:hover { background: rgba(146, 182, 42, 0.05); }
+  .table tbody tr:last-child { border-bottom: none; }
+  .table tbody td { padding: 0.9rem 0.9rem; border: none; color: var(--gray-600); vertical-align: middle; font-size: 0.92rem; }
+
+  .student-info { display: flex; align-items: center; gap: 0.9rem; }
+  .student-avatar { width: 38px; height: 38px; border-radius: 50%; object-fit: cover; border: 2px solid rgba(146, 182, 42, 0.22); }
+  .student-name { font-weight: 800; color: var(--gray-dark); text-decoration: none; }
+  .student-username { font-size: 0.8rem; color: var(--gray-600); font-weight: 600; }
+
+  .status-badge { padding: 0.35rem 0.8rem; border-radius: 16px; font-size: 0.78rem; font-weight: 800; letter-spacing: 0.4px; display: inline-flex; align-items: center; gap: 0.45rem; }
+  .status-active { background: linear-gradient(135deg, rgba(39, 174, 96, 0.08) 0%, rgba(39, 174, 96, 0.16) 100%); color: #27ae60; border: 1px solid rgba(39, 174, 96, 0.28); }
+  .status-suspended { background: linear-gradient(135deg, rgba(231, 76, 60, 0.10) 0%, rgba(231, 76, 60, 0.18) 100%); color: #e74c3c; border: 1px solid rgba(231, 76, 60, 0.28); }
+  .status-none { background: linear-gradient(135deg, rgba(108,117,125,0.08) 0%, rgba(108,117,125,0.16) 100%); color: var(--gray-600); border: 1px solid rgba(108,117,125,0.28); }
+
+  .actions-bar { display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.8rem; }
+  .btn-bulk { background: linear-gradient(135deg, var(--lime-green) 0%, var(--lime-green-dark) 100%); color: var(--white); padding: 0.55rem 1rem; border-radius: 10px; font-weight: 700; border: none; display: inline-flex; align-items: center; gap: 0.45rem; }
+  .btn-bulk:hover { transform: translateY(-1px); box-shadow: 0 6px 18px rgba(146,182,42,0.22); }
+  .btn-outline { background: linear-gradient(135deg, rgba(255,255,255,1) 0%, rgba(245,245,245,1) 100%); color: var(--gray-600); border: 1px solid rgba(146,182,42,0.22); padding: 0.55rem 1rem; border-radius: 10px; font-weight: 700; }
+
+  .breadcrumb { background: transparent; padding: 0; margin-bottom: 1rem; }
+  .breadcrumb-item a { color: var(--lime-green); text-decoration: none; font-weight: 600; transition: color 0.2s ease; }
+  .breadcrumb-item a:hover { color: var(--lime-green-dark); }
+  .breadcrumb-item.active { color: var(--gray-600); }
+
+  @media (max-width: 768px) {
+    .cert-manage-container { padding: 1rem; margin: 0.5rem; }
+    .page-title { font-size: 1.7rem; }
+    .filter-grid { grid-template-columns: 1fr; }
+    .table-responsive { border-radius: 10px; }
+  }
+</style>
+
+<div class="cert-manage-container">
+  <nav style="--bs-breadcrumb-divider: '>';" aria-label="breadcrumb">
+    <ol class="breadcrumb">
+      <li class="breadcrumb-item"><a href="/">Inicio</a></li>
+      <li class="breadcrumb-item active" aria-current="page">Certificados</li>
+    </ol>
+  </nav>
+
+  <div class="page-header">
+    <h1 class="page-title">Gestión de Certificados</h1>
+  </div>
+
+  {% include 'snippets/messages.html' %}
+
+  <div class="filter-section">
+    <div class="filter-title">
+      <i class="fas fa-filter"></i>
+      Filtrar Certificados
+    </div>
+    <form method="get" class="filter-form">
+      <div class="filter-grid">
+        <div class="filter-item">
+          <label class="filter-label">Curso</label>
+          <select class="filter-control" name="course">
+            <option value="">-- Curso (todos) --</option>
+            {% for c in courses %}
+              <option value="{{ c.id }}" {% if selected_course_id == c.id %}selected{% endif %}>{{ c.title }} ({{ c.code }})</option>
+            {% endfor %}
+          </select>
+        </div>
+        <div class="filter-item">
+          <label class="filter-label">Alumno</label>
+          <input class="filter-control" type="text" name="q" value="{{ q }}" placeholder="Buscar alumno (nombre, username)" />
+        </div>
+      </div>
+      <div class="filter-actions">
+        <button class="btn-apply" type="submit"><i class="fas fa-search"></i> Aplicar Filtros</button>
+        <button class="btn-clear" type="button" onclick="window.location='?';"><i class="fas fa-eraser"></i> Limpiar</button>
+      </div>
+    </form>
+  </div>
+
+  <form method="post" action="{% url 'certificate_bulk_generate' %}">
+    {% csrf_token %}
+    <input type="hidden" name="course" value="{{ selected_course_id|default:'' }}" />
+    <input type="hidden" name="q" value="{{ q }}" />
+
+    <div class="actions-bar">
+      <h5 class="m-0">Resultados ({{ certs|length }})</h5>
+      <div class="d-flex gap-2">
+        <button class="btn-bulk" type="submit"><i class="fas fa-bolt"></i> Generar certificados del filtro</button>
+        {% if is_admin %}
+        <a class="btn-outline" href="{% url 'certificate_admin_list' %}"><i class="fas fa-database"></i> Vista Admin (lista)</a>
+        {% endif %}
+      </div>
+    </div>
+
+    <div class="table-container">
+      <div class="table-responsive">
+        <table class="table align-middle">
+          <thead>
+            <tr>
+              <th>#</th>
+              <th>Alumno</th>
+              <th>Curso</th>
+              <th>Total</th>
+              <th>Estado</th>
+              <th>Certificado</th>
+              <th>Acciones</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for tc in certs %}
+            <tr>
+              <td>{{ forloop.counter }}</td>
+              <td>
+                <div class="student-info">
+                  <img src="{{ tc.student.student.get_picture }}" class="student-avatar" alt="{{ tc.student.student.get_full_name }}" />
+                  <div>
+                    <div class="student-name">{{ tc.student.student.get_full_name }}</div>
+                    <div class="student-username">@{{ tc.student.student.username }}</div>
+                  </div>
+                </div>
+              </td>
+              <td>{{ tc.course.title }} ({{ tc.course.code }})</td>
+              <td>{{ tc.total }}</td>
+              <td>
+                {% if tc.certificate %}
+                  {% if tc.certificate.status == 'SUSPENDED' %}
+                    <span class="status-badge status-suspended"><i class="fas fa-times-circle"></i> Suspendido</span>
+                  {% else %}
+                    <span class="status-badge status-active"><i class="fas fa-check-circle"></i> Activo</span>
+                  {% endif %}
+                {% else %}
+                  <span class="status-badge status-none"><i class="fas fa-minus-circle"></i> No emitido</span>
+                {% endif %}
+              </td>
+              <td>
+                {% if tc.certificate %}
+                  <span class="badge bg-success">{{ tc.certificate.serial_number }}</span>
+                {% else %}
+                  <span class="badge bg-secondary">-</span>
+                {% endif %}
+              </td>
+              <td class="d-flex gap-2">
+                {% if tc.certificate %}
+                  <a class="btn btn-sm {% if tc.certificate.status == 'SUSPENDED' %}btn-warning{% else %}btn-outline-secondary{% endif %}"
+                     href="{% url 'certificate_toggle_status' tc.id %}">
+                    {% if tc.certificate.status == 'SUSPENDED' %}
+                      <i class="fas fa-toggle-on"></i> Habilitar
+                    {% else %}
+                      <i class="fas fa-toggle-off"></i> Suspender
+                    {% endif %}
+                  </a>
+                {% else %}
+                  <a class="btn btn-sm btn-outline-primary" href="{% url 'certificate_generate' tc.id %}"><i class="fas fa-wand-magic-sparkles"></i> Generar</a>
+                {% endif %}
+                <a class="btn btn-sm btn-success" href="{% url 'certificate_pdf_view' tc.id %}" target="_blank"><i class="fas fa-file-pdf"></i> PDF</a>
+                {% if is_admin %}
+                  <a class="btn btn-sm btn-outline-dark" href="{% url 'certificate_admin_detail' tc.id %}"><i class="fas fa-eye"></i> Detalle</a>
+                {% endif %}
+              </td>
+            </tr>
+            {% empty %}
+            <tr><td colspan="7" class="text-center text-muted">Sin resultados</td></tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </form>
+</div>
+{% endblock %}
+
+
+

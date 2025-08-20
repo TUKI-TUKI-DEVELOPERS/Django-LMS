@@ -1,0 +1,367 @@
+{% load static %}
+{% load i18n %}
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <meta name="description" content="Aprende Ya - Formación que marca la diferencia. Plataforma educativa moderna para el desarrollo profesional.">
+    <meta name="keywords" content="educación, formación, capacitación, aprendizaje, Aprende Ya">
+    <meta name="author" content="Aprende Ya">
+
+    <title>{% block title %}Aprende Ya - Formación que marca la diferencia{% endblock title %}</title>
+
+    <link rel="shortcut icon" href="{% static 'img/favicon.png' %}" type="image/x-icon">
+
+    <!-- Fontawesome icons -->
+    <link rel="stylesheet" type="text/css" href="{% static 'vendor/fontawesome-6.5.1/css/all.min.css' %}">
+
+    <!-- Bootstrap5 -->
+    <link rel="stylesheet" type="text/css" href="{% static 'vendor/bootstrap-5.3.2/css/bootstrap.min.css' %}">
+
+    <link rel="stylesheet" type="text/css" href="{% static 'css/style.min.css' %}">
+    <link rel="stylesheet" type="text/css" href="{% static 'css/public-2025.css' %}">
+
+    {% block header %}{% endblock %}
+</head>
+
+<body>
+    <!-- Navigation -->
+    <nav class="navbar navbar-expand-lg navbar-light sticky-top">
+        <div class="container">
+            <a class="navbar-brand fw-bold d-flex align-items-center" href="{% url 'public_home' %}">
+                <div class="navbar-logo-container bg-white rounded-circle d-flex align-items-center justify-content-center me-3" style="width: 60px; height: 60px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); border: 2px solid rgb(146, 182, 42);">
+                    <img src="{% static 'img/logo-aprendeya.png' %}" alt="Aprende Ya Logo" class="navbar-logo" style="width: 45px; height: 45px; object-fit: contain;">
+                </div>
+                <span class="brand-text">Aprende Ya</span>
+            </a>
+            
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav mx-auto">
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url 'public_home' %}">Inicio</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url 'about' %}">Sobre Nosotros</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url 'public_courses' %}">Cursos</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url 'contact' %}">Contáctanos</a>
+                    </li>
+                </ul>
+                
+                <div class="d-flex align-items-center">
+                    <a class="btn btn-lime" href="{% url 'login' %}">
+                        <i class="fas fa-sign-in-alt me-2"></i>Aula Virtual
+                    </a>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <main>
+        {% block content %}{% endblock content %}
+    </main>
+
+    <!-- Footer -->
+    <footer class="footer py-5 mt-5">
+        <div class="container">
+            <div class="row">
+                <div class="col-md-6">
+                    <div class="d-flex align-items-center mb-3">
+                        <div class="bg-white rounded-circle d-flex align-items-center justify-content-center me-3" style="width: 60px; height: 60px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); border: 2px solid rgb(146, 182, 42);">
+                            <img src="{% static 'img/logo-aprendeya.png' %}" alt="Aprende Ya Logo" class="footer-logo" style="width: 45px; height: 45px; object-fit: contain;">
+                        </div>
+                        <div>
+                            <h5 class="fw-bold mb-1">Aprende Ya</h5>
+                            <p class="mb-0 small">Formación que marca la diferencia</p>
+                        </div>
+                    </div>
+                    <p class="mb-0">En APRENDE YA nos dedicamos a ofrecer programas que inspiran, capacitan y transforman, alimentando la creencia en el potencial ilimitado de cada ser humano.</p>
+                </div>
+                <div class="col-md-6 text-md-end">
+                    <div class="mb-3">
+                        <h6 class="text-lime fw-bold mb-2">Enlaces Públicos</h6>
+                        <div class="d-flex flex-column flex-md-row justify-content-md-end gap-2">
+                            <a href="{% url 'public_home' %}">Inicio</a>
+                            <a href="{% url 'about' %}">Sobre Nosotros</a>
+                            <a href="{% url 'public_courses' %}">Cursos</a>
+                            <a href="{% url 'contact' %}">Contacto</a>
+                            <a href="{% url 'login' %}">Aula Virtual</a>
+                        </div>
+                    </div>
+                    <p class="mb-0">&copy; 2025 Aprende Ya. Todos los derechos reservados.</p>
+                    <small class="text-muted">Desarrollado por <strong>Tukituki Solutions SAC</strong></small>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <script src="{% url 'javascript-catalog' %}"></script>
+    <script type="text/javascript" src="{% static 'vendor/jquery-3.7.1/jquery-3.7.1.min.js' %}"></script>
+    <script type="text/javascript" src="{% static 'vendor/bootstrap-5.3.2/js/bootstrap.bundle.min.js' %}"></script>
+    <script type="text/javascript" src="{% static 'js/main.js' %}"></script>
+    <script type="text/javascript" src="{% static 'js/public-2025.js' %}"></script>
+
+    <!-- Estilos CSS personalizados -->
+    <style>
+    /* Colores del logo APRENDE YA */
+    :root {
+        --gray-dark: rgb(69, 69, 69);
+        --lime-green: rgb(146, 182, 42);
+        --navy-blue: rgb(32, 32, 68);
+        --dark-red: rgb(159, 8, 31);
+        --mustard-yellow: rgb(226, 210, 41);
+    }
+
+    body {
+        font-family: 'Rubik', sans-serif;
+        line-height: 1.6;
+    }
+
+    /* Navbar styles */
+    .navbar {
+        background: rgba(255, 255, 255, 0.95) !important;
+        backdrop-filter: blur(20px);
+        box-shadow: 0 2px 20px rgba(0,0,0,0.08);
+        border-bottom: 1px solid rgba(146, 182, 42, 0.2);
+        padding: 1rem 0;
+        transition: all 0.3s ease;
+    }
+
+    .navbar-brand {
+        color: var(--gray-dark) !important;
+        font-weight: 700;
+        transition: all 0.3s ease;
+    }
+
+    .navbar-brand:hover {
+        color: var(--lime-green) !important;
+        transform: translateY(-1px);
+    }
+
+    .navbar-logo-container {
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+    }
+
+    .navbar-brand:hover .navbar-logo-container {
+        transform: scale(1.1);
+        box-shadow: 0 8px 25px rgba(146, 182, 42, 0.3) !important;
+    }
+
+    .navbar-logo {
+        transition: transform 0.3s ease;
+    }
+
+    .navbar-brand:hover .navbar-logo {
+        transform: scale(1.05);
+    }
+
+    .brand-text {
+        font-size: 1.5rem;
+        font-weight: 700;
+    }
+
+    .navbar-nav .nav-link {
+        color: var(--gray-dark) !important;
+        font-weight: 500;
+        transition: all 0.3s ease;
+        position: relative;
+        padding: 0.5rem 1rem !important;
+        margin: 0 0.25rem;
+        border-radius: 8px;
+    }
+
+    .navbar-nav .nav-link:hover {
+        color: var(--lime-green) !important;
+        background: rgba(146, 182, 42, 0.1);
+        transform: translateY(-1px);
+    }
+
+    .navbar-nav .nav-link::after {
+        content: '';
+        position: absolute;
+        bottom: 0;
+        left: 50%;
+        width: 0;
+        height: 2px;
+        background: var(--lime-green);
+        transition: all 0.3s ease;
+        transform: translateX(-50%);
+    }
+
+    .navbar-nav .nav-link:hover::after {
+        width: 80%;
+    }
+
+    .btn-lime {
+        background: linear-gradient(135deg, var(--lime-green) 0%, #a8c73a 100%) !important;
+        border: none !important;
+        color: white !important;
+        font-weight: 600;
+        padding: 0.75rem 1.5rem;
+        border-radius: 12px;
+        transition: all 0.3s ease;
+        box-shadow: 0 4px 15px rgba(146, 182, 42, 0.3);
+        text-decoration: none;
+        display: inline-flex;
+        align-items: center;
+    }
+
+    .btn-lime:hover {
+        background: linear-gradient(135deg, #a8c73a 0%, var(--lime-green) 100%) !important;
+        color: white !important;
+        transform: translateY(-2px);
+        box-shadow: 0 8px 25px rgba(146, 182, 42, 0.4);
+        text-decoration: none;
+    }
+
+    .btn-lime:focus {
+        box-shadow: 0 0 0 0.2rem rgba(146, 182, 42, 0.25);
+    }
+
+    /* Footer styles */
+    .footer {
+        background: linear-gradient(135deg, var(--gray-dark) 0%, #4a4a4a 100%) !important;
+        color: white;
+        border-top: 3px solid var(--lime-green);
+        position: relative;
+    }
+
+    .footer::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        height: 1px;
+        background: linear-gradient(90deg, transparent 0%, var(--lime-green) 50%, transparent 100%);
+    }
+
+    .footer h5 {
+        color: var(--lime-green);
+        font-weight: 700;
+        margin-bottom: 0.5rem;
+    }
+
+    .footer h6 {
+        color: var(--lime-green);
+        font-weight: 600;
+        margin-bottom: 1rem;
+    }
+
+    .footer a {
+        color: #e9ecef;
+        text-decoration: none;
+        transition: all 0.3s ease;
+        padding: 0.25rem 0;
+        border-radius: 4px;
+        display: inline-block;
+    }
+
+    .footer a:hover {
+        color: var(--lime-green);
+        transform: translateX(4px);
+        text-decoration: none;
+    }
+
+    .footer-logo {
+        transition: transform 0.3s ease;
+    }
+
+    .footer:hover .footer-logo {
+        transform: scale(1.05);
+    }
+
+    /* Utility classes */
+    .text-lime {
+        color: var(--lime-green) !important;
+    }
+
+    .bg-lime {
+        background-color: var(--lime-green) !important;
+    }
+
+    .text-gray-dark {
+        color: var(--gray-dark) !important;
+    }
+
+    .bg-gray-dark {
+        background-color: var(--gray-dark) !important;
+    }
+
+    /* Responsive improvements */
+    @media (max-width: 768px) {
+        .navbar-nav {
+            text-align: center;
+            margin: 1rem 0;
+        }
+        
+        .navbar-nav .nav-link {
+            margin: 0.25rem 0;
+        }
+        
+        .btn-lime {
+            width: 100%;
+            justify-content: center;
+            margin-top: 1rem;
+        }
+        
+        .footer {
+            text-align: center;
+        }
+        
+        .footer .col-md-6:last-child {
+            text-align: center !important;
+            margin-top: 2rem;
+        }
+        
+        .brand-text {
+            font-size: 1.2rem;
+        }
+        
+        .navbar-logo-container {
+            width: 50px !important;
+            height: 50px !important;
+        }
+        
+        .navbar-logo {
+            width: 35px !important;
+            height: 35px !important;
+        }
+    }
+
+    /* Smooth scrolling */
+    html {
+        scroll-behavior: smooth;
+    }
+
+    /* Focus styles for accessibility */
+    .btn-lime:focus,
+    .nav-link:focus,
+    .footer a:focus {
+        outline: 2px solid var(--lime-green);
+        outline-offset: 2px;
+    }
+
+    /* Loading animation for buttons */
+    .btn-lime:active {
+        transform: translateY(0);
+        transition: transform 0.1s ease;
+    }
+    </style>
+
+    {% block js %}
+    {% endblock js %}
+</body>
+
+</html> 

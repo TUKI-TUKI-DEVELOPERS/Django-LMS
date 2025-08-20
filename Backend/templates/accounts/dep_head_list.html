@@ -1,0 +1,88 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block title %}Jefes de Departamento | Sistema de Gestión Académica{% endblock %}
+
+{% block content %}
+<style>
+  :root { --lime: rgb(146,182,42); --gray:#454545; }
+  body { background: url('{% static "img/pic-8.png" %}') center/cover no-repeat fixed; }
+  .container-card { max-width: 1400px; margin: 1rem auto; padding: 1.5rem; background: rgba(255,255,255,0.95); backdrop-filter: blur(18px); border-radius: 18px; box-shadow: 0 8px 32px rgba(0,0,0,0.08); border: 1px solid rgba(146, 182, 42, 0.12); }
+  .page-header { display:flex; justify-content: space-between; align-items:center; border-bottom:1px solid rgba(146,182,42,0.15); padding-bottom:.75rem; margin-bottom:1.25rem; }
+  .page-title { font-size:2rem; font-weight:800; margin:0; background: linear-gradient(135deg, var(--lime) 0%, #a8c73a 100%); -webkit-background-clip:text; -webkit-text-fill-color:transparent; }
+  .btn-add { background: linear-gradient(135deg, var(--lime) 0%, #7a9a2a 100%); color:#fff; border:none; border-radius:10px; padding:.7rem 1.2rem; font-weight:700; box-shadow:0 4px 14px rgba(146,182,42,0.28); text-decoration:none; }
+  .stats { display:grid; grid-template-columns: repeat(auto-fit, minmax(180px,1fr)); gap:.9rem; margin-bottom:1.25rem; }
+  .stat { background:#fff; border:1px solid rgba(146,182,42,0.15); border-radius:12px; padding:1rem; box-shadow:0 4px 16px rgba(0,0,0,0.05); }
+  .table-container { background:#fff; border:1px solid rgba(146,182,42,0.12); border-radius:14px; overflow:hidden; box-shadow:0 6px 22px rgba(0,0,0,0.06); }
+  .table thead th { background: rgba(146,182,42,0.08); font-weight:800; text-transform:uppercase; letter-spacing:.5px; }
+</style>
+
+<div class="container-card">
+  <nav style="--bs-breadcrumb-divider: '>';" aria-label="breadcrumb">
+    <ol class="breadcrumb">
+      <li class="breadcrumb-item"><a href="/">Inicio</a></li>
+      <li class="breadcrumb-item active" aria-current="page">Jefes de Departamento</li>
+    </ol>
+  </nav>
+
+  <div class="page-header">
+    <h1 class="page-title">Jefes de Departamento</h1>
+    <a href="{% url 'add_dep_head' %}" class="btn-add"><i class="fas fa-user-plus"></i> Registrar Jefe</a>
+  </div>
+
+  <div class="stats">
+    <div class="stat"><div class="fw-bold">Total</div><div class="fs-4">{{ total_heads }}</div></div>
+    <div class="stat"><div class="fw-bold">Activos</div><div class="fs-4">{{ active_heads }}</div></div>
+    <div class="stat"><div class="fw-bold">Inactivos</div><div class="fs-4">{{ inactive_heads }}</div></div>
+  </div>
+
+  <div class="table-container">
+    <div class="table-responsive">
+      <table class="table align-middle">
+        <thead>
+          <tr>
+            <th>#</th>
+            <th>Jefe</th>
+            <th>Contacto</th>
+            <th>Género</th>
+            <th>Estado</th>
+            <th>Registro</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for head in heads %}
+          <tr>
+            <td>{{ forloop.counter }}</td>
+            <td>
+              <div class="d-flex align-items-center gap-2">
+                <img src="{{ head.get_picture }}" style="width:44px;height:44px;border-radius:50%;object-fit:cover;border:2px solid rgba(146,182,42,0.22)" />
+                <div>
+                  <a href="{% url 'profile_single' head.id %}" class="fw-bold text-decoration-none">{{ head.get_full_name }}</a>
+                  <div class="text-muted">@{{ head.username }}</div>
+                </div>
+              </div>
+            </td>
+            <td>
+              <div class="text-muted">{{ head.email|default:"No especificado" }}</div>
+              <div class="text-muted">{{ head.phone|default:"No especificado" }}</div>
+            </td>
+            <td>{{ head.get_gender_display|default:"-" }}</td>
+            <td>
+              {% if head.is_active %}
+              <span class="badge bg-success">Activo</span>
+              {% else %}
+              <span class="badge bg-secondary">Inactivo</span>
+              {% endif %}
+            </td>
+            <td>{{ head.date_joined|date:"d/m/Y" }}</td>
+          </tr>
+          {% empty %}
+          <tr><td colspan="6" class="text-center text-muted py-4">No hay jefes de departamento</td></tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+{% endblock %}
+
+

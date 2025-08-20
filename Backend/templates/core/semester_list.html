@@ -1,0 +1,446 @@
+{% extends 'base.html' %}
+{% load i18n %}
+{% block title %}Lista de Semestres | Sistema de Gestión Académica{% endblock title %}
+{% load static %}
+
+{% block content %}
+
+<style>
+	/* Modern Semester List Styles 2025 - Matching public_home.html design */
+	:root {
+		--gray-dark: rgb(69, 69, 69);
+		--lime-green: rgb(146, 182, 42);
+		--navy-blue: rgb(32, 32, 68);
+		--dark-red: rgb(159, 8, 31);
+		--mustard-yellow: rgb(226, 210, 41);
+	}
+
+	/* Page background with transparency */
+	body {
+		background: url('{% static "img/pic-8.png" %}') center/cover no-repeat fixed;
+		background-attachment: fixed;
+	}
+
+	.semester-container {
+		background: rgba(255, 255, 255, 0.95);
+		backdrop-filter: blur(20px);
+		border-radius: 20px;
+		box-shadow: 0 8px 32px rgba(0,0,0,0.08);
+		margin: 1rem;
+		padding: 2rem;
+		border: 1px solid rgba(146, 182, 42, 0.1);
+	}
+
+	/* Breadcrumb - Elegant */
+	.breadcrumb {
+		background: transparent;
+		padding: 0;
+		margin-bottom: 2rem;
+	}
+
+	.breadcrumb-item a {
+		color: var(--lime-green);
+		text-decoration: none;
+		font-weight: 500;
+		transition: color 0.3s ease;
+	}
+
+	.breadcrumb-item a:hover {
+		color: #a8c73a;
+	}
+
+	.breadcrumb-item.active {
+		color: #6c757d;
+	}
+
+	/* Page Header */
+	.page-header {
+		display: flex;
+		justify-content: space-between;
+		align-items: center;
+		margin-bottom: 2rem;
+		padding-bottom: 1rem;
+		border-bottom: 1px solid rgba(146, 182, 42, 0.1);
+	}
+
+	.page-title {
+		font-size: 2.2rem;
+		font-weight: 700;
+		color: var(--navy-blue);
+		margin: 0;
+		background: linear-gradient(135deg, var(--navy-blue) 0%, var(--lime-green) 100%);
+		-webkit-background-clip: text;
+		-webkit-text-fill-color: transparent;
+		background-clip: text;
+		display: flex;
+		align-items: center;
+	}
+
+	.page-title i {
+		margin-right: 1rem;
+		font-size: 2rem;
+		background: linear-gradient(135deg, var(--lime-green) 0%, #a8c73a 100%);
+		-webkit-background-clip: text;
+		-webkit-text-fill-color: transparent;
+		background-clip: text;
+	}
+
+	/* Add Button */
+	.btn-add {
+		background: linear-gradient(135deg, var(--lime-green) 0%, #a8c73a 100%);
+		border: none;
+		color: white;
+		padding: 0.8rem 1.5rem;
+		border-radius: 12px;
+		font-weight: 600;
+		transition: all 0.3s ease;
+		box-shadow: 0 4px 15px rgba(146, 182, 42, 0.3);
+		text-decoration: none;
+		display: inline-flex;
+		align-items: center;
+	}
+
+	.btn-add:hover {
+		transform: translateY(-2px);
+		box-shadow: 0 8px 25px rgba(146, 182, 42, 0.4);
+		color: white;
+	}
+
+	.btn-add i {
+		margin-right: 0.5rem;
+	}
+
+	/* Alert Styles */
+	.alert {
+		border: none;
+		border-radius: 12px;
+		padding: 1rem 1.5rem;
+		margin-bottom: 1.5rem;
+		backdrop-filter: blur(10px);
+	}
+
+	.alert-success {
+		background: rgba(146, 182, 42, 0.1);
+		color: #2d5016;
+		border-left: 4px solid var(--lime-green);
+	}
+
+	.alert-danger {
+		background: rgba(220, 53, 69, 0.1);
+		color: #721c24;
+		border-left: 4px solid #dc3545;
+	}
+
+	.alert i {
+		margin-right: 0.5rem;
+	}
+
+	/* Semester Cards */
+	.semester-card {
+		background: rgba(255, 255, 255, 0.98);
+		border: 1px solid rgba(146, 182, 42, 0.1);
+		border-radius: 16px;
+		box-shadow: 0 4px 20px rgba(0,0,0,0.06);
+		padding: 1.5rem;
+		margin-bottom: 1.5rem;
+		transition: all 0.3s ease;
+		position: relative;
+		overflow: hidden;
+	}
+
+	.semester-card::before {
+		content: '';
+		position: absolute;
+		top: 0;
+		left: 0;
+		right: 0;
+		height: 3px;
+		background: linear-gradient(135deg, var(--lime-green) 0%, #a8c73a 100%);
+		opacity: 0;
+		transition: opacity 0.3s ease;
+	}
+
+	.semester-card:hover {
+		transform: translateY(-4px);
+		box-shadow: 0 8px 32px rgba(146, 182, 42, 0.15);
+		border-color: rgba(146, 182, 42, 0.3);
+	}
+
+	.semester-card:hover::before {
+		opacity: 1;
+	}
+
+	.semester-header {
+		display: flex;
+		justify-content: space-between;
+		align-items: flex-start;
+		margin-bottom: 1rem;
+	}
+
+	.semester-number {
+		background: linear-gradient(135deg, var(--lime-green) 0%, #a8c73a 100%);
+		color: white;
+		width: 35px;
+		height: 35px;
+		border-radius: 50%;
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		font-size: 1rem;
+		font-weight: 600;
+		margin-right: 1rem;
+		flex-shrink: 0;
+	}
+
+	.semester-info {
+		flex-grow: 1;
+	}
+
+	.semester-name {
+		font-size: 1.2rem;
+		font-weight: 600;
+		color: var(--navy-blue);
+		margin: 0 0 0.5rem 0;
+	}
+
+	.semester-details {
+		display: flex;
+		gap: 2rem;
+		flex-wrap: wrap;
+	}
+
+	.semester-detail {
+		display: flex;
+		align-items: center;
+		gap: 0.5rem;
+	}
+
+	.semester-detail i {
+		color: var(--lime-green);
+		font-size: 0.9rem;
+	}
+
+	.semester-detail-label {
+		font-size: 0.85rem;
+		color: #6c757d;
+		font-weight: 500;
+	}
+
+	.semester-detail-value {
+		font-size: 0.9rem;
+		color: var(--navy-blue);
+		font-weight: 600;
+	}
+
+	.semester-status {
+		background: linear-gradient(135deg, var(--lime-green) 0%, #a8c73a 100%);
+		color: white;
+		padding: 0.4rem 0.8rem;
+		border-radius: 20px;
+		font-weight: 600;
+		font-size: 0.9rem;
+	}
+
+	.semester-status.inactive {
+		background: linear-gradient(135deg, #dc3545 0%, #c82333 100%);
+	}
+
+	/* Action Buttons */
+	.btn-action {
+		padding: 0.4rem 0.8rem;
+		border-radius: 12px;
+		font-size: 0.85rem;
+		font-weight: 600;
+		text-decoration: none;
+		transition: all 0.3s ease;
+		margin-left: 0.5rem;
+		display: inline-flex;
+		align-items: center;
+		border: none;
+	}
+
+	.btn-edit {
+		background: linear-gradient(135deg, rgba(146, 182, 42, 0.1) 0%, rgba(122, 154, 42, 0.1) 100%);
+		color: var(--lime-green);
+		border: 1px solid rgba(146, 182, 42, 0.2);
+	}
+
+	.btn-edit:hover {
+		background: linear-gradient(135deg, rgba(146, 182, 42, 0.2) 0%, rgba(122, 154, 42, 0.2) 100%);
+		color: #7a9a2a;
+		transform: translateY(-2px);
+		box-shadow: 0 4px 12px rgba(146, 182, 42, 0.2);
+	}
+
+	.btn-delete {
+		background: linear-gradient(135deg, rgba(220, 53, 69, 0.1) 0%, rgba(200, 35, 51, 0.1) 100%);
+		color: #dc3545;
+		border: 1px solid rgba(220, 53, 69, 0.2);
+	}
+
+	.btn-delete:hover {
+		background: linear-gradient(135deg, rgba(220, 53, 69, 0.2) 0%, rgba(200, 35, 51, 0.2) 100%);
+		color: #c82333;
+		transform: translateY(-2px);
+		box-shadow: 0 4px 12px rgba(220, 53, 69, 0.2);
+	}
+
+	/* Empty State */
+	.empty-state {
+		text-align: center;
+		padding: 4rem 2rem;
+		color: #6c757d;
+		background: rgba(255, 255, 255, 0.9);
+		border-radius: 20px;
+		backdrop-filter: blur(10px);
+	}
+
+	.empty-state i {
+		font-size: 3rem;
+		margin-bottom: 1rem;
+		color: #dee2e6;
+	}
+
+	.empty-state h4 {
+		font-weight: 500;
+		margin-bottom: 0.5rem;
+		color: var(--navy-blue);
+	}
+
+	.empty-state p {
+		font-size: 0.95rem;
+		margin: 0;
+	}
+
+	.empty-state a {
+		color: var(--lime-green);
+		text-decoration: none;
+		font-weight: 600;
+		transition: color 0.3s ease;
+	}
+
+	.empty-state a:hover {
+		color: #a8c73a;
+	}
+
+	/* Responsive */
+	@media (max-width: 768px) {
+		.semester-container {
+			margin: 0.5rem;
+			padding: 1rem;
+		}
+		
+		.page-title {
+			font-size: 1.8rem;
+		}
+		
+		.page-header {
+			flex-direction: column;
+			gap: 1rem;
+			align-items: flex-start;
+		}
+		
+		.semester-card {
+			padding: 1rem;
+		}
+		
+		.semester-details {
+			flex-direction: column;
+			gap: 1rem;
+			align-items: flex-start;
+		}
+	}
+</style>
+
+<div class="semester-container">
+	<nav style="--bs-breadcrumb-divider: '>';" aria-label="breadcrumb">
+		<ol class="breadcrumb">
+			<li class="breadcrumb-item"><a href="/">Inicio</a></li>
+			<li class="breadcrumb-item active" aria-current="page">Lista de Semestres</li>
+		</ol>
+	</nav>
+
+	<div class="page-header">
+		<h1 class="page-title">
+			<i class="fas fa-calendar-alt"></i>
+			Lista de Semestres
+		</h1>
+		{% if request.user.is_superuser %}
+		<a href="{% url 'add_semester' %}" class="btn-add">
+			<i class="fas fa-plus"></i>Agregar Nuevo Semestre
+		</a>
+		{% endif %}
+	</div>
+
+	{% if messages %}
+		{% for message in messages %}
+			{% if message.tags == 'error' %}
+				<div class="alert alert-danger">
+					<i class="fas fa-exclamation-circle"></i>{{ message }}
+				</div>
+			{% else %}
+				<div class="alert alert-success">
+					<i class="fas fa-check-circle"></i>{{ message }}
+				</div>
+			{% endif %}
+		{% endfor %}
+	{% endif %}
+
+	{% if semesters %}
+		{% for semester in semesters %}
+		<div class="semester-card">
+			<div class="semester-header">
+				<div class="semester-number">{{ forloop.counter }}</div>
+				<div class="semester-info">
+					<h3 class="semester-name">{{ semester.semester }}</h3>
+					<div class="semester-details">
+						<div class="semester-detail">
+							<i class="fas fa-calendar-check"></i>
+							<span class="semester-detail-label">¿Es Semestre Actual?:</span>
+							<span class="semester-status {% if not semester.is_current_semester %}inactive{% endif %}">
+								{% if semester.is_current_semester %}
+									<i class="fas fa-check-circle"></i> Sí
+								{% else %}
+									<i class="fas fa-times-circle"></i> No
+								{% endif %}
+							</span>
+						</div>
+						<div class="semester-detail">
+							<i class="fas fa-calendar-alt"></i>
+							<span class="semester-detail-label">Sesión:</span>
+							<span class="semester-detail-value">{{ semester.session }}</span>
+						</div>
+						<div class="semester-detail">
+							<i class="fas fa-calendar-plus"></i>
+							<span class="semester-detail-label">Próximo Semestre Comienza:</span>
+							<span class="semester-detail-value">{{ semester.next_semester_begins }}</span>
+						</div>
+					</div>
+				</div>
+				{% if request.user.is_superuser %}
+				<div style="margin-top: 1rem;">
+					<a href="{% url 'edit_semester' pk=semester.pk %}" class="btn-action btn-edit" title="Editar">
+						<i class="fas fa-edit"></i>
+					</a>
+					<a href="{% url 'delete_semester' pk=semester.pk %}" class="btn-action btn-delete" title="Eliminar" 
+					   onclick="return confirm('¿Estás seguro de que quieres eliminar este semestre?')">
+						<i class="fas fa-trash"></i>
+					</a>
+				</div>
+				{% endif %}
+			</div>
+		</div>
+		{% endfor %}
+	{% else %}
+	<div class="empty-state">
+		<i class="fas fa-calendar-times"></i>
+		<h4>No hay Semestres</h4>
+		<p>No se han creado semestres aún.</p>
+		{% if request.user.is_superuser %}
+		<p><a href="{% url 'add_semester' %}">Agregar Semestre Ahora.</a></p>
+		{% endif %}
+	</div>
+	{% endif %}
+</div>
+
+{% endblock content %}

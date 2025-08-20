@@ -1,0 +1,973 @@
+{% extends base_template %}
+{% load i18n %}
+{% block title %}{% trans 'Registro de Usuario | Sistema de Gestión Académica' %}{% endblock title %}
+
+{% block content %}
+
+<style>
+
+:root {
+	--navy-blue: #202044;
+	--lime-green: #92b62a;
+	--dark-red: #9f081f;
+	--mustard-yellow: #e2d229;
+	--dark-gray: #454545;
+}
+
+/* Fondo sólo para header amplio (controlado desde el template, no CSS) */
+body.page-has-hero {
+    background-image: url('/static/img/pic-8.png');
+    background-size: cover;
+    background-attachment: fixed;
+    background-position: center;
+}
+
+.registration-container {
+	min-height: 100vh;
+	padding: 2rem 0;
+	background: rgba(255, 255, 255, 0.95);
+	backdrop-filter: blur(20px);
+}
+
+.hero-section {
+	background: linear-gradient(135deg, var(--navy-blue) 0%, #2a2a5a 100%);
+	color: white;
+	padding: 3rem 0;
+	margin-bottom: 3rem;
+	border-radius: 0 0 20px 20px;
+	box-shadow: 0 8px 32px rgba(32, 32, 68, 0.3);
+	position: relative;
+	overflow: hidden;
+}
+
+.hero-section::before {
+	content: '';
+	position: absolute;
+	top: 0;
+	left: 0;
+	right: 0;
+	bottom: 0;
+	background: linear-gradient(45deg, rgba(146, 182, 42, 0.1) 0%, transparent 50%, rgba(146, 182, 42, 0.1) 100%);
+	pointer-events: none;
+}
+
+.hero-title {
+	font-size: 2.5rem;
+	font-weight: 700;
+	margin-bottom: 1rem;
+	text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+	position: relative;
+	z-index: 1;
+}
+
+.hero-subtitle {
+	font-size: 1.2rem;
+	opacity: 0.9;
+	margin-bottom: 0;
+	position: relative;
+	z-index: 1;
+}
+
+.page-title-simple {
+    color: var(--navy-blue);
+    font-weight: 700;
+    font-size: 1.5rem;
+    margin: 0;
+}
+
+.form-section {
+	background: rgba(255, 255, 255, 0.95);
+	border-radius: 20px;
+	padding: 2.5rem;
+	margin-bottom: 2rem;
+	box-shadow: 0 8px 32px rgba(32, 32, 68, 0.08);
+	border: 1px solid rgba(146, 182, 42, 0.1);
+	backdrop-filter: blur(20px);
+	position: relative;
+	overflow: hidden;
+	transition: all 0.3s ease;
+}
+
+.form-section::before {
+	content: '';
+	position: absolute;
+	top: 0;
+	left: 0;
+	right: 0;
+	height: 3px;
+	background: linear-gradient(90deg, var(--lime-green), #a8c73a);
+}
+
+.form-section:hover {
+	transform: translateY(-2px);
+	box-shadow: 0 12px 40px rgba(32, 32, 68, 0.12);
+	border-color: rgba(146, 182, 42, 0.2);
+}
+
+.section-title {
+	color: var(--navy-blue);
+	font-size: 1.5rem;
+	font-weight: 600;
+	margin-bottom: 1.5rem;
+	display: flex;
+	align-items: center;
+	gap: 0.5rem;
+	padding-bottom: 0.5rem;
+	border-bottom: 2px solid rgba(146, 182, 42, 0.2);
+}
+
+.section-title i {
+	color: var(--lime-green);
+	font-size: 1.2rem;
+}
+
+.form-group {
+	margin-bottom: 1.5rem;
+}
+
+.form-label {
+	color: var(--navy-blue);
+	font-weight: 600;
+	margin-bottom: 0.5rem;
+	font-size: 0.95rem;
+	display: block;
+}
+
+.form-control {
+	border: 2px solid rgba(146, 182, 42, 0.1);
+	border-radius: 12px;
+	padding: 0.8rem 1rem;
+	font-size: 0.95rem;
+	transition: all 0.3s ease;
+	background: rgba(255, 255, 255, 0.9);
+	width: 100%;
+}
+
+.form-control:focus {
+	border-color: var(--lime-green);
+	box-shadow: 0 0 0 0.2rem rgba(146, 182, 42, 0.25);
+	outline: none;
+	background: rgba(255, 255, 255, 0.95);
+	transform: translateY(-1px);
+}
+
+.form-select {
+	border: 2px solid rgba(146, 182, 42, 0.1);
+	border-radius: 12px;
+	padding: 0.8rem 1rem;
+	font-size: 0.95rem;
+	transition: all 0.3s ease;
+	background: rgba(255, 255, 255, 0.9);
+	width: 100%;
+}
+
+.form-select:focus {
+	border-color: var(--lime-green);
+	box-shadow: 0 0 0 0.2rem rgba(146, 182, 42, 0.25);
+	outline: none;
+	background: rgba(255, 255, 255, 0.95);
+	transform: translateY(-1px);
+}
+
+.help-text {
+	color: var(--dark-gray);
+	font-size: 0.85rem;
+	margin-top: 0.5rem;
+	opacity: 0.8;
+}
+
+.role-info {
+	background: linear-gradient(135deg, rgba(146, 182, 42, 0.1) 0%, rgba(146, 182, 42, 0.05) 100%);
+	border: 1px solid rgba(146, 182, 42, 0.2);
+	border-radius: 12px;
+	padding: 1.5rem;
+	margin-top: 1rem;
+	position: relative;
+	overflow: hidden;
+}
+
+.role-info::before {
+	content: '';
+	position: absolute;
+	top: 0;
+	left: 0;
+	width: 4px;
+	height: 100%;
+	background: var(--lime-green);
+}
+
+.role-info h6 {
+	color: var(--navy-blue);
+	font-weight: 600;
+	margin-bottom: 0.5rem;
+	display: flex;
+	align-items: center;
+	gap: 0.5rem;
+}
+
+.role-info h6 i {
+	color: var(--lime-green);
+}
+
+.role-description {
+	color: var(--dark-gray);
+	font-size: 0.9rem;
+	line-height: 1.6;
+}
+
+.btn-register {
+	background: linear-gradient(135deg, var(--lime-green) 0%, #a8c73a 100%);
+	border: none;
+	color: white;
+	padding: 1rem 3rem;
+	border-radius: 50px;
+	font-weight: 600;
+	font-size: 1.1rem;
+	transition: all 0.3s ease;
+	box-shadow: 0 4px 15px rgba(146, 182, 42, 0.3);
+	position: relative;
+	overflow: hidden;
+}
+
+.btn-register::before {
+	content: '';
+	position: absolute;
+	top: 0;
+	left: -100%;
+	width: 100%;
+	height: 100%;
+	background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+	transition: left 0.5s;
+}
+
+.btn-register:hover::before {
+	left: 100%;
+}
+
+.btn-register:hover {
+	transform: translateY(-2px);
+	box-shadow: 0 8px 25px rgba(146, 182, 42, 0.4);
+	color: white;
+}
+
+.btn-register:disabled {
+	opacity: 0.7;
+	transform: none;
+}
+
+.login-link {
+	color: var(--navy-blue);
+	text-decoration: none;
+	font-weight: 600;
+	transition: color 0.3s ease;
+	position: relative;
+}
+
+.login-link::after {
+	content: '';
+	position: absolute;
+	bottom: -2px;
+	left: 0;
+	width: 0;
+	height: 2px;
+	background: var(--lime-green);
+	transition: width 0.3s ease;
+}
+
+.login-link:hover {
+	color: var(--lime-green);
+}
+
+.login-link:hover::after {
+	width: 100%;
+}
+
+.alert {
+	border-radius: 12px;
+	border: none;
+	padding: 1rem 1.5rem;
+	position: relative;
+	overflow: hidden;
+}
+
+.alert::before {
+	content: '';
+	position: absolute;
+	top: 0;
+	left: 0;
+	width: 4px;
+	height: 100%;
+}
+
+.alert-danger {
+	background: linear-gradient(135deg, rgba(159, 8, 31, 0.1) 0%, rgba(159, 8, 31, 0.05) 100%);
+	border: 1px solid rgba(159, 8, 31, 0.2);
+	color: var(--dark-red);
+}
+
+.alert-danger::before {
+	background: var(--dark-red);
+}
+
+.alert-info {
+	background: linear-gradient(135deg, rgba(146, 182, 42, 0.1) 0%, rgba(146, 182, 42, 0.05) 100%);
+	border: 1px solid rgba(146, 182, 42, 0.2);
+	color: var(--navy-blue);
+}
+
+.alert-info::before {
+	background: var(--lime-green);
+}
+
+/* Estilos específicos para campos dinámicos */
+.student-fields {
+	display: none !important;
+}
+
+.student-fields.show {
+	display: block !important;
+}
+
+.parent-fields {
+	display: none !important;
+}
+
+.parent-fields.show {
+	display: block !important;
+}
+
+/* Animaciones */
+@keyframes fadeIn {
+	from { opacity: 0; transform: translateY(20px); }
+	to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes slideIn {
+	from { opacity: 0; transform: translateX(-20px); }
+	to { opacity: 1; transform: translateX(0); }
+}
+
+.form-section {
+	animation: fadeIn 0.6s ease-out;
+}
+
+.form-section:nth-child(even) {
+	animation: slideIn 0.6s ease-out;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+	.hero-title {
+		font-size: 2rem;
+	}
+	
+	.form-section {
+		padding: 1.5rem;
+	}
+	
+	.btn-register {
+		padding: 0.8rem 2rem;
+		font-size: 1rem;
+	}
+	
+	.section-title {
+		font-size: 1.3rem;
+	}
+}
+
+/* Mejoras adicionales */
+.form-control:disabled {
+	background: rgba(146, 182, 42, 0.1);
+	border-color: rgba(146, 182, 42, 0.3);
+	color: var(--navy-blue);
+	opacity: 0.7;
+}
+
+.form-control:disabled:focus {
+	box-shadow: none;
+	transform: none;
+}
+
+/* Efectos de hover para campos */
+.form-group:hover .form-label {
+	color: var(--lime-green);
+}
+
+.form-group:hover .form-control {
+	border-color: rgba(146, 182, 42, 0.3);
+}
+
+.form-group:hover .form-select {
+	border-color: rgba(146, 182, 42, 0.3);
+}
+
+/* Estilos adicionales para mejorar la apariencia */
+.login-section {
+	background: rgba(255, 255, 255, 0.8);
+	border-radius: 15px;
+	padding: 1.5rem;
+	box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+	border: 1px solid rgba(146, 182, 42, 0.1);
+}
+
+.hero-content {
+	position: relative;
+	z-index: 2;
+}
+
+.icon-circle {
+	transition: all 0.3s ease;
+}
+
+.icon-circle:hover {
+	transform: scale(1.05);
+	box-shadow: 0 15px 40px rgba(0,0,0,0.3) !important;
+}
+
+.title-underline {
+	transition: all 0.3s ease;
+}
+
+.title-underline:hover {
+	width: 120px !important;
+}
+
+/* Mejoras para los mensajes de validación */
+#username-message p {
+	border-radius: 8px;
+	padding: 0.5rem 1rem;
+	margin-top: 0.5rem;
+	font-size: 0.9rem;
+	font-weight: 500;
+}
+
+.bg-error {
+	background: linear-gradient(135deg, rgba(159, 8, 31, 0.1) 0%, rgba(159, 8, 31, 0.05) 100%);
+	border: 1px solid rgba(159, 8, 31, 0.2);
+}
+
+.bg-correct {
+	background: linear-gradient(135deg, rgba(146, 182, 42, 0.1) 0%, rgba(146, 182, 42, 0.05) 100%);
+	border: 1px solid rgba(146, 182, 42, 0.2);
+}
+
+/* Animaciones adicionales */
+@keyframes pulse {
+	0% { transform: scale(1); }
+	50% { transform: scale(1.05); }
+	100% { transform: scale(1); }
+}
+
+.btn-register:active {
+	animation: pulse 0.3s ease;
+}
+
+/* Mejoras para campos deshabilitados */
+.form-control:disabled {
+	cursor: not-allowed;
+}
+
+.form-control:disabled + .form-label {
+	cursor: not-allowed;
+}
+</style>
+
+<div class="registration-container">
+	<div class="container">
+		
+        <!-- Header Section -->
+        {% if use_compact_header %}
+        <div class="container py-3">
+            <h2 class="page-title-simple">
+                <i class="fas fa-user-plus me-2 text-lime"></i>{% if title %}{{ title }}{% else %}Crear Nueva Cuenta{% endif %}
+            </h2>
+            <div class="title-underline bg-lime mt-2" style="width: 60px; height: 3px; border-radius: 2px;"></div>
+        </div>
+        {% else %}
+        <div class="hero-section text-center page-has-hero">
+            <div class="container">
+                <div class="row justify-content-center">
+                    <div class="col-lg-8">
+                        <div class="hero-content">
+                            <div class="hero-icon mb-4">
+                                <div class="icon-circle bg-white rounded-circle d-inline-flex align-items-center justify-content-center" style="width: 120px; height: 120px; box-shadow: 0 10px 30px rgba(0,0,0,0.2); border: 3px solid rgba(146, 182, 42, 0.3);">
+                                    <i class="fas fa-user-plus fa-3x text-lime"></i>
+                                </div>
+                            </div>
+                            <h1 class="hero-title">
+                                {% if title %}{{ title }}{% else %}Crear Nueva Cuenta{% endif %}
+                            </h1>
+                            <p class="hero-subtitle">{% if title %}Registra un nuevo profesor{% else %}Registra un nuevo usuario con el rol apropiado{% endif %}</p>
+                            <div class="title-underline bg-lime mx-auto mt-3" style="width: 80px; height: 3px; border-radius: 2px;"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        {% endif %}
+
+		<form action="" method="POST" id="registration-form">
+			{% csrf_token %}
+			
+			{% include 'snippets/messages.html' %}
+
+			{% if form.errors %}
+				<div class="alert alert-danger mb-4">
+					<i class="fas fa-exclamation-circle me-2"></i>Por favor corrige los errores a continuación:
+					<ul class="mb-0 mt-2">
+						{% for field, errors in form.errors.items %}
+							{% for error in errors %}
+								<li><strong>{{ field }}:</strong> {{ error }}</li>
+							{% endfor %}
+						{% endfor %}
+					</ul>
+				</div>
+			{% endif %}
+
+			<div class="row g-4">
+				
+				<!-- Información de Acceso -->
+				<div class="col-lg-6">
+					<div class="form-section">
+						<h3 class="section-title">
+							<i class="fas fa-key"></i>Información de Cuenta
+						</h3>
+						
+						<div class="form-group">
+							<label for="id_username" class="form-label">
+								<i class="fas fa-user-circle me-2"></i>{{ form.username.label }}
+							</label>
+							{{ form.username }}
+							<div id="username-message"></div>
+						</div>
+						
+						<div class="form-group">
+							<label for="id_email" class="form-label">
+								<i class="fas fa-envelope me-2"></i>{{ form.email.label }}
+							</label>
+							{{ form.email }}
+						</div>
+						
+						<div class="form-group">
+							<label for="id_password1" class="form-label">
+								<i class="fas fa-lock me-2"></i>{{ form.password1.label }}
+							</label>
+							{{ form.password1 }}
+							<div class="help-text">
+								<i class="fas fa-info-circle me-1"></i>La contraseña debe tener al menos 8 caracteres y no ser muy similar a tu nombre de usuario.
+							</div>
+						</div>
+						
+						<div class="form-group">
+							<label for="id_password2" class="form-label">
+								<i class="fas fa-lock me-2"></i>{{ form.password2.label }}
+							</label>
+							{{ form.password2 }}
+						</div>
+						
+					</div>
+				</div>
+
+				<!-- Información Personal -->
+				<div class="col-lg-6">
+					<div class="form-section">
+						<h3 class="section-title">
+							<i class="fas fa-user"></i>Información Personal
+						</h3>
+						
+						<div class="row g-3">
+							<div class="col-md-6">
+								<div class="form-group">
+									<label for="id_first_name" class="form-label">
+										<i class="fas fa-user me-2"></i>{{ form.first_name.label }}
+									</label>
+									{{ form.first_name }}
+								</div>
+							</div>
+							<div class="col-md-6">
+								<div class="form-group">
+									<label for="id_last_name" class="form-label">
+										<i class="fas fa-user me-2"></i>{{ form.last_name.label }}
+									</label>
+									{{ form.last_name }}
+								</div>
+							</div>
+						</div>
+						
+						<div class="form-group">
+							<label for="id_address" class="form-label">
+								<i class="fas fa-map-marker-alt me-2"></i>{{ form.address.label }}
+							</label>
+							{{ form.address }}
+						</div>
+						
+						<div class="row g-3">
+							<div class="col-md-6">
+								<div class="form-group">
+									<label for="id_phone" class="form-label">
+										<i class="fas fa-phone me-2"></i>{{ form.phone.label }}
+									</label>
+									{{ form.phone }}
+								</div>
+							</div>
+							<div class="col-md-6">
+								<div class="form-group">
+									<label for="id_gender" class="form-label">
+										<i class="fas fa-venus-mars me-2"></i>{{ form.gender.label }}
+									</label>
+									{{ form.gender }}
+								</div>
+							</div>
+						</div>
+						
+					</div>
+				</div>
+				
+			</div>
+
+			<!-- Rol del Usuario -->
+			<div class="form-section">
+				<h3 class="section-title">
+					<i class="fas fa-users-cog"></i>Rol de Usuario e Información Específica
+				</h3>
+				
+				<div class="form-group">
+					<label for="id_user_role" class="form-label">
+						<i class="fas fa-user-tag me-2"></i>{{ form.user_role.label }}
+					</label>
+					{{ form.user_role }}
+					<!-- Campo oculto para asegurar que el valor se envíe -->
+					<input type="hidden" name="user_role" id="hidden_user_role" value="">
+					<div class="help-text">
+						<i class="fas fa-lightbulb me-1"></i>Selecciona el rol para este usuario. Campos adicionales aparecerán según tu selección.
+					</div>
+					<div class="alert alert-info mt-3" id="role-help" style="display: none;">
+						<small><i class="fas fa-info-circle"></i> <span id="role-help-text"></span></small>
+					</div>
+				</div>
+				
+				<!-- Campos específicos por rol -->
+				<div class="row g-3">
+					
+					<!-- Campo para nivel (solo estudiantes) -->
+					<div class="col-md-6">
+						<div class="form-group student-fields" style="display: none;">
+							<label for="id_level" class="form-label">
+								<i class="fas fa-graduation-cap me-2"></i>{{ form.level.label }}
+							</label>
+							{{ form.level }}
+							<div class="help-text">
+								<i class="fas fa-check-circle me-1"></i>Requerido para estudiantes
+							</div>
+						</div>
+					</div>
+					
+					<!-- Campo para programa (siempre visible) -->
+					<div class="col-md-6">
+						<div class="form-group">
+							<label for="id_program" class="form-label">
+								<i class="fas fa-book me-2"></i>{{ form.program.label }}
+							</label>
+							{{ form.program }}
+							<div class="help-text">
+								<i class="fas fa-info-circle me-1"></i>Selecciona un programa (requerido para estudiantes y jefes de departamento)
+							</div>
+						</div>
+					</div>
+					
+					<!-- Campo para parentesco (solo padres) -->
+					<div class="col-md-6">
+						<div class="form-group parent-fields" style="display: none;">
+							<label for="id_relation_ship" class="form-label">
+								<i class="fas fa-heart me-2"></i>{{ form.relation_ship.label }}
+							</label>
+							{{ form.relation_ship }}
+							<div class="help-text">
+								<i class="fas fa-check-circle me-1"></i>Requerido para padres
+							</div>
+						</div>
+					</div>
+					
+				</div>
+				
+				<!-- Información de rol -->
+				<div class="role-info" style="display: none;">
+					<h6><i class="fas fa-info-circle me-2"></i>Información del Rol:</h6>
+					<div class="role-description"></div>
+				</div>
+				
+			</div>
+
+			<div class="text-center mt-5">
+				<button type="submit" class="btn btn-register" id="register-btn">
+					<i class="fas fa-user-plus me-2"></i>Crear Cuenta
+				</button>
+			</div>
+		</form>
+		
+		<div class="text-center mt-4">
+			<div class="login-section">
+				<p class="text-muted mb-2">
+					<i class="fas fa-sign-in-alt me-2"></i>¿Ya tienes una cuenta?
+				</p>
+				<a href="{% url 'login' %}" class="login-link">
+					<i class="fas fa-arrow-right me-2"></i>Inicia sesión aquí
+				</a>
+			</div>
+		</div>
+
+	</div>
+</div>
+
+{% endblock content %}
+
+{% block js %}
+<script>
+// Variables globales
+let totalForms = 1;
+let maxForms = 15;
+let minForms = 1;
+
+// Función para obtener el token CSRF de las cookies
+function getCookie(name) {
+	let cookieValue = null;
+	if (document.cookie && document.cookie !== '') {
+		const cookies = document.cookie.split(';');
+		for (let i = 0; i < cookies.length; i++) {
+			const cookie = cookies[i].trim();
+			if (cookie.substring(0, name.length + 1) === (name + '=')) {
+				cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+				break;
+			}
+		}
+	}
+	return cookieValue;
+}
+
+const registerFormEl = document.getElementById('registration-form');
+const registerBtnEl = document.getElementById('register-btn');
+const userRoleEl = document.getElementById('id_user_role');
+
+// Descripciones de roles
+const roleDescriptions = {
+	'student': 'Los estudiantes pueden acceder a cursos, tomar exámenes y seguir su progreso de aprendizaje.',
+	'lecturer': 'Los profesores pueden crear cursos, subir materiales y calificar el trabajo de los estudiantes.',
+	'parent': 'Los padres pueden ver el progreso y calificaciones de sus estudiantes conectados.',
+	'dep_head': 'Los jefes de departamento pueden gestionar su departamento y supervisar cursos.'
+};
+
+// Manejar envío del formulario (con guardas por si el elemento no existe)
+if (registerFormEl) {
+    registerFormEl.addEventListener('submit', function(e) {
+        const csrfToken = document.querySelector('input[name="csrfmiddlewaretoken"]');
+        if (!csrfToken || !csrfToken.value) {
+            console.error('Token CSRF no encontrado');
+            e.preventDefault();
+            return false;
+        }
+        console.log('Formulario enviado con token CSRF:', csrfToken.value.substring(0, 10) + '...');
+        if (registerBtnEl) {
+            registerBtnEl.innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i>Creando cuenta...';
+            registerBtnEl.classList.add('disabled');
+        }
+    });
+} else {
+    console.warn('Elemento #registration-form no encontrado');
+}
+
+// Manejar selección de rol (solo si existe el select)
+if (userRoleEl) userRoleEl.addEventListener('change', function() {
+	const selectedRole = this.value;
+	console.log('Rol seleccionado:', selectedRole);
+	
+	// Sincronizar con el campo oculto
+	const hiddenUserRole = document.getElementById('hidden_user_role');
+	if (hiddenUserRole) {
+		hiddenUserRole.value = selectedRole;
+		console.log('Campo oculto sincronizado:', hiddenUserRole.value);
+	}
+	
+	// Ocultar todos los campos específicos de rol primero
+	const studentFields = document.querySelectorAll('.student-fields');
+	const parentFields = document.querySelectorAll('.parent-fields');
+	
+	studentFields.forEach(field => {
+		field.classList.remove('show');
+		field.style.display = 'none';
+	});
+	parentFields.forEach(field => {
+		field.classList.remove('show');
+		field.style.display = 'none';
+	});
+	
+	console.log('Campos específicos de rol ocultos');
+	
+	// Mostrar campos para el rol seleccionado
+	if (selectedRole === 'student') {
+		console.log('Mostrando campos de estudiante...');
+		
+		// Mostrar campos específicos de estudiante
+		studentFields.forEach(field => {
+			field.classList.add('show');
+			field.style.display = 'block';
+			console.log('Campo de estudiante mostrado:', field);
+		});
+		
+		// El campo de programa siempre es visible, solo actualizar texto de ayuda
+		const programHelpText = document.querySelector('.help-text');
+		if (programHelpText && programHelpText.textContent.includes('programa')) {
+			programHelpText.textContent = 'Requerido para estudiantes';
+		}
+		
+		console.log('Campos de estudiante y programa mostrados');
+		
+	} else if (selectedRole === 'parent') {
+		console.log('Mostrando campos de padre...');
+		parentFields.forEach(field => {
+			field.classList.add('show');
+			field.style.display = 'block';
+			console.log('Campo de padre mostrado:', field);
+		});
+		console.log('Campos de padre mostrados');
+		
+	} else if (selectedRole === 'dep_head') {
+		console.log('Mostrando campos de jefe de departamento...');
+		
+		// El campo de programa siempre es visible, solo actualizar texto de ayuda
+		const programHelpText = document.querySelector('.help-text');
+		if (programHelpText && programHelpText.textContent.includes('programa')) {
+			programHelpText.textContent = 'Requerido para jefes de departamento';
+		}
+		
+		console.log('Campos de jefe de departamento y programa mostrados');
+	}
+	
+	// Mostrar información de rol y ayuda
+	const roleInfo = document.querySelector('.role-info');
+	const roleDescription = document.querySelector('.role-description');
+	const roleHelp = document.querySelector('#role-help');
+	const roleHelpText = document.querySelector('#role-help-text');
+	
+	if (selectedRole && roleDescriptions[selectedRole]) {
+		roleDescription.textContent = roleDescriptions[selectedRole];
+		roleInfo.style.display = 'block';
+		
+		// Mostrar ayuda específica para roles que necesitan programa
+		if (selectedRole === 'student') {
+			roleHelpText.textContent = 'Los estudiantes necesitan seleccionar un nivel y programa.';
+			roleHelp.style.display = 'block';
+		} else if (selectedRole === 'dep_head') {
+			roleHelpText.textContent = 'Los jefes de departamento necesitan seleccionar un programa.';
+			roleHelp.style.display = 'block';
+		} else {
+			roleHelp.style.display = 'none';
+		}
+	} else {
+		roleInfo.style.display = 'none';
+		roleHelp.style.display = 'none';
+	}
+});
+
+// Validación de nombre de usuario
+$("#id_username").on("input", function () {
+	const username = $(this).val();
+
+	$.ajax({
+		url: "/accounts/ajax/validate-username/",
+		data: {
+			username: username
+		},
+		dataType: 'json',
+		beforeSend: function(xhr, settings) {
+			// Agregar el token CSRF al header
+			xhr.setRequestHeader("X-CSRFToken", getCookie('csrftoken'));
+		},
+		success: function (data) {
+			if (data.is_taken) {
+				$('#username-message').html(`<p class="my-2 text-danger"><span class="bg-error p-2"><b>${username}</b> ya está en uso. Intenta con otro.</span></p>`);
+			} else {
+				$('#username-message').html(`<p class="my-2 text-success"><span class="bg-correct p-2"><b>${username}</b> está disponible ✓</span></p>`);
+			}
+		}
+	});
+});
+
+// Inicializar al cargar el DOM
+document.addEventListener('DOMContentLoaded', function() {
+    console.log('🔍 Inicializando formulario...');
+    console.log('   - userRoleEl:', userRoleEl);
+    
+    const hiddenUserRole = document.getElementById('hidden_user_role');
+    
+    if (userRoleEl) {
+        console.log('   - Valor actual:', userRoleEl.value);
+        console.log('   - Opciones disponibles:', userRoleEl.options.length);
+        for (let i = 0; i < userRoleEl.options.length; i++) {
+            console.log(`     ${i}: ${userRoleEl.options[i].value} - ${userRoleEl.options[i].text}`);
+        }
+        
+        // Determinar el valor inicial basado en el contexto
+        let initialRole = 'student'; // valor por defecto
+        if (userRoleEl.value) {
+            initialRole = userRoleEl.value;
+        } else if (userRoleEl.dataset && userRoleEl.dataset.lockRole === 'true') {
+            // Si está bloqueado, buscar el valor en las opciones
+            for (let i = 0; i < userRoleEl.options.length; i++) {
+                if (userRoleEl.options[i].selected) {
+                    initialRole = userRoleEl.options[i].value;
+                    break;
+                }
+            }
+        }
+        
+        console.log('🎯 Rol inicial determinado:', initialRole);
+        
+        // Establecer el valor en ambos campos
+        userRoleEl.value = initialRole;
+        if (hiddenUserRole) {
+            hiddenUserRole.value = initialRole;
+        }
+        
+        console.log('✅ Valor establecido, disparando evento change...');
+        userRoleEl.dispatchEvent(new Event('change'));
+        
+        // Si desde el backend marcamos data-lock-role, bloqueamos el selector
+        if (userRoleEl.dataset && userRoleEl.dataset.lockRole === 'true') {
+            console.log('🔒 Bloqueando selector de rol...');
+            userRoleEl.disabled = true;
+            userRoleEl.style.opacity = '0.6';
+            userRoleEl.style.cursor = 'not-allowed';
+        }
+    } else {
+        console.warn('❌ Elemento #id_user_role no encontrado');
+    }
+});
+
+// Debug: Verificar que el token CSRF esté presente
+document.addEventListener('DOMContentLoaded', function() {
+	const csrfToken = document.querySelector('input[name="csrfmiddlewaretoken"]');
+	if (csrfToken && csrfToken.value) {
+		console.log('✅ Token CSRF encontrado:', csrfToken.value.substring(0, 10) + '...');
+	} else {
+		console.error('❌ Token CSRF no encontrado en el formulario');
+	}
+	
+	// Debug: Verificar elementos del formulario
+	const studentFields = document.querySelectorAll('.student-fields');
+	const parentFields = document.querySelectorAll('.parent-fields');
+	
+	console.log('🔍 Elementos encontrados:');
+	console.log('   - Campos de estudiante:', studentFields.length);
+	console.log('   - Campos de padre:', parentFields.length);
+	
+	// Verificar que el campo de programa esté presente
+	const programSelect = document.querySelector('#id_program');
+	if (programSelect) {
+		console.log('✅ Campo de programa encontrado:', programSelect);
+		console.log('   - Opciones disponibles:', programSelect.options.length);
+	} else {
+		console.error('❌ Campo de programa NO encontrado');
+	}
+});
+</script>
+{% endblock %}

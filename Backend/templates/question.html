@@ -1,0 +1,224 @@
+{% extends "base.html" %}
+{% load i18n%}
+
+
+{% block title %} {{ quiz.title }} | {% trans 'Learning management system' %} {% endblock %}
+{% block description %} {{ quiz.title }} - {{ quiz.description }} {% endblock %}
+
+{% block content %}
+
+<style>
+/* Quiz Take Page - White & Lime Green theme */
+:root {
+  --navy-blue: #202044;
+  --lime-green: #92b62a;
+  --dark-red: #9f081f;
+  --light-gray: #f8f9fa;
+  --white: #ffffff;
+  --glass-bg: rgba(255, 255, 255, 0.95);
+  --glass-border: rgba(146, 182, 42, 0.15);
+  --shadow: 0 12px 30px rgba(0,0,0,0.08);
+  --radius: 16px;
+}
+
+.quiz-container {
+  background: var(--glass-bg);
+  border: 1px solid var(--glass-border);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+  padding: 1.5rem;
+}
+
+.quiz-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 1rem;
+  margin-bottom: 1rem;
+}
+
+.quiz-title {
+  margin: 0;
+  font-size: 1.75rem;
+  font-weight: 800;
+  background: linear-gradient(135deg, var(--navy-blue), var(--lime-green));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.progress-wrap {
+  width: 260px;
+}
+.progress-bar {
+  height: 10px;
+  background: linear-gradient(90deg, var(--lime-green), #a8c73a);
+}
+
+.quiz-meta {
+  display: flex;
+  gap: 1rem;
+  color: #6c757d;
+  font-weight: 600;
+  margin-bottom: 1rem;
+}
+
+.question-card {
+  background: var(--white);
+  border: 1px solid var(--glass-border);
+  border-radius: var(--radius);
+  box-shadow: 0 8px 24px rgba(0,0,0,0.06);
+  overflow: hidden;
+}
+.question-header {
+  padding: 1rem 1.25rem;
+  border-bottom: 1px solid var(--glass-border);
+  background: linear-gradient(135deg, rgba(146, 182, 42, 0.06), rgba(32, 32, 68, 0.04));
+}
+.question-text {
+  font-size: 1.15rem;
+  color: var(--navy-blue);
+  margin: 0;
+  font-weight: 700;
+}
+
+.answer-list { list-style: none; padding: 0; margin: 0; }
+.answer-item {
+  display: flex; align-items: center; gap: .75rem;
+  padding: .9rem 1.25rem; border-bottom: 1px solid var(--light-gray);
+}
+.answer-item:last-child { border-bottom: none; }
+.answer-item input[type="radio"] { accent-color: var(--lime-green); width: 18px; height: 18px; }
+
+.submit-row {
+  display: flex; justify-content: flex-end; gap: .5rem; padding: 1rem 1.25rem; border-top: 1px solid var(--glass-border);
+}
+.btn-primary { background: linear-gradient(135deg, var(--lime-green), #a8c73a); border: none; font-weight: 700; }
+.btn-primary:hover { filter: brightness(1.02); transform: translateY(-1px); }
+
+.callout {
+  border-left: 4px solid var(--lime-green);
+  background: rgba(146, 182, 42, 0.08);
+  padding: 1rem 1.25rem; border-radius: 10px; margin-bottom: 1rem;
+}
+.callout.error { border-left-color: var(--dark-red); background: rgba(159,8,31,.08); }
+
+.explanation { background: #fff9e6; border: 1px solid #ffe8a3; border-radius: 10px; padding: 1rem; }
+
+@media (max-width: 768px) { .quiz-header { flex-direction: column; align-items: flex-start; } .progress-wrap { width: 100%; } }
+</style>
+
+<nav style="--bs-breadcrumb-divider: '>';" aria-label="breadcrumb" class="mb-3">
+  <ol class="breadcrumb">
+    <li class="breadcrumb-item"><a href="/">{% trans 'Home' %}</a></li>
+    <li class="breadcrumb-item"><a href="{% url 'course:programs' %}">Programs</a></li>
+    <li class="breadcrumb-item"><a href="{% url 'course:program_detail' course.program.id %}">{{ course.program }}</a></li>
+    <li class="breadcrumb-item"><a href="{{ course.get_absolute_url }}">{{ course }}</a></li>
+    <li class="breadcrumb-item"><a href="{% url 'quiz:quiz_index' course.slug %}">{% trans 'Quizzes' %}</a></li>
+    <li class="breadcrumb-item active" aria-current="page">{{ quiz.title|title }}</li>
+  </ol>
+</nav>
+
+<div class="quiz-container">
+  <div class="quiz-header">
+    <h1 class="quiz-title">{{ quiz.title|title }}</h1>
+    {% if progress %}
+    <div class="progress-wrap">
+      <div class="d-flex justify-content-between small text-muted mb-1">
+        <span>{% trans "Pregunta" %} {{ progress.0|add:1 }} {% trans "de" %} {{ progress.1 }}</span>
+        <span>{% widthratio progress.0 progress.1 100 %}%</span>
+      </div>
+      <div class="progress" style="height:10px; background:#eceff1">
+        <div class="progress-bar" role="progressbar" style="width:{% widthratio progress.0 progress.1 100 %}%"></div>
+      </div>
+    </div>
+    {% endif %}
+  </div>
+
+  <div class="quiz-meta">
+    <span><i class="fas fa-tag"></i> {{ quiz.get_category_display|default:quiz.category }}</span>
+    {% if question.figure %}<span><i class="fas fa-image"></i> {% trans "Con imagen" %}</span>{% endif %}
+  </div>
+
+  {% if previous.answers %}
+    <div class="callout {% if not previous.previous_outcome %}error{% endif %}">
+      <div class="fw-bold mb-1">{% trans "Resultado anterior" %}: {{ previous.previous_outcome|yesno:"Correcto,Incorrecto" }}</div>
+      {% if previous.answers %}
+        <div class="small text-muted mb-2">{% trans "Respuestas" %}:</div>
+        <ul class="mb-2">
+          {% for answer in previous.answers %}
+            <li>{% if answer.correct %}<strong>✔ {{ answer }}</strong>{% else %}{{ answer }}{% endif %}
+            {% if previous.question_type.MCQuestion and answer.id|add:"0" == previous.previous_answer|add:"0" %}
+              <span class="text-muted">— {% trans "Tu respuesta" %}</span>
+            {% endif %}
+            </li>
+          {% endfor %}
+        </ul>
+      {% endif %}
+      <div class="explanation">
+        <div class="fw-bold mb-1">{% trans "Explicación" %}</div>
+        <div>{{ previous.previous_question.explanation|default:_("No hay explicación para esta pregunta.") }}</div>
+      </div>
+    </div>
+  {% endif %}
+
+  {% if question %}
+  <div class="question-card mb-2">
+    <div class="question-header">
+      <p class="question-text">{{ question.content }}</p>
+    </div>
+    {% if question.figure %}
+      <div class="p-3 text-center">
+        <img class="img-fluid rounded" src="{{ question.figure.url }}" alt="{{ question.content }}">
+      </div>
+    {% endif %}
+    <form action="" method="POST">{% csrf_token %}
+      <input type="hidden" name="question_id" value="{{ question.id }}">
+      <ul class="answer-list">
+        {% for answer in form.answers %}
+          <li class="answer-item">{{ answer }}</li>
+        {% endfor %}
+      </ul>
+      <div class="submit-row">
+        <button type="submit" class="btn btn-primary">
+          <i class="fas fa-paper-plane"></i> {% trans "Responder" %}
+        </button>
+      </div>
+    </form>
+  </div>
+  {% endif %}
+</div>
+
+{% endblock %}
+
+{% block js %}
+<!-- Modal de instrucciones (siempre en el DOM; se muestra solo en la primera pregunta) -->
+<div class="modal fade" id="instractionModal" tabindex="-1" aria-labelledby="instractionModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h1 class="modal-title fs-5" id="instractionModalLabel">{% trans 'Instrucciones del examen' %}</h1>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        {% blocktrans %}
+        No podrás volver a la pregunta anterior después de enviarla. Revisa bien tu respuesta antes de continuar.
+        {% endblocktrans %}
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-primary" data-bs-dismiss="modal">{% trans 'Entendido' %}</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+const firstQuestion = {% if progress and progress.0|add:"1" == 1 %}true{% else %}false{% endif %};
+if (firstQuestion) {
+  const modalEl = document.getElementById('instractionModal');
+  if (modalEl) {
+    const instractionModal = new bootstrap.Modal(modalEl, { keyboard: false });
+    instractionModal.show();
+  }
+}
+</script>
+{% endblock js %}

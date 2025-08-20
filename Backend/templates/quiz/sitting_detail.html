@@ -1,0 +1,76 @@
+{% extends 'base.html' %}
+{% load i18n %}
+{% block title %}
+{% trans "Result of" %} {{ sitting.quiz.title }} {% trans "for" %} {{ sitting.user }} | {% trans 'Learning management system' %}
+{% endblock %}
+
+{% block content %}
+<style>
+:root {
+  --navy-blue:#202044; --lime-green:#92b62a; --dark-red:#9f081f; --light-gray:#f8f9fa; --glass:#ffffffef; --border:rgba(146,182,42,.15);
+}
+.container-glass { background: var(--glass); border:1px solid var(--border); border-radius:16px; box-shadow:0 12px 30px rgba(0,0,0,.08); padding:1.5rem; }
+.page-title { font-weight:800; font-size:1.8rem; background:linear-gradient(135deg,var(--navy-blue),var(--lime-green)); -webkit-background-clip:text; -webkit-text-fill-color:transparent; }
+.badge-score { background:linear-gradient(135deg,var(--lime-green),#a8c73a); color:#fff; border-radius:999px; padding:.35rem .75rem; font-weight:700; }
+.meta { color:#6c757d; font-weight:600; }
+.q-table { width:100%; border-collapse:separate; border-spacing:0 8px; }
+.q-row { background:#fff; border:1px solid var(--border); border-radius:12px; overflow:hidden; }
+.q-cell { padding:1rem; vertical-align:top; }
+.q-status { font-weight:700; color:var(--lime-green); }
+.q-status.bad { color:var(--dark-red); }
+.btn-toggle { background:linear-gradient(135deg,#ffc107,#fd7e14); color:#212529; border:none; border-radius:10px; padding:.5rem .9rem; font-weight:700; }
+.thumb { max-width:120px; border-radius:8px; box-shadow:0 4px 12px rgba(0,0,0,.08); }
+</style>
+
+<nav style="--bs-breadcrumb-divider: '>';" aria-label="breadcrumb" class="mb-3">
+  <ol class="breadcrumb">
+    <li class="breadcrumb-item"><a href="/">{% trans 'Home' %}</a></li>
+    <li class="breadcrumb-item"><a href="{% url 'quiz:quiz_marking' %}">{% trans 'Completed Exams' %}</a></li>
+    <li class="breadcrumb-item active" aria-current="page">{% trans 'Marking' %}</li>
+  </ol>
+</nav>
+
+<div class="container-glass">
+  <div class="d-flex justify-content-between align-items-start mb-2">
+    <h1 class="page-title m-0">{{ sitting.quiz.title }}</h1>
+    <span class="badge-score">{{ sitting.get_percent_correct }}%</span>
+  </div>
+  <div class="meta mb-3">
+    <span class="me-3"><i class="fas fa-user"></i> {{ sitting.user }}</span>
+    <span class="me-3"><i class="fas fa-book"></i> {{ sitting.quiz.course }}</span>
+    <span class="me-3"><i class="fas fa-clock"></i> {{ sitting.end|date }}</span>
+  </div>
+  {% if sitting.quiz.description %}<p class="mb-3">{{ sitting.quiz.description }}</p>{% endif %}
+
+  <table class="q-table">
+    <tbody>
+    {% for question in questions %}
+      <tr class="q-row">
+        <td class="q-cell" style="width:55%">
+          <div class="fw-bold mb-1">{{ question.content }}</div>
+          {% if question.figure %}
+            <img class="thumb mt-2" src="{{ question.figure.url }}" alt="{{ question.figure }}">
+          {% endif %}
+        </td>
+        <td class="q-cell" style="width:25%">
+          <div>{{ question.user_answer }}</div>
+        </td>
+        <td class="q-cell" style="width:10%">
+          {% if question.id in sitting.get_incorrect_questions %}
+            <span class="q-status bad">{% trans 'Incorrecto' %}</span>
+          {% else %}
+            <span class="q-status">{% trans 'Correcto' %}</span>
+          {% endif %}
+        </td>
+        <td class="q-cell" style="width:10%">
+          <form action="" method="POST">{% csrf_token %}
+            <input type="hidden" name="qid" value="{{ question.id }}">
+            <button type="submit" class="btn-toggle"><i class="fas fa-exchange-alt"></i> {% trans 'Cambiar' %}</button>
+          </form>
+        </td>
+      </tr>
+    {% endfor %}
+    </tbody>
+  </table>
+</div>
+{% endblock %}

@@ -1,0 +1,395 @@
+{% extends 'base.html' %}
+{% load i18n %}
+{% block title %} {{ title }} | Sistema de Gestión Académica{% endblock title %}
+
+{% load static %}
+
+{% block content %}
+
+<style>
+	/* Modern Profile Styles 2025 */
+	.profile-container {
+		background: rgba(255, 255, 255, 0.95);
+		backdrop-filter: blur(20px);
+		border-radius: 16px;
+		box-shadow: 0 8px 32px rgba(0,0,0,0.08);
+		margin: 1rem;
+		padding: 2rem;
+	}
+
+	/* Breadcrumb - Elegant */
+	.breadcrumb {
+		background: transparent;
+		padding: 0;
+		margin-bottom: 2rem;
+	}
+
+	.breadcrumb-item a {
+		color: #92b62a;
+		text-decoration: none;
+		font-weight: 500;
+		transition: color 0.3s ease;
+	}
+
+	.breadcrumb-item a:hover {
+		color: #7a9a2a;
+	}
+
+	.breadcrumb-item.active {
+		color: #6c757d;
+	}
+
+	/* Profile Card - Modern */
+	.profile-card {
+		background: linear-gradient(135deg, rgba(255,255,255,0.9) 0%, rgba(248,249,250,0.9) 100%);
+		backdrop-filter: blur(10px);
+		border: 1px solid rgba(146, 182, 42, 0.1);
+		border-radius: 16px;
+		box-shadow: 0 4px 20px rgba(0,0,0,0.05);
+		transition: all 0.3s ease;
+		position: relative;
+		overflow: hidden;
+		padding: 1.5rem;
+	}
+
+	.profile-card::before {
+		content: '';
+		position: absolute;
+		top: 0;
+		left: 0;
+		right: 0;
+		height: 3px;
+		background: linear-gradient(90deg, #92b62a, #7a9a2a);
+	}
+
+	.profile-card:hover {
+		transform: translateY(-2px);
+		box-shadow: 0 8px 30px rgba(146, 182, 42, 0.15);
+		border-color: rgba(146, 182, 42, 0.3);
+	}
+
+	.profile-image {
+		width: 120px;
+		height: 120px;
+		border-radius: 50%;
+		object-fit: cover;
+		border: 3px solid rgba(146, 182, 42, 0.2);
+		box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+		transition: all 0.3s ease;
+	}
+
+	.profile-image:hover {
+		transform: scale(1.05);
+		border-color: #92b62a;
+		box-shadow: 0 6px 20px rgba(146, 182, 42, 0.3);
+	}
+
+	.profile-name {
+		font-size: 1.5rem;
+		font-weight: 700;
+		color: #2c3e50;
+		margin: 1rem 0 0.5rem 0;
+	}
+
+	.profile-info {
+		list-style: none;
+		padding: 0;
+		margin: 1rem 0;
+	}
+
+	.profile-info li {
+		padding: 0.5rem 0;
+		color: #6c757d;
+		font-size: 0.9rem;
+		border-bottom: 1px solid rgba(146, 182, 42, 0.1);
+	}
+
+	.profile-info li:last-child {
+		border-bottom: none;
+	}
+
+	.profile-info strong {
+		color: #92b62a;
+		font-weight: 600;
+	}
+
+	/* Action Buttons */
+	.profile-actions {
+		margin-top: 1.5rem;
+	}
+
+	.profile-actions a {
+		display: flex;
+		align-items: center;
+		padding: 0.8rem 1rem;
+		margin-bottom: 0.5rem;
+		background: rgba(146, 182, 42, 0.1);
+		border: 1px solid rgba(146, 182, 42, 0.2);
+		border-radius: 10px;
+		color: #92b62a;
+		text-decoration: none;
+		transition: all 0.3s ease;
+		font-weight: 500;
+	}
+
+	.profile-actions a:hover {
+		background: rgba(146, 182, 42, 0.2);
+		transform: translateX(5px);
+		box-shadow: 0 4px 12px rgba(146, 182, 42, 0.2);
+		color: #7a9a2a;
+	}
+
+	.profile-actions i {
+		margin-right: 0.5rem;
+		font-size: 1.1rem;
+	}
+
+	/* Content Card */
+	.content-card {
+		background: linear-gradient(135deg, rgba(255,255,255,0.9) 0%, rgba(248,249,250,0.9) 100%);
+		backdrop-filter: blur(10px);
+		border: 1px solid rgba(146, 182, 42, 0.1);
+		border-radius: 16px;
+		box-shadow: 0 4px 20px rgba(0,0,0,0.05);
+		padding: 1.5rem;
+		height: 100%;
+	}
+
+	.section-title {
+		font-size: 1.2rem;
+		font-weight: 600;
+		color: #2c3e50;
+		margin-bottom: 1rem;
+		padding-bottom: 0.5rem;
+		border-bottom: 2px solid rgba(146, 182, 42, 0.2);
+		display: flex;
+		align-items: center;
+	}
+
+	.section-title i {
+		margin-right: 0.5rem;
+		color: #92b62a;
+	}
+
+	.info-item {
+		padding: 0.5rem 0;
+		border-bottom: 1px solid rgba(146, 182, 42, 0.1);
+	}
+
+	.info-item:last-child {
+		border-bottom: none;
+	}
+
+	.info-item strong {
+		color: #92b62a;
+		font-weight: 600;
+	}
+
+	.info-item p {
+		margin: 0;
+		color: #6c757d;
+	}
+
+	/* Course List */
+	.course-list {
+		list-style: none;
+		padding: 0;
+		margin: 0;
+	}
+
+	.course-list li {
+		padding: 0.5rem 0;
+		border-bottom: 1px solid rgba(146, 182, 42, 0.1);
+	}
+
+	.course-list li:last-child {
+		border-bottom: none;
+	}
+
+	.course-list a {
+		color: #92b62a;
+		text-decoration: none;
+		font-weight: 500;
+		transition: color 0.3s ease;
+	}
+
+	.course-list a:hover {
+		color: #7a9a2a;
+		text-decoration: underline;
+	}
+
+	/* Responsive */
+	@media (max-width: 768px) {
+		.profile-container {
+			margin: 0.5rem;
+			padding: 1rem;
+		}
+		
+		.profile-image {
+			width: 100px;
+			height: 100px;
+		}
+		
+		.profile-name {
+			font-size: 1.3rem;
+		}
+	}
+</style>
+
+<style>
+  /* Accounts unified skin overrides */
+  :root {
+    --lime-green: rgb(146, 182, 42);
+    --lime-green-dark: #7a9a2a;
+    --gray-dark: #454545;
+    --gray-600: #6c757d;
+  }
+  body {
+    background: url('{% static "img/pic-8.png" %}') center/cover no-repeat fixed;
+    background-attachment: fixed;
+  }
+  .form-control, .form-select,
+  input[type="text"], input[type="email"], input[type="tel"], input[type="password"], textarea, select {
+    border: 1px solid rgba(146, 182, 42, 0.2);
+    border-radius: 10px;
+    padding: 0.65rem 0.9rem;
+    transition: all 0.2s ease;
+    background: rgba(255,255,255,0.95);
+  }
+  .form-control:focus, .form-select:focus,
+  input[type="text"]:focus, input[type="email"]:focus, input[type="tel"]:focus, input[type="password"]:focus, textarea:focus, select:focus {
+    outline: none;
+    border-color: var(--lime-green);
+    box-shadow: 0 0 0 3px rgba(146, 182, 42, 0.12);
+  }
+  .btn-submit, .btn-save {
+    background: linear-gradient(135deg, var(--lime-green) 0%, var(--lime-green-dark) 100%) !important;
+    color: #fff !important;
+    border: none;
+    box-shadow: 0 4px 14px rgba(146,182,42,0.28);
+  }
+  .btn-submit:hover, .btn-save:hover { transform: translateY(-1px); box-shadow: 0 6px 18px rgba(146,182,42,0.22); }
+  .breadcrumb-item a { color: var(--lime-green) !important; }
+  .breadcrumb-item a:hover { color: var(--lime-green-dark) !important; }
+  .page-header { border-bottom: 1px solid rgba(146, 182, 42, 0.15) !important; }
+</style>
+
+{% if user.is_authenticated %}
+
+<div class="profile-container">
+	<nav style="--bs-breadcrumb-divider: '>';" aria-label="breadcrumb">
+		<ol class="breadcrumb">
+		  <li class="breadcrumb-item"><a href="/">Inicio</a></li>
+		  <li class="breadcrumb-item active" aria-current="page">{{ user.get_full_name }}</li>
+		</ol>
+	</nav>
+
+	{% include 'snippets/messages.html' %}
+
+	<div class="row">
+		<div class="col-md-3 mb-4">
+			<div class="profile-card">
+				<div class="text-center">
+					<img src="{{ user.get_picture }}" class="profile-image">
+					<h3 class="profile-name">{{ user.get_full_name|title }}</h3>
+					<ul class="profile-info">
+						<li><strong>Último acceso: </strong>{{ user.last_login|date }}</li>
+						<li><strong>Rol: </strong>{{ user.get_user_role }}</li>
+					</ul>
+				</div>
+				<div class="profile-actions">
+					<a href="{% url 'edit_profile' %}">
+						<i class="fas fa-user-edit"></i>
+						<span class="mobile-hide">Editar Perfil</span>
+					</a>
+					<a href="{% url 'change_password' %}">
+						<i class="fas fa-lock"></i>
+						<span class="mobile-hide">Cambiar Contraseña</span>
+					</a>
+				</div>
+			</div>
+		</div>
+
+		<div class="col-md-9">
+			<div class="content-card">
+				{% if user.is_lecturer %}
+				<div class="section-title">
+					<i class="fas fa-book-open"></i>Mis Cursos
+				</div>
+				{% if courses %}
+				<ul class="course-list">
+					{% for course in courses %}
+					<li><a href="{{ course.get_absolute_url }}">{{ course }}</a></li>
+					{% endfor %}
+				</ul>
+				{% else %}
+				<div class="text-danger">¡No hay cursos asignados!</div>
+				{% endif %}
+				<hr>
+				{% endif %}
+
+				<div class="section-title">
+					<i class="fas fa-user"></i>Información Personal
+				</div>
+				<div class="info-item">
+					<p><strong>Nombre:</strong> {{ user.first_name|title }}</p>
+				</div>
+				<div class="info-item">
+					<p><strong>Apellido:</strong> {{ user.last_name|title }}</p>
+				</div>
+				<div class="info-item">
+					<p><strong>Número de ID:</strong> {{ user.username }}</p>
+				</div>
+
+				{% if user.is_student %}
+				<hr>
+				<div class="section-title">
+					<i class="fas fa-graduation-cap"></i>Información del Estudiante
+				</div>
+				<div class="info-item">
+					<p><strong>Escuela: </strong>Escuela Preparatoria Hawas</p>
+				</div>
+				<div class="info-item">
+					<p><strong>Nivel: </strong>{{ level.level }}</p>
+				</div>
+				{% endif %}
+
+				<hr>
+				<div class="section-title">
+					<i class="fas fa-phone-square-alt"></i>Información de Contacto
+				</div>
+				<div class="info-item">
+					<p><strong>Correo Electrónico:</strong> {{ user.email }}</p>
+				</div>
+				<div class="info-item">
+					<p><strong>Teléfono:</strong> {{ user.phone }}</p>
+				</div>
+				<div class="info-item">
+					<p><strong>Dirección/Ciudad:</strong> {{ user.address }}</p>
+				</div>
+
+				<hr>
+				<div class="section-title">
+					<i class="fa fa-calendar-day"></i>Fechas Importantes
+				</div>
+				<div class="info-item">
+					<p><strong>Último acceso:</strong> {{ user.last_login }}</p>
+				</div>
+				{% if current_semester and current_session %}
+				<div class="info-item">
+					<p><strong>Año Académico:</strong> {{ current_semester }} Semestre {{ current_session }}</p>
+				</div>
+				{% endif %}
+				<div class="info-item">
+					<p><strong>Fecha de Registro:</strong> {{ user.date_joined|date }}</p>
+				</div>
+			</div>
+		</div>
+
+		<div class="col-md-3 mx-auto"></div>
+
+	</div>
+</div>
+{% endif %}
+
+{% endblock content %}

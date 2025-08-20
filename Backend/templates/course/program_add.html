@@ -1,0 +1,319 @@
+{% extends 'base.html' %}
+{% load i18n %}
+{% block title %}{{ title }} | Sistema de Gestión Académica{% endblock title %}
+{% load crispy_forms_tags %}
+{% load static %}
+
+{% block content %}
+
+<style>
+	/* Modern Program Add Form Styles 2025 */
+	:root {
+		--gray-dark: rgb(69, 69, 69);
+		--lime-green: rgb(146, 182, 42);
+		--navy-blue: rgb(32, 32, 68);
+		--dark-red: rgb(159, 8, 31);
+		--mustard-yellow: rgb(226, 210, 41);
+	}
+
+	/* Page background with transparency */
+	body {
+		background: url('{% static "img/pic-8.png" %}') center/cover no-repeat fixed;
+		background-attachment: fixed;
+	}
+
+	.program-form-container {
+		background: rgba(255, 255, 255, 0.95);
+		backdrop-filter: blur(20px);
+		border-radius: 20px;
+		box-shadow: 0 8px 32px rgba(0,0,0,0.08);
+		margin: 1rem;
+		padding: 2rem;
+		border: 1px solid rgba(146, 182, 42, 0.1);
+	}
+
+	/* Breadcrumb - Elegant */
+	.breadcrumb {
+		background: transparent;
+		padding: 0;
+		margin-bottom: 2rem;
+	}
+
+	.breadcrumb-item a {
+		color: var(--lime-green);
+		text-decoration: none;
+		font-weight: 500;
+		transition: color 0.3s ease;
+	}
+
+	.breadcrumb-item a:hover {
+		color: #a8c73a;
+	}
+
+	.breadcrumb-item.active {
+		color: #6c757d;
+	}
+
+	/* Page Header */
+	.page-header {
+		margin-bottom: 2rem;
+		padding-bottom: 1rem;
+		border-bottom: 1px solid rgba(146, 182, 42, 0.1);
+	}
+
+	.page-title {
+		font-size: 2.2rem;
+		font-weight: 700;
+		color: var(--navy-blue);
+		margin: 0;
+		background: linear-gradient(135deg, var(--navy-blue) 0%, var(--lime-green) 100%);
+		-webkit-background-clip: text;
+		-webkit-text-fill-color: transparent;
+		background-clip: text;
+		display: flex;
+		align-items: center;
+	}
+
+	.page-title i {
+		margin-right: 1rem;
+		font-size: 2rem;
+		background: linear-gradient(135deg, var(--lime-green) 0%, #a8c73a 100%);
+		-webkit-background-clip: text;
+		-webkit-text-fill-color: transparent;
+		background-clip: text;
+	}
+
+	/* Form Card */
+	.form-card {
+		background: rgba(255, 255, 255, 0.98);
+		border: 1px solid rgba(146, 182, 42, 0.1);
+		border-radius: 16px;
+		box-shadow: 0 4px 20px rgba(0,0,0,0.06);
+		padding: 2rem;
+		margin-bottom: 2rem;
+		transition: all 0.3s ease;
+		position: relative;
+		overflow: hidden;
+	}
+
+	.form-card::before {
+		content: '';
+		position: absolute;
+		top: 0;
+		left: 0;
+		right: 0;
+		height: 3px;
+		background: linear-gradient(135deg, var(--lime-green) 0%, #a8c73a 100%);
+		opacity: 1;
+	}
+
+	.form-card:hover {
+		transform: translateY(-2px);
+		box-shadow: 0 8px 32px rgba(146, 182, 42, 0.15);
+		border-color: rgba(146, 182, 42, 0.3);
+	}
+
+	.card-title {
+		font-size: 1.5rem;
+		font-weight: 600;
+		color: var(--navy-blue);
+		margin-bottom: 1.5rem;
+		display: flex;
+		align-items: center;
+	}
+
+	.card-title i {
+		margin-right: 0.8rem;
+		color: var(--lime-green);
+	}
+
+	/* Form Fields */
+	.form-group {
+		margin-bottom: 1.5rem;
+	}
+
+	.form-label {
+		font-weight: 600;
+		color: var(--navy-blue);
+		margin-bottom: 0.5rem;
+		display: block;
+	}
+
+	.form-control {
+		border: 2px solid rgba(146, 182, 42, 0.1);
+		border-radius: 12px;
+		padding: 0.8rem 1rem;
+		font-size: 1rem;
+		transition: all 0.3s ease;
+		background: rgba(255, 255, 255, 0.9);
+		backdrop-filter: blur(10px);
+	}
+
+	.form-control:focus {
+		border-color: var(--lime-green);
+		box-shadow: 0 0 0 0.2rem rgba(146, 182, 42, 0.25);
+		outline: none;
+		background: rgba(255, 255, 255, 0.95);
+	}
+
+	textarea.form-control {
+		min-height: 120px;
+		resize: vertical;
+	}
+
+	/* Submit Button */
+	.btn-submit {
+		background: linear-gradient(135deg, var(--lime-green) 0%, #a8c73a 100%);
+		border: none;
+		color: white;
+		padding: 1rem 2rem;
+		border-radius: 12px;
+		font-weight: 600;
+		font-size: 1.1rem;
+		transition: all 0.3s ease;
+		box-shadow: 0 4px 15px rgba(146, 182, 42, 0.3);
+		display: inline-flex;
+		align-items: center;
+		justify-content: center;
+		width: 100%;
+		margin-top: 1rem;
+	}
+
+	.btn-submit:hover {
+		transform: translateY(-2px);
+		box-shadow: 0 8px 25px rgba(146, 182, 42, 0.4);
+		color: white;
+	}
+
+	.btn-submit i {
+		margin-right: 0.5rem;
+	}
+
+	/* Cancel Button */
+	.btn-cancel {
+		background: linear-gradient(135deg, #6c757d 0%, #5a6268 100%);
+		border: none;
+		color: white;
+		padding: 0.8rem 1.5rem;
+		border-radius: 12px;
+		font-weight: 600;
+		transition: all 0.3s ease;
+		box-shadow: 0 4px 15px rgba(108, 117, 125, 0.3);
+		text-decoration: none;
+		display: inline-flex;
+		align-items: center;
+		margin-right: 1rem;
+	}
+
+	.btn-cancel:hover {
+		transform: translateY(-2px);
+		box-shadow: 0 8px 25px rgba(108, 117, 125, 0.4);
+		color: white;
+	}
+
+	.btn-cancel i {
+		margin-right: 0.5rem;
+	}
+
+	/* Button Group */
+	.button-group {
+		display: flex;
+		gap: 1rem;
+		margin-top: 2rem;
+	}
+
+	/* Responsive */
+	@media (max-width: 768px) {
+		.program-form-container {
+			margin: 0.5rem;
+			padding: 1rem;
+		}
+		
+		.page-title {
+			font-size: 1.8rem;
+		}
+		
+		.form-card {
+			padding: 1.5rem;
+		}
+		
+		.button-group {
+			flex-direction: column;
+		}
+		
+		.btn-cancel {
+			margin-right: 0;
+			margin-bottom: 1rem;
+		}
+	}
+</style>
+
+<div class="program-form-container">
+	<nav style="--bs-breadcrumb-divider: '>';" aria-label="breadcrumb">
+		<ol class="breadcrumb">
+			<li class="breadcrumb-item"><a href="/">Inicio</a></li>
+			<li class="breadcrumb-item"><a href="{% url 'course:programs' %}">Programas</a></li>
+			<li class="breadcrumb-item active" aria-current="page">Formulario de Programa</li>
+		</ol>
+	</nav>
+
+	<div class="page-header">
+		<h1 class="page-title">
+			<i class="fas fa-plus-circle"></i>
+			{{ title }}
+		</h1>
+	</div>
+
+	{% include 'snippets/messages.html' %}
+
+	<div class="form-card">
+		<h3 class="card-title">
+			<i class="fas fa-edit"></i>
+			Información del Programa
+		</h3>
+		<form action="" method="POST">
+			{% csrf_token %}
+			<div class="form-group">
+				<label for="{{ form.title.id_for_label }}" class="form-label">
+					<i class="fas fa-tag"></i> Título del Programa
+				</label>
+				{{ form.title }}
+				{% if form.title.errors %}
+				<div class="text-danger mt-1">
+					{% for error in form.title.errors %}
+					<small><i class="fas fa-exclamation-circle"></i> {{ error }}</small>
+					{% endfor %}
+				</div>
+				{% endif %}
+			</div>
+			
+			<div class="form-group">
+				<label for="{{ form.summary.id_for_label }}" class="form-label">
+					<i class="fas fa-align-left"></i> Resumen del Programa
+				</label>
+				{{ form.summary }}
+				{% if form.summary.errors %}
+				<div class="text-danger mt-1">
+					{% for error in form.summary.errors %}
+					<small><i class="fas fa-exclamation-circle"></i> {{ error }}</small>
+					{% endfor %}
+				</div>
+				{% endif %}
+				<small class="text-muted">
+					<i class="fas fa-info-circle"></i> Proporciona una descripción breve del programa
+				</small>
+			</div>
+			
+			<div class="button-group">
+				<a href="{% url 'course:programs' %}" class="btn-cancel">
+					<i class="fas fa-times"></i>Cancelar
+				</a>
+				<button class="btn-submit" type="submit">
+					<i class="fas fa-save"></i>Guardar Programa
+				</button>
+			</div>
+		</form>
+	</div>
+</div>
+
+{% endblock content %}

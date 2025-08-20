@@ -1,0 +1,908 @@
+{% extends 'base.html' %}
+{% load i18n %}
+{% load media_extras %}
+{% block title %}{{ module.title }} | {{ course.title }}{% endblock title %}
+{% load static %}
+
+{% block content %}
+
+<style>
+:root {
+    --lime-green: rgb(146, 182, 42);
+    --lime-green-dark: #7a9a2a;
+    --gray-dark: #454545;
+    --dark-gray: #6c757d;
+    --white: #ffffff;
+    --light-gray: #f8f9fa;
+    --glass-bg: rgba(255, 255, 255, 0.95);
+    --glass-border: rgba(146, 182, 42, 0.12);
+    --border-radius: 12px;
+    --shadow: 0 8px 32px rgba(0, 0, 0, 0.08);
+    --shadow-hover: 0 12px 32px rgba(146, 182, 42, 0.20);
+}
+
+.module-detail-container {
+    min-height: 100vh;
+    background: linear-gradient(135deg, rgba(255, 255, 255, 0.95) 0%, rgba(146, 182, 42, 0.05) 100%);
+    padding: 2rem 0;
+    backdrop-filter: blur(20px);
+}
+
+.content-wrapper {
+    background: rgba(255, 255, 255, 0.95);
+    border-radius: 20px;
+    backdrop-filter: blur(20px);
+    box-shadow: 0 20px 40px rgba(32, 32, 68, 0.1);
+    border: 1px solid rgba(146, 182, 42, 0.1);
+    overflow: hidden;
+}
+
+/* Breadcrumb */
+.breadcrumb { background: transparent; padding: 0; margin: 0.75rem 1rem 0; }
+.breadcrumb-item a { color: var(--lime-green); text-decoration: none; font-weight: 600; transition: color 0.2s ease; }
+.breadcrumb-item a:hover { color: var(--lime-green-dark); }
+.breadcrumb-item.active { color: var(--dark-gray); }
+
+.page-header { display: flex; align-items: center; justify-content: space-between; padding: 0.75rem 1rem 0.9rem; margin: 0 1rem 1rem; border-bottom: 1px solid rgba(146, 182, 42, 0.15); background: transparent; color: inherit; }
+
+.page-header::before { display: none; }
+
+.page-title { font-size: 2rem; font-weight: 800; margin: 0; line-height: 1.1; background: linear-gradient(135deg, var(--lime-green) 0%, #a8c73a 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; display: flex; align-items: center; gap: 0.6rem; }
+
+.page-subtitle { font-size: 1rem; color: var(--dark-gray); margin: 0; }
+
+.module-info { padding: 0 1rem 0.5rem; background: transparent; border-bottom: none; }
+.module-layout { display: grid; grid-template-columns: 1fr 280px; gap: 1rem; align-items: start; }
+.module-main { min-width: 0; }
+.module-aside .module-stats { display: flex; flex-direction: column; gap: 0.6rem; }
+
+/* Compact description card to avoid large blank areas */
+.module-hero { position: relative; height: clamp(200px, 28vw, 320px); border-radius: 16px; overflow: hidden; margin-bottom: .9rem; box-shadow: 0 10px 26px rgba(0,0,0,.08); }
+.module-hero img { width:100%; height:100%; object-fit: cover; display:block }
+.module-hero::after { content:''; position:absolute; inset:0; background:linear-gradient(180deg, rgba(32,32,68,.35), rgba(69,69,69,.15)); }
+.module-description-card { background: rgba(255,255,255,0.98); border: 1px solid rgba(146,182,42,0.12); border-radius: 14px; padding: 1rem 1.1rem; box-shadow: 0 2px 10px rgba(0,0,0,0.04); }
+.module-description-card h3 { margin-top: 0; margin-bottom: 0.35rem; font-size: 1.1rem; font-weight: 900; color: var(--gray-dark); }
+.module-description-card p { margin: 0; color: var(--dark-gray); line-height: 1.6; }
+
+.module-stats { display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: 0.6rem; margin-bottom: 0.8rem; }
+
+.stat-card { background: rgba(255,255,255,0.98); border-radius: 10px; padding: 0.6rem 0.8rem; box-shadow: 0 1px 6px rgba(0,0,0,0.05); border: 1px solid rgba(146, 182, 42, 0.10); transition: all 0.2s ease; position: relative; overflow: hidden; }
+
+.stat-card::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 2px; background: linear-gradient(135deg, var(--lime-green), #a8c73a); opacity: 1; }
+
+.stat-card:hover { transform: translateY(-1px); box-shadow: 0 6px 16px rgba(146, 182, 42, 0.12); border-color: rgba(146,182,42,0.25); }
+
+.stat-icon { width: 28px; height: 28px; border-radius: 6px; display: flex; align-items: center; justify-content: center; margin-bottom: 0.4rem; font-size: 0.9rem; color: #fff; border: 1px solid rgba(146,182,42,0.22); background: linear-gradient(135deg, var(--lime-green), #a8c73a); }
+
+.stat-value { font-size: 1.1rem; font-weight: 800; color: var(--gray-dark); margin-bottom: 0.1rem; }
+
+.stat-label { color: var(--dark-gray); font-size: 0.75rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.4px; }
+
+.lessons-section { padding: 0.75rem 1rem 1.25rem; }
+
+.section-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 2rem;
+    padding-bottom: 1rem;
+    border-bottom: 2px solid var(--glass-border);
+}
+
+.section-header h2 {
+    color: var(--white);
+    margin: 0;
+    font-size: 1.75rem;
+    font-weight: 700;
+}
+
+.section-actions {
+    margin-left: auto;
+}
+
+.section-actions .btn {
+    background: var(--lime-green);
+    border: none;
+    color: var(--white);
+    padding: 0.75rem 1.5rem;
+    border-radius: var(--border-radius);
+    text-decoration: none;
+    transition: all 0.3s ease;
+    font-weight: 600;
+}
+
+.section-actions .btn:hover {
+    background: #7a9a22;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(146, 182, 42, 0.3);
+}
+
+.admin-actions {
+    display: flex;
+    gap: 0.5rem;
+    margin-top: 0.5rem;
+}
+
+.admin-actions .btn-lesson {
+    flex: 1;
+    text-align: center;
+    padding: 0.5rem 1rem;
+    font-size: 0.875rem;
+}
+
+.btn-danger {
+    background: linear-gradient(135deg, var(--dark-red), #c82333);
+    color: white;
+}
+
+.btn-danger:hover {
+    background: linear-gradient(135deg, #b02a37, #9f081f);
+    color: white;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(159, 8, 31, 0.3);
+}
+
+.lessons-list {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}
+
+/* Collapsible lessons */
+.lesson-header { cursor: pointer; user-select: none; }
+.lesson-item .lesson-body { display: none; }
+.lesson-item.is-expanded .lesson-body { display: block; }
+.lesson-toggle { display: flex; align-items: flex-start; justify-content: space-between; width: 100%; }
+.lesson-chevron { color: var(--dark-gray); transition: transform 0.2s ease; margin-left: 0.5rem; }
+.lesson-item.is-expanded .lesson-chevron { transform: rotate(180deg); }
+
+/* Lesson blocks */
+.lesson-blocks { display: flex; flex-direction: column; gap: 0.75rem; margin-top: 0.75rem; }
+.block-card { background: rgba(255,255,255,0.98); border: 1px solid rgba(146,182,42,0.12); border-radius: 12px; padding: 0.9rem; box-shadow: 0 2px 10px rgba(0,0,0,0.04); }
+.block-title { font-weight: 800; font-size: 0.95rem; color: var(--gray-dark); margin-bottom: 0.5rem; display: flex; align-items: center; gap: 0.5rem; }
+.block-title i { color: var(--lime-green); }
+.block-content { color: var(--dark-gray); }
+.block-media { width: 100%; border-radius: 10px; border: 1px solid rgba(146,182,42,0.18); }
+
+/* Compact lesson summary (visible even when collapsed) */
+.lesson-compact { margin: 0.25rem 0 0.5rem; }
+.lesson-compact-desc { margin: 0; color: var(--dark-gray); font-size: 0.92rem; line-height: 1.4; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+.lesson-compact-meta { display: flex; flex-wrap: wrap; gap: 0.35rem 0.5rem; margin-top: 0.35rem; }
+.lc-chip { display: inline-flex; align-items: center; gap: 0.35rem; padding: 0.22rem 0.5rem; font-size: 0.78rem; font-weight: 800; color: var(--gray-dark); border: 1px solid rgba(146,182,42,0.18); border-radius: 999px; background: linear-gradient(135deg, rgba(146,182,42,0.05), rgba(146,182,42,0.10)); }
+.lc-chip i { color: var(--lime-green); }
+/* Description directly under lesson title */
+.lesson-title-desc { margin: 0.25rem 0 0; color: var(--dark-gray); font-size: 0.92rem; line-height: 1.4; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+
+.lesson-item {
+    background: white;
+    border-radius: 15px;
+    padding: 1.5rem;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.06);
+    border: 1px solid rgba(146, 182, 42, 0.1);
+    transition: all 0.3s ease;
+    position: relative;
+    overflow: hidden;
+}
+
+.lesson-item::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 3px;
+    background: linear-gradient(135deg, var(--lime-green), #a8c73a);
+    opacity: 1;
+}
+
+.lesson-item:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 32px rgba(146, 182, 42, 0.15);
+    border-color: rgba(146, 182, 42, 0.3);
+}
+
+.lesson-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 1rem;
+}
+
+.lesson-title { font-size: 1.15rem; font-weight: 600; color: var(--navy-blue); margin-bottom: 0.5rem; }
+
+.lesson-order {
+    background: var(--lime-green);
+    color: white;
+    padding: 0.3rem 0.8rem;
+    border-radius: 15px;
+    font-size: 0.8rem;
+    font-weight: 600;
+}
+
+.lesson-info {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+    gap: 1rem;
+    margin-bottom: 1rem;
+}
+
+.info-item {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: 0.9rem;
+    color: var(--dark-gray);
+}
+
+.info-item i {
+    color: var(--lime-green);
+    width: 16px;
+}
+
+.lesson-type-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.4rem 0.8rem;
+    border-radius: 20px;
+    font-size: 0.8rem;
+    font-weight: 600;
+}
+
+.badge-video {
+    background: rgba(146, 182, 42, 0.1);
+    color: var(--lime-green);
+    border: 1px solid rgba(146, 182, 42, 0.2);
+}
+
+.badge-text {
+    background: rgba(32, 32, 68, 0.1);
+    color: var(--navy-blue);
+    border: 1px solid rgba(32, 32, 68, 0.2);
+}
+
+.badge-quiz {
+    background: rgba(226, 210, 41, 0.1);
+    color: var(--mustard-yellow);
+    border: 1px solid rgba(226, 210, 41, 0.2);
+}
+
+.badge-activity {
+    background: rgba(159, 8, 31, 0.1);
+    color: var(--dark-red);
+    border: 1px solid rgba(159, 8, 31, 0.2);
+}
+
+.badge-assignment {
+    background: rgba(146, 182, 42, 0.1);
+    color: var(--lime-green);
+    border: 1px solid rgba(146, 182, 42, 0.2);
+}
+
+.lesson-description {
+    color: var(--dark-gray);
+    margin-bottom: 1rem;
+    line-height: 1.6;
+}
+
+.lesson-progress {
+    margin-bottom: 1rem;
+}
+
+.progress-label {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 0.5rem;
+    font-size: 0.9rem;
+    color: var(--dark-gray);
+}
+
+.progress-percentage {
+    font-weight: 600;
+    color: var(--lime-green);
+}
+
+.progress-bar-container {
+    background: var(--light-gray);
+    border-radius: 10px;
+    height: 8px;
+    overflow: hidden;
+}
+
+.progress-bar {
+    height: 100%;
+    background: linear-gradient(90deg, var(--lime-green), #a8c73a);
+    border-radius: 10px;
+    transition: width 1s ease;
+}
+
+.lesson-actions {
+    display: flex;
+    gap: 0.5rem;
+    flex-wrap: wrap;
+}
+
+.btn-lesson {
+    padding: 0.6rem 1.2rem;
+    border-radius: 10px;
+    font-size: 0.9rem;
+    font-weight: 600;
+    text-decoration: none;
+    text-align: center;
+    transition: all 0.3s ease;
+    border: none;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.btn-primary {
+    background: linear-gradient(135deg, var(--lime-green), #a8c73a);
+    color: white;
+}
+
+.btn-primary:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 5px 15px rgba(146, 182, 42, 0.3);
+    color: white;
+}
+
+.btn-secondary {
+    background: var(--light-gray);
+    color: var(--navy-blue);
+    border: 1px solid rgba(146, 182, 42, 0.2);
+}
+
+.btn-secondary:hover {
+    background: var(--lime-green);
+    color: white;
+    transform: translateY(-2px);
+}
+
+.btn-success {
+    background: linear-gradient(135deg, var(--lime-green), #a8c73a);
+    color: white;
+}
+
+.btn-success:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 5px 15px rgba(146, 182, 42, 0.3);
+    color: white;
+}
+
+.btn-warning {
+    background: linear-gradient(135deg, var(--mustard-yellow), #f0e68c);
+    color: var(--navy-blue);
+}
+
+.btn-warning:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 5px 15px rgba(226, 210, 41, 0.3);
+    color: var(--navy-blue);
+}
+
+.completed-badge {
+    background: linear-gradient(135deg, var(--lime-green), #a8c73a);
+    color: white;
+    padding: 0.3rem 0.8rem;
+    border-radius: 15px;
+    font-size: 0.8rem;
+    font-weight: 600;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.3rem;
+}
+
+.empty-state {
+    text-align: center;
+    padding: 3rem 2rem;
+    color: var(--dark-gray);
+}
+
+.empty-state i {
+    font-size: 4rem;
+    color: var(--lime-green);
+    margin-bottom: 1rem;
+    opacity: 0.5;
+}
+
+.empty-state h4 {
+    color: var(--navy-blue);
+    margin-bottom: 0.5rem;
+    font-size: 1.3rem;
+}
+
+.empty-state p {
+    margin-bottom: 0;
+    opacity: 0.8;
+    font-size: 1rem;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .module-detail-container {
+        padding: 1rem 0;
+    }
+    
+    .page-title {
+        font-size: 2rem;
+    }
+    
+    .module-stats {
+        grid-template-columns: 1fr;
+    }
+    
+    .lesson-info {
+        grid-template-columns: 1fr;
+    }
+    
+    .module-layout { grid-template-columns: 1fr; }
+    .module-aside { order: -1; }
+    .lesson-actions { flex-direction: column; }
+    .lessons-section { padding: 0.75rem 0.75rem 1rem; }
+}
+
+/* Animaciones */
+@keyframes fadeInUp {
+    from { opacity: 0; transform: translateY(30px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+.lesson-item {
+    animation: fadeInUp 0.6s ease-out;
+}
+
+.lesson-item:nth-child(1) { animation-delay: 0.1s; }
+.lesson-item:nth-child(2) { animation-delay: 0.2s; }
+.lesson-item:nth-child(3) { animation-delay: 0.3s; }
+.lesson-item:nth-child(4) { animation-delay: 0.4s; }
+
+/* Estilos para lecciones inactivas */
+.lesson-inactive {
+    opacity: 0.7;
+    background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+    border: 1px solid #dee2e6;
+}
+
+.lesson-inactive .lesson-header {
+    background: linear-gradient(135deg, #6c757d 0%, #495057 100%);
+}
+
+.lesson-inactive .lesson-title h3 {
+    color: #6c757d;
+}
+
+.lesson-status-inactive {
+    background: linear-gradient(135deg, #dc3545 0%, #c82333 100%);
+    color: white;
+    padding: 0.25rem 0.75rem;
+    border-radius: 20px;
+    font-size: 0.8rem;
+    font-weight: 600;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    margin-left: 1rem;
+    box-shadow: 0 2px 8px rgba(220, 53, 69, 0.3);
+}
+
+.status-active {
+    color: var(--lime-green);
+    font-weight: 600;
+}
+
+.status-inactive {
+    color: #dc3545;
+    font-weight: 600;
+}
+
+.btn-disabled {
+    background: linear-gradient(135deg, #6c757d 0%, #495057 100%);
+    color: white;
+    cursor: not-allowed;
+    opacity: 0.6;
+}
+
+.btn-disabled:hover {
+    background: linear-gradient(135deg, #6c757d 0%, #495057 100%);
+    transform: none;
+    box-shadow: 0 4px 12px rgba(108, 117, 125, 0.3);
+}
+
+.btn-success {
+    background: linear-gradient(135deg, #28a745 0%, #20c997 100%);
+    color: white;
+    border: none;
+    padding: 0.5rem 1rem;
+    border-radius: 8px;
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-weight: 600;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 12px rgba(40, 167, 69, 0.3);
+}
+
+.btn-success:hover {
+    background: linear-gradient(135deg, #218838 0%, #1ea085 100%);
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(40, 167, 69, 0.4);
+    color: white;
+    text-decoration: none;
+}
+
+.btn-warning {
+    background: linear-gradient(135deg, #ffc107 0%, #fd7e14 100%);
+    color: #212529;
+    border: none;
+    padding: 0.5rem 1rem;
+    border-radius: 8px;
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-weight: 600;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 12px rgba(255, 193, 7, 0.3);
+}
+
+.btn-warning:hover {
+    background: linear-gradient(135deg, #e0a800 0%, #e8590c 100%);
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(255, 193, 7, 0.4);
+    color: #212529;
+    text-decoration: none;
+}
+</style>
+
+<div class="module-detail-container">
+    <div class="container">
+        <div class="content-wrapper">
+            
+            <!-- Breadcrumb -->
+            <nav style="--bs-breadcrumb-divider: '>';" aria-label="breadcrumb">
+                <ol class="breadcrumb">
+                    <li class="breadcrumb-item"><a href="/">Inicio</a></li>
+                    {% if request.user.is_student %}
+                    <li class="breadcrumb-item"><a href="{% url 'course:user_course_list' %}">Mis Cursos</a></li>
+                    {% else %}
+                    <li class="breadcrumb-item"><a href="{% url 'course:programs' %}">Programas</a></li>
+                    {% endif %}
+                    <li class="breadcrumb-item"><a href="{% url 'course:program_detail' course.program.id %}">{{ course.program }}</a></li>
+                    <li class="breadcrumb-item"><a href="{% url 'course:course_single' course.slug %}">{{ course }}{% if course.code %} ({{ course.code }}){% endif %}</a></li>
+                    <li class="breadcrumb-item active" aria-current="page">{{ module.title }}</li>
+                </ol>
+            </nav>
+            
+            <!-- Header -->
+            <div class="page-header">
+                <h1 class="page-title">
+                    <i class="fas fa-cube"></i>{{ module.title }}
+                </h1>
+                <p class="page-subtitle">
+                    {{ course.title }} - Módulo {{ module.order }}
+                </p>
+            </div>
+
+            <div class="module-info">
+              <div class="module-layout">
+                <div class="module-main">
+                  {% if module.image %}
+                  <div class="module-hero">
+                    <img src="{{ module.image.url }}" alt="{{ module.title }}">
+                  </div>
+                  {% endif %}
+                  <div class="module-description-card">
+                      <h3>Descripción del Módulo</h3>
+                      <p>{{ module.description }}</p>
+                  </div>
+                </div>
+                <aside class="module-aside">
+                <div class="module-stats">
+                    <div class="stat-card">
+                        <div class="stat-icon lessons">
+                            <i class="fas fa-book"></i>
+                        </div>
+                        <div class="stat-value">{{ lessons.count }}</div>
+                        <div class="stat-label">Lecciones</div>
+                    </div>
+                    
+                    <div class="stat-card">
+                        <div class="stat-icon duration">
+                            <i class="fas fa-clock"></i>
+                        </div>
+                        <div class="stat-value">{{ module.total_duration }} min</div>
+                        <div class="stat-label">Duración Total</div>
+                    </div>
+                    
+                    {% if student_progress %}
+                    <div class="stat-card">
+                        <div class="stat-icon progress">
+                            <i class="fas fa-percentage"></i>
+                        </div>
+                        <div class="stat-value">
+                            {% with completed=student_progress|length %}
+                                {% with total=lessons.count %}
+                                    {% if total > 0 %}
+                                        {% widthratio completed total 100 %}%
+                                    {% else %}
+                                        0%
+                                    {% endif %}
+                                {% endwith %}
+                            {% endwith %}
+                        </div>
+                        <div class="stat-label">Progreso</div>
+                    </div>
+                    
+                    <div class="stat-card">
+                        <div class="stat-icon completed">
+                            <i class="fas fa-check-circle"></i>
+                        </div>
+                        <div class="stat-value">{{ student_progress|length }}/{{ lessons.count }}</div>
+                        <div class="stat-label">Completadas</div>
+                    </div>
+                    {% endif %}
+                </div>
+                </aside>
+                </div>
+            </div>
+
+            <!-- Lecciones -->
+            <div class="lessons-section">
+                <div class="section-header">
+                    <h2>
+                        <i class="fas fa-book"></i>Lecciones del Módulo
+                    </h2>
+                    {% if user.is_lecturer or user.is_superuser %}
+                    <div class="section-actions">
+                        <a href="{% url 'course:lesson_create' slug=course.slug module_id=module.id %}" class="btn btn-primary">
+                            <i class="fas fa-plus"></i> Crear Lección
+                        </a>
+                    </div>
+                    {% endif %}
+                </div>
+                
+                {% if lessons %}
+                <div class="lessons-list">
+                    {% for lesson in lessons %}
+                    <div class="lesson-item {% if not lesson.is_active %}lesson-inactive{% endif %}" data-lesson-id="{{ lesson.id }}">
+                        <div class="lesson-header" onclick="toggleLesson(this)">
+                            <div class="lesson-toggle">
+                            <div class="lesson-title">
+                                <h3>{{ lesson.title }}</h3>
+                                <span class="lesson-order">Lección {{ lesson.order }}</span>
+                                {% if not lesson.is_active %}
+                                <span class="lesson-status-inactive">
+                                    <i class="fas fa-pause-circle"></i> Inactiva
+                                </span>
+                                {% endif %}
+                                    {% if lesson.description %}
+                                    <p class="lesson-title-desc">{{ lesson.description }}</p>
+                                {% endif %}
+                            </div>
+                            <div class="lesson-type">
+                                <span class="badge badge-{{ lesson.lesson_type }}">
+                                    {% if lesson.lesson_type == 'video' %}
+                                        <i class="fas fa-video"></i>
+                                    {% elif lesson.lesson_type == 'text' %}
+                                        <i class="fas fa-file-text"></i>
+                                    {% elif lesson.lesson_type == 'quiz' %}
+                                        <i class="fas fa-question-circle"></i>
+                                    {% elif lesson.lesson_type == 'activity' %}
+                                            <i class="fas a-tasks"></i>
+                                    {% elif lesson.lesson_type == 'assignment' %}
+                                        <i class="fas fa-upload"></i>
+                                    {% endif %}
+                                    {{ lesson.get_lesson_type_display }}
+                                </span>
+                                    <i class="fas fa-chevron-down lesson-chevron"></i>
+                                </div>
+                            </div>
+                            <div class="lesson-compact">
+                                {% if lesson.description %}
+                                <p class="lesson-compact-desc">{{ lesson.description }}</p>
+                                {% endif %}
+                                <div class="lesson-compact-meta">
+                                    <span class="lc-chip"><i class="fas fa-tag"></i>{{ lesson.get_lesson_type_display }}</span>
+                                    <span class="lc-chip"><i class="fas fa-clock"></i>{{ lesson.duration_minutes }} min</span>
+                                    {% if lesson.is_required %}
+                                    <span class="lc-chip"><i class="fas fa-star"></i>Requerida</span>
+                                    {% else %}
+                                    <span class="lc-chip"><i class="fas fa-circle"></i>Opcional</span>
+                                    {% endif %}
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="lesson-body">
+                            <div class="lesson-description">
+                                {{ lesson.description }}
+                            </div>
+                            
+                            <div class="lesson-info">
+                                <div class="info-item">
+                                    <i class="fas fa-clock"></i>
+                                    <span>{{ lesson.duration_minutes }} min</span>
+                                </div>
+                                <div class="info-item">
+                                    <i class="fas fa-star"></i>
+                                    <span>{% if lesson.is_required %}Requerida{% else %}Opcional{% endif %}</span>
+                                </div>
+                                <div class="info-item">
+                                    <i class="fas fa-circle"></i>
+                                    <span class="{% if lesson.is_active %}status-active{% else %}status-inactive{% endif %}">
+                                        {% if lesson.is_active %}Activa{% else %}Inactiva{% endif %}
+                                    </span>
+                                </div>
+                            </div>
+                            
+                            {% if student_progress %}
+                            <div class="lesson-progress">
+                                {% for progress in student_progress %}
+                                    {% if progress.lesson == lesson %}
+                                        {% if progress.is_completed %}
+                                            <div class="progress-completed">
+                                                <i class="fas fa-check-circle"></i>
+                                                <span>Completada</span>
+                                            </div>
+                                        {% else %}
+                                            <div class="progress-pending">
+                                                <i class="fas fa-clock"></i>
+                                                <span>Pendiente</span>
+                                            </div>
+                                        {% endif %}
+                                    {% endif %}
+                                {% endfor %}
+                            </div>
+                            {% endif %}
+                            
+                            {% if lesson.blocks.exists %}
+                            <div class="lesson-blocks">
+                                {% for block in lesson.blocks.all %}
+                                <div class="block-card">
+                                    {% if block.title %}
+                                    <div class="block-title">
+                                        <i class="fas fa-layer-group"></i>{{ block.title }}
+                                    </div>
+                                    {% endif %}
+                                    <div class="block-content">
+                                        {% if block.block_type == 'text' and block.text_content and block.text_content|cut:" " != '[]' %}
+                                            {{ block.text_content|safe }}
+                                        {% elif block.block_type == 'image' and block.image %}
+                                            <img class="block-media" src="{{ block.image.url }}" alt="{{ block.title|default:'Imagen' }}">
+                                        {% elif block.block_type == 'video' and block.video_url %}
+                                            {% with embed_url=block.video_url|to_embed_url %}
+                                                {% if embed_url %}
+                                                    <div class="ratio ratio-16x9"><iframe src="{{ embed_url }}" title="{{ block.title|default:'Video' }}" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen referrerpolicy="origin-when-cross-origin"></iframe></div>
+                                {% else %}
+                                                    <em>Contenido no disponible.</em>
+                                                {% endif %}
+                                            {% endwith %}
+                                        {% elif block.block_type == 'video' and block.video_file %}
+                                            <video class="block-media" controls src="{{ block.video_file.url }}"></video>
+                                        {% elif block.block_type == 'audio' and block.audio_file %}
+                                            <audio controls src="{{ block.audio_file.url }}" style="width:100%"></audio>
+                                        {% elif block.block_type == 'file' and block.file %}
+                                            <a href="{{ block.file.url }}" class="content-link" download><i class="fas fa-file-download"></i> Descargar archivo</a>
+                                        {% elif block.block_type == 'embed' %}
+                                            {% if block.embed_code and block.embed_code|cut:" " != '[]' %}
+                                                {{ block.embed_code|safe }}
+                                            {% elif block.embed_url and block.embed_url|cut:" " != '[]' %}
+                                                <div class="ratio ratio-16x9"><iframe src="{{ block.embed_url }}" title="{{ block.title|default:'Embed' }}" allowfullscreen></iframe></div>
+                                            {% elif block.text_content and block.text_content|cut:" " != '[]' %}
+                                                {{ block.text_content|safe }}
+                                            {% else %}
+                                                <em>Contenido no disponible.</em>
+                                            {% endif %}
+                                        {% elif block.block_type == 'divider' %}
+                                            <hr>
+                                        {% elif block.block_type == 'presentation' %}
+                                            {% if block.file %}
+                                                {% with abs=request.scheme|add:"://"|add:request.get_host|add:block.file.url %}
+                                                    {% with furl=block.file.url|lower %}
+                                                    {% if furl|slice:"-4:" == '.pdf' %}
+                                                        <iframe class="block-media" src="{{ block.file.url }}#view=FitH" style="height:600px"></iframe>
+                                                        <div style="margin-top:0.5rem"><a class="content-link" href="{{ block.file.url }}" target="_blank"><i class="fas fa-external-link-alt"></i> Abrir PDF</a></div>
+                                                    {% elif furl|slice:"-5:" == '.pptx' or furl|slice:"-4:" == '.ppt' %}
+                                                        <iframe class="block-media" src="https://view.officeapps.live.com/op/embed.aspx?src={{ abs|urlencode }}" style="height:600px" allowfullscreen></iframe>
+                                                        <div style="margin-top:0.5rem"><a class="content-link" href="{{ block.file.url }}" target="_blank"><i class="fas fa-external-link-alt"></i> Descargar presentación</a></div>
+                                                    {% else %}
+                                                        <a href="{{ block.file.url }}" class="content-link" target="_blank"><i class="fas fa-file"></i> Ver archivo</a>
+                                                    {% endif %}
+                                                    {% endwith %}
+                                                {% endwith %}
+                                            {% elif block.embed_url %}
+                                                <div class="ratio ratio-16x9"><iframe src="{{ block.embed_url }}" title="{{ block.title|default:'Presentación' }}" allowfullscreen></iframe></div>
+                                            {% elif block.embed_code %}
+                                                {{ block.embed_code|safe }}
+                                            {% elif block.text_content %}
+                                                {{ block.text_content|safe }}
+                                            {% else %}
+                                                <em>Contenido no disponible.</em>
+                                            {% endif %}
+                                        {% elif block.block_type == 'code' and block.text_content %}
+                                            <pre style="background:#f8f9fa;border:1px solid #e9ecef;border-radius:8px;padding:0.75rem;overflow:auto"><code>{{ block.text_content|escape }}</code></pre>
+                                {% else %}
+                                            <em>Contenido no disponible.</em>
+                                        {% endif %}
+                                    </div>
+                                </div>
+                                {% endfor %}
+                            </div>
+                                {% endif %}
+                                
+                            <div class="lesson-actions" style="margin-top:0.75rem; display:flex; gap:0.5rem; flex-wrap:wrap;">
+                                {% if request.user.is_student %}
+                                    {% if student_progress|completed_for:lesson %}
+                                        <span class="btn-lesson btn-success" title="Lección completada" style="cursor:default;">
+                                            <i class="fas fa-check-circle"></i> Completada
+                                        </span>
+                                    {% else %}
+                                        <form method="post" action="{% url 'course:mark_lesson_complete' slug=course.slug module_id=module.id lesson_id=lesson.id %}">
+                                            {% csrf_token %}
+                                            <button type="submit" class="btn-lesson btn-success">
+                                                <i class="fas fa-check"></i> Marcar como completada
+                                            </button>
+                                        </form>
+                                    {% endif %}
+                                {% endif %}
+
+                                {% if user.is_lecturer or user.is_superuser %}
+                                <div class="admin-actions">
+                                    <a href="{% url 'course:lesson_canvas' slug=course.slug module_id=module.id lesson_id=lesson.id %}" class="btn-lesson btn-success" title="Editar contenido (Canvas)">
+                                        <i class="fas fa-chalkboard"></i> Canvas
+                                    </a>
+                                    <a href="{% url 'course:lesson_edit' slug=course.slug module_id=module.id lesson_id=lesson.id %}" class="btn-lesson btn-secondary">
+                                        <i class="fas fa-edit"></i> Editar
+                                    </a>
+                                    {% if not lesson.is_active %}
+                                    <a href="{% url 'course:lesson_reactivate' slug=course.slug module_id=module.id lesson_id=lesson.id %}" class="btn-lesson btn-success" title="Reactivar lección">
+                                        <i class="fas fa-play-circle"></i> Reactivar
+                                    </a>
+                                    {% else %}
+                                    <a href="{% url 'course:lesson_deactivate' slug=course.slug module_id=module.id lesson_id=lesson.id %}" class="btn-lesson btn-warning" title="Desactivar lección">
+                                        <i class="fas fa-pause-circle"></i> Desactivar
+                                    </a>
+                                    {% endif %}
+                                    <a href="{% url 'course:lesson_delete' slug=course.slug module_id=module.id lesson_id=lesson.id %}" class="btn-lesson btn-danger">
+                                        <i class="fas fa-trash"></i> Eliminar
+                                    </a>
+                                </div>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+                {% else %}
+                <div class="empty-state">
+                    <i class="fas fa-book"></i>
+                    <h4>No hay lecciones disponibles</h4>
+                    <p>Este módulo aún no tiene lecciones configuradas.</p>
+                    {% if user.is_lecturer or user.is_superuser %}
+                    <a href="{% url 'course:lesson_create' slug=course.slug module_id=module.id %}" class="btn btn-primary">
+                        <i class="fas fa-plus"></i> Crear Primera Lección
+                    </a>
+                    {% endif %}
+                </div>
+                {% endif %}
+            </div>
+
+        </div>
+    </div>
+</div>
+
+<script>
+function toggleLesson(headerEl) {
+  try {
+    const item = headerEl.closest('.lesson-item');
+    if (!item) return;
+    item.classList.toggle('is-expanded');
+  } catch (e) { /* noop */ }
+}
+</script>
+
+{% endblock content %}

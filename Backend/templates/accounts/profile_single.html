@@ -1,0 +1,524 @@
+{% extends 'base.html' %}
+{% load i18n %}
+{% block title %} {{ title }} | {% trans 'Learning management system' %}{% endblock title %}
+
+{% load static %}
+
+{% block content %}
+
+{% if user.is_authenticated %}
+
+<style>
+:root {
+    --navy-blue: #202044;
+    --lime-green: #92b62a;
+    --dark-red: #9f081f;
+    --mustard-yellow: #e2d229;
+    --dark-gray: #454545;
+}
+
+.profile-container {
+    min-height: 100vh;
+    padding: 2rem 0;
+    background: linear-gradient(135deg, rgba(255, 255, 255, 0.95) 0%, rgba(146, 182, 42, 0.05) 100%);
+    backdrop-filter: blur(20px);
+}
+
+.breadcrumb-nav {
+    background: rgba(255, 255, 255, 0.9);
+    border-radius: 15px;
+    padding: 1rem 1.5rem;
+    margin-bottom: 2rem;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+    border: 1px solid rgba(146, 182, 42, 0.1);
+}
+
+.breadcrumb-item a {
+    color: var(--navy-blue);
+    text-decoration: none;
+    font-weight: 500;
+    transition: color 0.3s ease;
+}
+
+.breadcrumb-item a:hover {
+    color: var(--lime-green);
+}
+
+.profile-card {
+    background: rgba(255, 255, 255, 0.95);
+    border-radius: 20px;
+    padding: 2rem;
+    box-shadow: 0 8px 32px rgba(32, 32, 68, 0.08);
+    border: 1px solid rgba(146, 182, 42, 0.1);
+    backdrop-filter: blur(20px);
+    position: relative;
+    overflow: hidden;
+    transition: all 0.3s ease;
+}
+
+.profile-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 3px;
+    background: linear-gradient(90deg, var(--lime-green), #a8c73a);
+}
+
+.profile-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 12px 40px rgba(32, 32, 68, 0.12);
+    border-color: rgba(146, 182, 42, 0.2);
+}
+
+.profile-image {
+    width: 150px;
+    height: 150px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 4px solid rgba(146, 182, 42, 0.2);
+    box-shadow: 0 8px 25px rgba(146, 182, 42, 0.3);
+    transition: all 0.3s ease;
+}
+
+.profile-image:hover {
+    transform: scale(1.05);
+    border-color: var(--lime-green);
+    box-shadow: 0 12px 35px rgba(146, 182, 42, 0.4);
+}
+
+.profile-name {
+    color: var(--navy-blue);
+    font-size: 1.5rem;
+    font-weight: 700;
+    margin: 1rem 0 0.5rem 0;
+    text-align: center;
+}
+
+.profile-role {
+    background: linear-gradient(135deg, var(--lime-green) 0%, #a8c73a 100%);
+    color: white;
+    padding: 0.5rem 1.5rem;
+    border-radius: 25px;
+    font-weight: 600;
+    font-size: 0.9rem;
+    display: inline-block;
+    margin: 0.5rem 0;
+    box-shadow: 0 4px 15px rgba(146, 182, 42, 0.3);
+}
+
+.profile-info {
+    background: rgba(146, 182, 42, 0.05);
+    border-radius: 12px;
+    padding: 1rem;
+    margin: 1rem 0;
+    border: 1px solid rgba(146, 182, 42, 0.1);
+}
+
+.profile-info p {
+    margin: 0.5rem 0;
+    color: var(--dark-gray);
+    font-size: 0.95rem;
+}
+
+.profile-info strong {
+    color: var(--navy-blue);
+    font-weight: 600;
+}
+
+.section-title {
+    color: var(--navy-blue);
+    font-size: 1.3rem;
+    font-weight: 600;
+    margin-bottom: 1.5rem;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding-bottom: 0.5rem;
+    border-bottom: 2px solid rgba(146, 182, 42, 0.2);
+}
+
+.section-title i {
+    color: var(--lime-green);
+    font-size: 1.1rem;
+}
+
+.info-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 1.5rem;
+    margin-bottom: 2rem;
+}
+
+.info-item {
+    background: rgba(255, 255, 255, 0.8);
+    border-radius: 12px;
+    padding: 1.5rem;
+    border: 1px solid rgba(146, 182, 42, 0.1);
+    transition: all 0.3s ease;
+}
+
+.info-item:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 25px rgba(32, 32, 68, 0.1);
+    border-color: rgba(146, 182, 42, 0.2);
+}
+
+.info-label {
+    color: var(--navy-blue);
+    font-weight: 600;
+    font-size: 0.9rem;
+    margin-bottom: 0.5rem;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.info-label i {
+    color: var(--lime-green);
+}
+
+.info-value {
+    color: var(--dark-gray);
+    font-size: 1rem;
+    font-weight: 500;
+}
+
+.courses-section {
+    background: rgba(255, 255, 255, 0.8);
+    border-radius: 15px;
+    padding: 1.5rem;
+    margin: 1.5rem 0;
+    border: 1px solid rgba(146, 182, 42, 0.1);
+}
+
+.course-item {
+    background: rgba(146, 182, 42, 0.05);
+    border-radius: 8px;
+    padding: 1rem;
+    margin: 0.5rem 0;
+    border: 1px solid rgba(146, 182, 42, 0.1);
+    transition: all 0.3s ease;
+}
+
+.course-item:hover {
+    background: rgba(146, 182, 42, 0.1);
+    transform: translateX(5px);
+}
+
+.course-item a {
+    color: var(--navy-blue);
+    text-decoration: none;
+    font-weight: 500;
+    transition: color 0.3s ease;
+}
+
+.course-item a:hover {
+    color: var(--lime-green);
+}
+
+.action-buttons {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    margin-top: 1rem;
+}
+
+.action-btn {
+    background: linear-gradient(135deg, var(--lime-green) 0%, #a8c73a 100%);
+    color: white;
+    border: none;
+    padding: 0.8rem 1.5rem;
+    border-radius: 25px;
+    font-weight: 600;
+    text-decoration: none;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 15px rgba(146, 182, 42, 0.3);
+}
+
+.action-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 25px rgba(146, 182, 42, 0.4);
+    color: white;
+    text-decoration: none;
+}
+
+.action-btn i {
+    font-size: 0.9rem;
+}
+
+.no-courses {
+    color: var(--dark-red);
+    font-style: italic;
+    text-align: center;
+    padding: 1rem;
+    background: rgba(159, 8, 31, 0.05);
+    border-radius: 8px;
+    border: 1px solid rgba(159, 8, 31, 0.1);
+}
+
+/* Animaciones */
+@keyframes fadeInUp {
+    from { opacity: 0; transform: translateY(30px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+.profile-card {
+    animation: fadeInUp 0.6s ease-out;
+}
+
+.info-item {
+    animation: fadeInUp 0.6s ease-out;
+}
+
+.info-item:nth-child(even) {
+    animation-delay: 0.1s;
+}
+
+.info-item:nth-child(odd) {
+    animation-delay: 0.2s;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .profile-container {
+        padding: 1rem 0;
+    }
+    
+    .profile-card {
+        padding: 1.5rem;
+    }
+    
+    .info-grid {
+        grid-template-columns: 1fr;
+        gap: 1rem;
+    }
+    
+    .profile-image {
+        width: 120px;
+        height: 120px;
+    }
+    
+    .profile-name {
+        font-size: 1.3rem;
+    }
+}
+</style>
+
+<style>
+  /* Accounts unified skin overrides */
+  :root { --lime-green: rgb(146, 182, 42); --lime-green-dark: #7a9a2a; --gray-dark: #454545; --gray-600: #6c757d; }
+  body { background: url('{% static "img/pic-8.png" %}') center/cover no-repeat fixed; background-attachment: fixed; }
+  .form-control, .form-select,
+  input[type="text"], input[type="email"], input[type="tel"], input[type="password"], textarea, select {
+    border: 1px solid rgba(146, 182, 42, 0.2); border-radius: 10px; padding: 0.65rem 0.9rem; transition: all 0.2s ease; background: rgba(255,255,255,0.95);
+  }
+  .form-control:focus, .form-select:focus,
+  input[type="text"]:focus, input[type="email"]:focus, input[type="tel"]:focus, input[type="password"]:focus, textarea:focus, select:focus {
+    outline: none; border-color: var(--lime-green); box-shadow: 0 0 0 3px rgba(146, 182, 42, 0.12);
+  }
+  .btn-submit, .btn-save { background: linear-gradient(135deg, var(--lime-green) 0%, var(--lime-green-dark) 100%) !important; color: #fff !important; border: none; box-shadow: 0 4px 14px rgba(146,182,42,0.28); }
+  .btn-submit:hover, .btn-save:hover { transform: translateY(-1px); box-shadow: 0 6px 18px rgba(146,182,42,0.22); }
+  .breadcrumb-item a { color: var(--lime-green) !important; }
+  .breadcrumb-item a:hover { color: var(--lime-green-dark) !important; }
+  .page-header { border-bottom: 1px solid rgba(146, 182, 42, 0.15) !important; }
+</style>
+
+<div class="profile-container">
+    <div class="container">
+        
+        <!-- Breadcrumb Navigation -->
+        <nav class="breadcrumb-nav" style="--bs-breadcrumb-divider: '>';" aria-label="breadcrumb">
+            <ol class="breadcrumb mb-0">
+                <li class="breadcrumb-item"><a href="/">{% trans 'Home' %}</a></li>
+                <li class="breadcrumb-item active" aria-current="page">{{ user.get_full_name }}</li>
+            </ol>
+        </nav>
+
+        {% include 'snippets/messages.html' %}
+
+        <div class="row g-4">
+            
+            <!-- Profile Card -->
+            <div class="col-lg-4">
+                <div class="profile-card">
+                    <div class="text-center">
+                        <img src="{{ user.picture.url }}" class="profile-image" alt="{{ user.get_full_name }}">
+                        <h3 class="profile-name">{{ user.get_full_name|title }}</h3>
+                        <div class="profile-role">{{ user.get_user_role }}</div>
+                        
+                        <div class="profile-info">
+                            <p><strong>{% trans 'Last login' %}:</strong> {{ user.last_login|date }}</p>
+                            <p><strong>{% trans 'Member since' %}:</strong> {{ user.date_joined|date }}</p>
+                        </div>
+                        
+                        {% if request.user.is_superuser %}
+                        <div class="action-buttons">
+                            {% if user.is_student %}
+                            <a href="{% url 'student_edit' pk=user.id %}" class="action-btn">
+                                <i class="fas fa-user-edit"></i>{% trans 'Edit Profile' %}
+                            </a>
+                            <a href="{% url 'student_program_edit' user.id %}" class="action-btn">
+                                <i class="fas fa-pen-to-square"></i>{% trans 'Change Program' %}
+                            </a>
+                            {% endif %}
+                            {% if user.is_lecturer %}
+                            <a href="{% url 'staff_edit' pk=user.id %}" class="action-btn">
+                                <i class="fas fa-user-edit"></i>{% trans 'Edit Profile' %}
+                            </a>
+                            {% endif %}
+                        </div>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+
+            <!-- Main Content -->
+            <div class="col-lg-8">
+                <div class="profile-card">
+                    
+                    <!-- Personal Information -->
+                    <h4 class="section-title">
+                        <i class="fas fa-user"></i>{% trans 'Personal Information' %}
+                    </h4>
+                    <div class="info-grid">
+                        <div class="info-item">
+                            <div class="info-label">
+                                <i class="fas fa-user"></i>{% trans 'First Name' %}
+                            </div>
+                            <div class="info-value">{{ user.first_name|title }}</div>
+                        </div>
+                        <div class="info-item">
+                            <div class="info-label">
+                                <i class="fas fa-user"></i>{% trans 'Last Name' %}
+                            </div>
+                            <div class="info-value">{{ user.last_name|title }}</div>
+                        </div>
+                        <div class="info-item">
+                            <div class="info-label">
+                                <i class="fas fa-id-card"></i>{% trans 'ID Number' %}
+                            </div>
+                            <div class="info-value">{{ user.username }}</div>
+                        </div>
+                        <div class="info-item">
+                            <div class="info-label">
+                                <i class="fas fa-venus-mars"></i>{% trans 'Gender' %}
+                            </div>
+                            <div class="info-value">{{ user.gender|title }}</div>
+                        </div>
+                    </div>
+
+                    <!-- Academic Information (for students) -->
+                    {% if user.is_student %}
+                    <h4 class="section-title">
+                        <i class="fas fa-graduation-cap"></i>{% trans 'Academic Information' %}
+                    </h4>
+                    <div class="info-grid">
+                        <div class="info-item">
+                            <div class="info-label">
+                                <i class="fas fa-university"></i>{% trans 'School' %}
+                            </div>
+                            <div class="info-value">Unity College</div>
+                        </div>
+                        <div class="info-item">
+                            <div class="info-label">
+                                <i class="fas fa-layer-group"></i>{% trans 'Level' %}
+                            </div>
+                            <div class="info-value">{{ level.level }}</div>
+                        </div>
+                        <div class="info-item">
+                            <div class="info-label">
+                                <i class="fas fa-book"></i>{% trans 'Program' %}
+                            </div>
+                            <div class="info-value">{{ student.program }}</div>
+                        </div>
+                    </div>
+                    {% endif %}
+
+                    <!-- Contact Information -->
+                    <h4 class="section-title">
+                        <i class="fas fa-address-book"></i>{% trans 'Contact Information' %}
+                    </h4>
+                    <div class="info-grid">
+                        <div class="info-item">
+                            <div class="info-label">
+                                <i class="fas fa-envelope"></i>{% trans 'Email' %}
+                            </div>
+                            <div class="info-value">{{ user.email }}</div>
+                        </div>
+                        <div class="info-item">
+                            <div class="info-label">
+                                <i class="fas fa-phone"></i>{% trans 'Phone Number' %}
+                            </div>
+                            <div class="info-value">{{ user.phone }}</div>
+                        </div>
+                        <div class="info-item">
+                            <div class="info-label">
+                                <i class="fas fa-map-marker-alt"></i>{% trans 'Address' %}
+                            </div>
+                            <div class="info-value">{{ user.address }}</div>
+                        </div>
+                    </div>
+
+                    <!-- Courses Section (for lecturers) -->
+                    {% if user.is_lecturer %}
+                    <h4 class="section-title">
+                        <i class="fas fa-book-open"></i>{% trans 'My Courses' %}
+                    </h4>
+                    <div class="courses-section">
+                        {% if courses %}
+                        {% for course in courses %}
+                        <div class="course-item">
+                            <a href="{{ course.get_absolute_url }}">{{ course }}</a>
+                        </div>
+                        {% endfor %}
+                        {% else %}
+                        <div class="no-courses">
+                            <i class="far fa-frown"></i> {% trans 'No courses assigned!' %}
+                        </div>
+                        {% endif %}
+                    </div>
+                    {% endif %}
+
+                    <!-- Important Dates -->
+                    <h4 class="section-title">
+                        <i class="fas fa-calendar-alt"></i>{% trans 'Important Dates' %}
+                    </h4>
+                    <div class="info-grid">
+                        <div class="info-item">
+                            <div class="info-label">
+                                <i class="fas fa-sign-in-alt"></i>{% trans 'Last Login' %}
+                            </div>
+                            <div class="info-value">{{ user.last_login|date:"F j, Y g:i A" }}</div>
+                        </div>
+                        <div class="info-item">
+                            <div class="info-label">
+                                <i class="fas fa-user-plus"></i>{% trans 'Registration Date' %}
+                            </div>
+                            <div class="info-value">{{ user.date_joined|date:"F j, Y" }}</div>
+                        </div>
+                        {% if current_semester and current_session %}
+                        <div class="info-item">
+                            <div class="info-label">
+                                <i class="fas fa-calendar-day"></i>{% trans 'Academic Year' %}
+                            </div>
+                            <div class="info-value">{{ current_semester }} {% trans 'Semester' %} {{ current_session }}</div>
+                        </div>
+                        {% endif %}
+                    </div>
+
+                </div>
+            </div>
+
+        </div>
+
+    </div>
+</div>
+
+{% endif %}
+
+{% endblock content %}

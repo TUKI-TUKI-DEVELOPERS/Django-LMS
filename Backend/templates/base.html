@@ -1,0 +1,176 @@
+{% load static %}
+{% load i18n %}
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+
+    <title>{% block title %}Aprende Ya - Sistema de Gestión Académica{% endblock title %}</title>
+
+    <link rel="shortcut icon" href="{% static 'img/favicon.png' %}" type="image/x-icon">
+
+    <!-- Fontawesome icons -->
+    <link rel="stylesheet" type="text/css" href="{% static 'vendor/fontawesome-6.5.1/css/all.min.css' %}">
+
+    <!-- Bootstrap5 -->
+    <link rel="stylesheet" type="text/css" href="{% static 'vendor/bootstrap-5.3.2/css/bootstrap.min.css' %}">
+
+    <link rel="stylesheet" type="text/css" href="{% static 'css/style.min.css' %}">
+    <link rel="stylesheet" type="text/css" href="{% static 'css/app-2025.css' %}">
+    <link rel="stylesheet" type="text/css" href="{% static 'css/responsive-fixes.css' %}">
+
+    <!-- <script src="https://js.stripe.com/v3/"></script> -->
+    <style>
+        :root {
+            --gray-dark: rgb(69, 69, 69);
+            --lime-green: rgb(146, 182, 42);
+            --navy-blue: rgb(32, 32, 68);
+            --white: #ffffff;
+            --light-gray: #f8f9fa;
+            --text-dark: #2d3748;
+            --text-light: #6c757d;
+            --shadow-soft: 0 8px 24px rgba(0, 0, 0, 0.08);
+            --sidebar-width-desktop: 320px;
+            --sidebar-width-lg: 300px;
+            --sidebar-width-md: 280px;
+        }
+
+        body {
+            background: linear-gradient(180deg, rgba(255,255,255,0.9), rgba(248,249,250,0.9));
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+            overflow-x: hidden; /* Prevenir scroll horizontal */
+        }
+
+        /* Layout: alinea el contenido con el sidebar fijo */
+        #main {
+            margin-left: var(--sidebar-width-desktop);
+            padding: 1rem 1.5rem 2rem;
+            transition: margin-left 0.25s ease;
+            min-height: 100vh;
+            width: calc(100vw - var(--sidebar-width-desktop));
+            max-width: calc(100vw - var(--sidebar-width-desktop));
+        }
+
+        #main-content {
+            margin-top: 0.5rem;
+            width: 100%;
+            max-width: 100%;
+        }
+
+        /* Responsive breakpoints mejorados */
+        @media (max-width: 1200px) {
+            #main { 
+                margin-left: var(--sidebar-width-lg); 
+                width: calc(100vw - var(--sidebar-width-lg));
+                max-width: calc(100vw - var(--sidebar-width-lg));
+            }
+        }
+        
+        @media (max-width: 992px) {
+            #main { 
+                margin-left: var(--sidebar-width-md); 
+                width: calc(100vw - var(--sidebar-width-md));
+                max-width: calc(100vw - var(--sidebar-width-md));
+            }
+        }
+        
+        /* En móvil/tablet el sidebar se oculta y el contenido ocupa todo */
+        @media (max-width: 1024px) {
+            #main { 
+                margin-left: 0; 
+                padding: 0.75rem 1rem 1.5rem; 
+                width: 100vw;
+                max-width: 100vw;
+            }
+            
+            /* Asegurar que el contenido no cause overflow */
+            .container-fluid {
+                padding-left: 0.75rem;
+                padding-right: 0.75rem;
+                max-width: 100%;
+            }
+        }
+
+        /* Ajustes adicionales para pantallas muy pequeñas */
+        @media (max-width: 576px) {
+            #main {
+                padding: 0.5rem 0.75rem 1rem;
+            }
+            
+            .container-fluid {
+                padding-left: 0.5rem;
+                padding-right: 0.5rem;
+            }
+        }
+
+        /* Utilidades opcionales para tarjetas, tablas y badges finos */
+        .glass-surface {
+            background: rgba(255,255,255,0.95);
+            border: 1px solid rgba(146, 182, 42, 0.12);
+            box-shadow: var(--shadow-soft);
+            backdrop-filter: blur(16px);
+            border-radius: 14px;
+        }
+
+        .btn-lime {
+            background: linear-gradient(135deg, var(--lime-green) 0%, #a8c73a 100%);
+            border: 1px solid rgba(146, 182, 42, 0.35);
+            color: var(--white);
+            transition: filter 0.2s ease, transform 0.2s ease;
+        }
+        .btn-lime:hover { filter: brightness(0.98); transform: translateY(-1px); }
+
+        .badge-lime { background: rgba(146, 182, 42, 0.12); color: var(--navy-blue); border: 1px solid rgba(146,182,42,0.25); }
+
+        /* Tablas compactas (aplícalas con la clase table-lean donde corresponda) */
+        .table-lean thead th {
+            background: rgba(146, 182, 42, 0.08);
+            border-bottom: 1px solid rgba(146, 182, 42, 0.2);
+            color: var(--text-dark);
+            font-weight: 700;
+        }
+        .table-lean th, .table-lean td { padding: 0.6rem 0.75rem; vertical-align: middle; }
+        .table-lean tbody tr:hover { background: rgba(146, 182, 42, 0.06); }
+    </style>
+    {% block header %}{% endblock %}
+</head>
+
+<body>
+    {% block sidebar %}
+        {% include 'aside.html' %}
+    {% endblock %}
+
+    {% block maincontent %}
+    <div id="main">
+        {% block topbar %}
+            {% include 'navbar.html' %}
+        {% endblock %}
+
+        <div class="container-fluid" id="main-content">
+            {% block content %}{% endblock content %}
+        </div>
+
+    </div>
+    {% endblock %}
+    <script src="{% url 'javascript-catalog' %}"></script>
+    <script type="text/javascript" src="{% static 'vendor/jquery-3.7.1/jquery-3.7.1.min.js' %}"></script>
+    <script type="text/javascript" src="{% static 'vendor/bootstrap-5.3.2/js/bootstrap.bundle.min.js' %}"></script>
+
+    <script type="text/javascript" src="{% static 'js/main.js' %}"></script>
+    <script>
+      // reveal on scroll for app pages
+      (function(){
+        const obs=new IntersectionObserver((es)=>{es.forEach(e=>{if(e.isIntersecting){e.target.classList.add('reveal-visible');obs.unobserve(e.target);}})},{threshold:.12});
+        document.querySelectorAll('.reveal').forEach(el=>obs.observe(el));
+      })();
+    </script>
+
+    {% block js %}
+    {% endblock js %}
+</body>
+
+</html>

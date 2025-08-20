@@ -1,0 +1,59 @@
+:root{
+  --gray-dark: rgb(69,69,69);
+  --lime-green: rgb(146,182,42);
+  --lime-green-dark: #7a9a2a;
+}
+
+/* Contenedores comunes */
+.content-wrapper,
+.program-container,
+.program-detail-container,
+.course-detail-container{max-width:1400px;margin:1rem auto;border-radius:18px}
+
+/* Grids responsivos para tarjetas de cursos */
+.courses-grid{display:grid;gap:1.2rem}
+.courses-grid{grid-template-columns:repeat(auto-fill,minmax(300px,1fr))}
+@media (max-width: 992px){.courses-grid{grid-template-columns:repeat(auto-fill,minmax(260px,1fr))}}
+@media (max-width: 576px){.courses-grid{grid-template-columns:1fr}}
+
+/* Tarjetas y cabeceras */
+.course-card{border-radius:16px;overflow:hidden}
+.course-header,.section-header{display:flex;justify-content:space-between;align-items:center;gap:.8rem}
+@media (max-width: 768px){.course-header,.section-header{flex-direction:column;align-items:flex-start}}
+
+/* Imagen de curso adaptable */
+.course-image-container{height:clamp(180px,26vw,240px)}
+@media (max-width: 576px){.course-image-container{height:160px}}
+
+/* Acciones en columna en móvil */
+.course-actions{display:flex;gap:.5rem}
+@media (max-width: 768px){.course-actions{flex-direction:column;align-items:stretch}}
+.btn-course{padding:.7rem 1rem;border-radius:10px}
+
+/* Conmutadores de vista compactos */
+.view-toggle{display:flex;gap:.4rem}
+.view-toggle .btn-view{min-width:42px}
+@media (max-width: 576px){.view-toggle{width:100%}.view-toggle .btn-view{flex:1}}
+
+/* Formularios y filtros: campos full-width y focus visible */
+.filter-section .form-control,.filter-section .form-select{border:1px solid rgba(146,182,42,.2);border-radius:10px;padding:.65rem .9rem}
+.filter-section .form-control:focus,.filter-section .form-select:focus{outline:none;border-color:var(--lime-green);box-shadow:0 0 0 3px rgba(146,182,42,.12)}
+.filter-actions{display:flex;gap:.8rem}
+@media (max-width: 576px){.filter-actions{flex-direction:column}}
+
+/* Tablas desplazables en secciones de curso */
+.course-detail-container .table-responsive,
+.content-card .table-responsive{overflow-x:auto}
+
+/* Etiquetas y badgets legibles en móvil */
+.badge{border-radius:20px}
+.course-status .badge{padding:.28rem .7rem}
+
+/* Mejoras táctiles */
+.btn,.btn-course,.btn-action{min-height:44px}
+
+/* Reveal utilitario (ya cargado en app-2025) */
+.reveal{opacity:0;transform:translateY(18px);transition:opacity .6s ease,transform .6s ease}
+.reveal-visible{opacity:1;transform:none}
+
+

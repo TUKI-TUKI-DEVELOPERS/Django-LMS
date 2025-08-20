@@ -1,0 +1,798 @@
+{% extends 'base.html' %}
+{% load i18n %}
+{% block title %}{{ title }} | Sistema de Gestión Académica{% endblock title %}
+{% load crispy_forms_tags %}
+{% load static %}
+
+{% block content %}
+
+<style>
+	/* Modern Course Form Styles 2025 */
+	:root {
+		--gray-dark: rgb(69, 69, 69);
+		--lime-green: rgb(146, 182, 42);
+		--navy-blue: rgb(32, 32, 68);
+		--dark-red: rgb(159, 8, 31);
+		--mustard-yellow: rgb(226, 210, 41);
+	}
+
+	/* Page background with transparency */
+	body {
+		background: url('{% static "img/pic-8.png" %}') center/cover no-repeat fixed;
+		background-attachment: fixed;
+	}
+
+	.course-form-container {
+		background: rgba(255, 255, 255, 0.95);
+		backdrop-filter: blur(20px);
+		border-radius: 20px;
+		box-shadow: 0 8px 32px rgba(0,0,0,0.08);
+		margin: 1rem;
+		padding: 2rem;
+		border: 1px solid rgba(146, 182, 42, 0.1);
+	}
+
+	/* Breadcrumb - Elegant */
+	.breadcrumb {
+		background: transparent;
+		padding: 0;
+		margin-bottom: 2rem;
+	}
+
+	.breadcrumb-item a {
+		color: var(--lime-green);
+		text-decoration: none;
+		font-weight: 500;
+		transition: color 0.3s ease;
+	}
+
+	.breadcrumb-item a:hover {
+		color: #a8c73a;
+	}
+
+	.breadcrumb-item.active {
+		color: #6c757d;
+	}
+
+	/* Page Header */
+	.page-header {
+		margin-bottom: 2rem;
+		padding-bottom: 1rem;
+		border-bottom: 1px solid rgba(146, 182, 42, 0.1);
+	}
+
+	.page-title {
+		font-size: 2.2rem;
+		font-weight: 700;
+		color: var(--navy-blue);
+		margin: 0;
+		background: linear-gradient(135deg, var(--navy-blue) 0%, var(--lime-green) 100%);
+		-webkit-background-clip: text;
+		-webkit-text-fill-color: transparent;
+		background-clip: text;
+		display: flex;
+		align-items: center;
+	}
+
+	.page-title i {
+		margin-right: 1rem;
+		font-size: 2rem;
+		background: linear-gradient(135deg, var(--lime-green) 0%, #a8c73a 100%);
+		-webkit-background-clip: text;
+		-webkit-text-fill-color: transparent;
+		background-clip: text;
+	}
+
+	/* Alert Styles */
+	.alert {
+		border: none;
+		border-radius: 12px;
+		padding: 1rem 1.5rem;
+		margin-bottom: 1.5rem;
+		backdrop-filter: blur(10px);
+	}
+
+	.alert-success {
+		background: rgba(146, 182, 42, 0.1);
+		color: #2d5016;
+		border-left: 4px solid var(--lime-green);
+	}
+
+	.alert-danger {
+		background: rgba(220, 53, 69, 0.1);
+		color: #721c24;
+		border-left: 4px solid #dc3545;
+	}
+
+	.alert i {
+		margin-right: 0.5rem;
+	}
+
+	/* Form Cards */
+	.form-card {
+		background: rgba(255, 255, 255, 0.98);
+		border: 1px solid rgba(146, 182, 42, 0.1);
+		border-radius: 16px;
+		box-shadow: 0 4px 20px rgba(0,0,0,0.06);
+		padding: 2rem;
+		margin-bottom: 2rem;
+		transition: all 0.3s ease;
+		position: relative;
+		overflow: hidden;
+	}
+
+	.form-card::before {
+		content: '';
+		position: absolute;
+		top: 0;
+		left: 0;
+		right: 0;
+		height: 3px;
+		background: linear-gradient(135deg, var(--lime-green) 0%, #a8c73a 100%);
+		opacity: 1;
+	}
+
+	.form-card:hover {
+		transform: translateY(-2px);
+		box-shadow: 0 8px 32px rgba(146, 182, 42, 0.15);
+		border-color: rgba(146, 182, 42, 0.3);
+	}
+
+	.card-title {
+		font-size: 1.5rem;
+		font-weight: 600;
+		color: var(--navy-blue);
+		margin-bottom: 1.5rem;
+		display: flex;
+		align-items: center;
+	}
+
+	.card-title i {
+		margin-right: 0.8rem;
+		color: var(--lime-green);
+	}
+
+	/* Form Fields */
+	.form-group {
+		margin-bottom: 1.5rem;
+	}
+
+	.form-label {
+		font-weight: 600;
+		color: var(--navy-blue);
+		margin-bottom: 0.5rem;
+		display: block;
+	}
+
+	.form-control {
+		border: 2px solid rgba(146, 182, 42, 0.1);
+		border-radius: 12px;
+		padding: 0.8rem 1rem;
+		font-size: 1rem;
+		transition: all 0.3s ease;
+		background: rgba(255, 255, 255, 0.9);
+		backdrop-filter: blur(10px);
+	}
+
+	.form-control:focus {
+		border-color: var(--lime-green);
+		box-shadow: 0 0 0 0.2rem rgba(146, 182, 42, 0.25);
+		outline: none;
+		background: rgba(255, 255, 255, 0.95);
+	}
+
+	/* Select Styling */
+	.form-select {
+		border: 2px solid rgba(146, 182, 42, 0.1);
+		border-radius: 12px;
+		padding: 0.8rem 1rem;
+		font-size: 1rem;
+		transition: all 0.3s ease;
+		background: rgba(255, 255, 255, 0.9);
+		backdrop-filter: blur(10px);
+	}
+
+	.form-select:focus {
+		border-color: var(--lime-green);
+		box-shadow: 0 0 0 0.2rem rgba(146, 182, 42, 0.25);
+		outline: none;
+		background: rgba(255, 255, 255, 0.95);
+	}
+
+	/* File Upload Area */
+	.file-upload-area {
+		border: 2px dashed rgba(146, 182, 42, 0.3);
+		border-radius: 12px;
+		padding: 2rem;
+		text-align: center;
+		background: rgba(146, 182, 42, 0.05);
+		transition: all 0.3s ease;
+		margin-top: 0.5rem;
+	}
+
+	.file-upload-area:hover {
+		border-color: var(--lime-green);
+		background: rgba(146, 182, 42, 0.1);
+	}
+
+	.file-upload-area input[type="file"] {
+		width: 100%;
+		padding: 1rem;
+		border: none;
+		background: transparent;
+		color: var(--navy-blue);
+		font-size: 0.9rem;
+	}
+
+	.file-upload-area input[type="file"]::-webkit-file-upload-button {
+		background: linear-gradient(135deg, var(--lime-green) 0%, #a8c73a 100%);
+		color: white;
+		border: none;
+		padding: 0.5rem 1rem;
+		border-radius: 8px;
+		font-weight: 500;
+		cursor: pointer;
+		margin-right: 1rem;
+		transition: all 0.3s ease;
+	}
+
+	.file-upload-area input[type="file"]::-webkit-file-upload-button:hover {
+		transform: translateY(-1px);
+		box-shadow: 0 4px 15px rgba(146, 182, 42, 0.3);
+	}
+
+	/* Textarea Styling */
+	textarea.form-control {
+		min-height: 120px;
+		resize: vertical;
+	}
+
+	/* Checkbox Styling */
+	.form-check {
+		display: flex;
+		align-items: center;
+		padding: 0.5rem;
+		margin-bottom: 0.5rem;
+		border-radius: 8px;
+		transition: all 0.3s ease;
+	}
+
+	.form-check:hover {
+		background: rgba(146, 182, 42, 0.1);
+	}
+
+	.form-check-input {
+		margin-right: 0.8rem;
+		transform: scale(1.2);
+		accent-color: var(--lime-green);
+	}
+
+	.form-check-label {
+		font-weight: 500;
+		color: var(--navy-blue);
+		cursor: pointer;
+		margin: 0;
+	}
+
+	/* Submit Button */
+	.btn-submit {
+		background: linear-gradient(135deg, var(--lime-green) 0%, #a8c73a 100%);
+		border: none;
+		color: white;
+		padding: 1rem 2rem;
+		border-radius: 12px;
+		font-weight: 600;
+		font-size: 1.1rem;
+		transition: all 0.3s ease;
+		box-shadow: 0 4px 15px rgba(146, 182, 42, 0.3);
+		display: inline-flex;
+		align-items: center;
+		justify-content: center;
+		width: 100%;
+		margin-top: 1rem;
+	}
+
+	.btn-submit:hover {
+		transform: translateY(-2px);
+		box-shadow: 0 8px 25px rgba(146, 182, 42, 0.4);
+		color: white;
+	}
+
+	.btn-submit i {
+		margin-right: 0.5rem;
+	}
+
+	/* Cancel Button */
+	.btn-cancel {
+		background: linear-gradient(135deg, #6c757d 0%, #5a6268 100%);
+		border: none;
+		color: white;
+		padding: 0.8rem 1.5rem;
+		border-radius: 12px;
+		font-weight: 600;
+		transition: all 0.3s ease;
+		box-shadow: 0 4px 15px rgba(108, 117, 125, 0.3);
+		text-decoration: none;
+		display: inline-flex;
+		align-items: center;
+		margin-right: 1rem;
+	}
+
+	.btn-cancel:hover {
+		transform: translateY(-2px);
+		box-shadow: 0 8px 25px rgba(108, 117, 125, 0.4);
+		color: white;
+	}
+
+	.btn-cancel i {
+		margin-right: 0.5rem;
+	}
+
+	/* Button Group */
+	.button-group {
+		display: flex;
+		gap: 1rem;
+		margin-top: 2rem;
+	}
+
+	/* Responsive */
+	@media (max-width: 768px) {
+		.course-form-container {
+			margin: 0.5rem;
+			padding: 1rem;
+		}
+		
+		.page-title {
+			font-size: 1.8rem;
+		}
+		
+		.form-card {
+			padding: 1.5rem;
+		}
+		
+		.button-group {
+			flex-direction: column;
+		}
+		
+		.btn-cancel {
+			margin-right: 0;
+			margin-bottom: 1rem;
+		}
+	}
+</style>
+
+<div class="course-form-container">
+	<nav style="--bs-breadcrumb-divider: '>';" aria-label="breadcrumb">
+		<ol class="breadcrumb">
+			<li class="breadcrumb-item"><a href="/">Inicio</a></li>
+			<li class="breadcrumb-item"><a href="{% url 'course:programs' %}">Programas</a></li>
+			<li class="breadcrumb-item active" aria-current="page">Formulario de Curso</li>
+		</ol>
+	</nav>
+
+	<div class="page-header">
+		<h1 class="page-title">
+			<i class="fas fa-book"></i>
+			{% if form.instance.pk %}Editar Curso{% else %}Agregar Nuevo Curso{% endif %}
+		</h1>
+	</div>
+
+	{% include 'snippets/messages.html' %}
+
+	<form action="" method="POST" enctype="multipart/form-data">
+		{% csrf_token %}
+		
+		<!-- Información Básica del Curso -->
+		<div class="form-card">
+			<h3 class="card-title">
+				<i class="fas fa-info-circle"></i>
+				Información Básica del Curso
+			</h3>
+			<div class="row">
+				<div class="col-md-6">
+					<div class="form-group">
+						<label for="{{ form.title.id_for_label }}" class="form-label">
+							<i class="fas fa-graduation-cap"></i> Título del Curso
+						</label>
+						{{ form.title }}
+						{% if form.title.errors %}
+						<div class="text-danger mt-1">
+							{% for error in form.title.errors %}
+							<small><i class="fas fa-exclamation-circle"></i> {{ error }}</small>
+							{% endfor %}
+						</div>
+						{% endif %}
+					</div>
+				</div>
+				<div class="col-md-6">
+					<div class="form-group">
+						<label for="{{ form.code.id_for_label }}" class="form-label">
+							<i class="fas fa-code"></i> Código del Curso
+						</label>
+						{{ form.code }}
+						{% if form.code.errors %}
+						<div class="text-danger mt-1">
+							{% for error in form.code.errors %}
+							<small><i class="fas fa-exclamation-circle"></i> {{ error }}</small>
+							{% endfor %}
+						</div>
+						{% endif %}
+					</div>
+				</div>
+			</div>
+			
+			<div class="form-group">
+				<label for="{{ form.summary.id_for_label }}" class="form-label">
+					<i class="fas fa-align-left"></i> Resumen del Curso
+				</label>
+				{{ form.summary }}
+				{% if form.summary.errors %}
+				<div class="text-danger mt-1">
+					{% for error in form.summary.errors %}
+					<small><i class="fas fa-exclamation-circle"></i> {{ error }}</small>
+					{% endfor %}
+				</div>
+				{% endif %}
+				<small class="text-muted">
+					<i class="fas fa-info-circle"></i> Describe brevemente el contenido y objetivos del curso
+				</small>
+			</div>
+			
+			<div class="form-group">
+				<label for="{{ form.image.id_for_label }}" class="form-label">
+					<i class="fas fa-image"></i> Imagen del Curso
+				</label>
+				<div class="file-upload-area">
+					{{ form.image }}
+				</div>
+				{% if form.image.errors %}
+				<div class="text-danger mt-1">
+					{% for error in form.image.errors %}
+					<small><i class="fas fa-exclamation-circle"></i> {{ error }}</small>
+					{% endfor %}
+				</div>
+				{% endif %}
+				<small class="text-muted">
+					<i class="fas fa-info-circle"></i> Sube una imagen representativa del curso (recomendado: 800x600px)
+				</small>
+			</div>
+		</div>
+
+		<!-- Información Académica -->
+		<div class="form-card">
+			<h3 class="card-title">
+				<i class="fas fa-university"></i>
+				Información Académica
+			</h3>
+			<div class="row">
+				<div class="col-md-6">
+					<div class="form-group">
+						<label for="{{ form.program.id_for_label }}" class="form-label">
+							<i class="fas fa-project-diagram"></i> Programa
+						</label>
+						{{ form.program }}
+						{% if form.program.errors %}
+						<div class="text-danger mt-1">
+							{% for error in form.program.errors %}
+							<small><i class="fas fa-exclamation-circle"></i> {{ error }}</small>
+							{% endfor %}
+						</div>
+						{% endif %}
+					</div>
+				</div>
+				<div class="col-md-6">
+					<div class="form-group">
+						<label for="{{ form.level.id_for_label }}" class="form-label">
+							<i class="fas fa-layer-group"></i> Nivel
+						</label>
+						{{ form.level }}
+						{% if form.level.errors %}
+						<div class="text-danger mt-1">
+							{% for error in form.level.errors %}
+							<small><i class="fas fa-exclamation-circle"></i> {{ error }}</small>
+							{% endfor %}
+						</div>
+						{% endif %}
+					</div>
+				</div>
+			</div>
+			
+			<div class="row">
+				<div class="col-md-4">
+					<div class="form-group">
+						<label for="{{ form.credit.id_for_label }}" class="form-label">
+							<i class="fas fa-star"></i> Créditos
+						</label>
+						{{ form.credit }}
+						{% if form.credit.errors %}
+						<div class="text-danger mt-1">
+							{% for error in form.credit.errors %}
+							<small><i class="fas fa-exclamation-circle"></i> {{ error }}</small>
+							{% endfor %}
+						</div>
+						{% endif %}
+					</div>
+				</div>
+				<div class="col-md-4">
+					<div class="form-group">
+						<label for="{{ form.year.id_for_label }}" class="form-label">
+							<i class="fas fa-calendar"></i> Año
+						</label>
+						{{ form.year }}
+						{% if form.year.errors %}
+						<div class="text-danger mt-1">
+							{% for error in form.year.errors %}
+							<small><i class="fas fa-exclamation-circle"></i> {{ error }}</small>
+							{% endfor %}
+						</div>
+						{% endif %}
+					</div>
+				</div>
+				<div class="col-md-4">
+					<div class="form-group">
+						<label for="{{ form.semester.id_for_label }}" class="form-label">
+							<i class="fas fa-calendar-alt"></i> Semestre
+						</label>
+						{{ form.semester }}
+						{% if form.semester.errors %}
+						<div class="text-danger mt-1">
+							{% for error in form.semester.errors %}
+							<small><i class="fas fa-exclamation-circle"></i> {{ error }}</small>
+							{% endfor %}
+						</div>
+						{% endif %}
+					</div>
+				</div>
+			</div>
+			
+			<div class="form-group">
+				<div class="form-check">
+					{{ form.is_elective }}
+					<label for="{{ form.is_elective.id_for_label }}" class="form-check-label">
+						<i class="fas fa-check-square"></i> ¿Es Curso Electivo?
+					</label>
+				</div>
+				{% if form.is_elective.errors %}
+				<div class="text-danger mt-1">
+					{% for error in form.is_elective.errors %}
+					<small><i class="fas fa-exclamation-circle"></i> {{ error }}</small>
+					{% endfor %}
+				</div>
+				{% endif %}
+				<small class="text-muted">
+					<i class="fas fa-info-circle"></i> Marca esta opción si el curso es opcional
+				</small>
+			</div>
+		</div>
+
+		<!-- Información Profesional del Curso -->
+		<div class="form-card">
+			<h3 class="card-title">
+				<i class="fas fa-briefcase"></i>
+				Información Profesional del Curso
+			</h3>
+			
+			<div class="form-group">
+				<label for="{{ form.objectives.id_for_label }}" class="form-label">
+					<i class="fas fa-bullseye"></i> Objetivos del Curso
+				</label>
+				{{ form.objectives }}
+				{% if form.objectives.errors %}
+				<div class="text-danger mt-1">
+					{% for error in form.objectives.errors %}
+					<small><i class="fas fa-exclamation-circle"></i> {{ error }}</small>
+					{% endfor %}
+				</div>
+				{% endif %}
+				<small class="text-muted">
+					<i class="fas fa-info-circle"></i> Lista los objetivos específicos que se lograrán al completar el curso
+				</small>
+			</div>
+			
+			<div class="form-group">
+				<label for="{{ form.target_audience.id_for_label }}" class="form-label">
+					<i class="fas fa-users"></i> Público Objetivo
+				</label>
+				{{ form.target_audience }}
+				{% if form.target_audience.errors %}
+				<div class="text-danger mt-1">
+					{% for error in form.target_audience.errors %}
+					<small><i class="fas fa-exclamation-circle"></i> {{ error }}</small>
+					{% endfor %}
+				</div>
+				{% endif %}
+				<small class="text-muted">
+					<i class="fas fa-info-circle"></i> Describe a quién va dirigido el curso
+				</small>
+			</div>
+			
+			<div class="row">
+				<div class="col-md-4">
+					<div class="form-group">
+						<label for="{{ form.duration.id_for_label }}" class="form-label">
+							<i class="fas fa-clock"></i> Duración
+						</label>
+						{{ form.duration }}
+						{% if form.duration.errors %}
+						<div class="text-danger mt-1">
+							{% for error in form.duration.errors %}
+							<small><i class="fas fa-exclamation-circle"></i> {{ error }}</small>
+							{% endfor %}
+						</div>
+						{% endif %}
+					</div>
+				</div>
+				<div class="col-md-4">
+					<div class="form-group">
+						<label for="{{ form.duration_unit.id_for_label }}" class="form-label">
+							<i class="fas fa-ruler"></i> Unidad de Duración
+						</label>
+						{{ form.duration_unit }}
+						{% if form.duration_unit.errors %}
+						<div class="text-danger mt-1">
+							{% for error in form.duration_unit.errors %}
+							<small><i class="fas fa-exclamation-circle"></i> {{ error }}</small>
+							{% endfor %}
+						</div>
+						{% endif %}
+					</div>
+				</div>
+				<div class="col-md-4">
+					<div class="form-group">
+						<label for="{{ form.modality.id_for_label }}" class="form-label">
+							<i class="fas fa-laptop"></i> Modalidad
+						</label>
+						{{ form.modality }}
+						{% if form.modality.errors %}
+						<div class="text-danger mt-1">
+							{% for error in form.modality.errors %}
+							<small><i class="fas fa-exclamation-circle"></i> {{ error }}</small>
+							{% endfor %}
+						</div>
+						{% endif %}
+					</div>
+				</div>
+			</div>
+			
+			<div class="row">
+				<div class="col-md-6">
+					<div class="form-group">
+						<label for="{{ form.category.id_for_label }}" class="form-label">
+							<i class="fas fa-tags"></i> Categoría
+						</label>
+						{{ form.category }}
+						{% if form.category.errors %}
+						<div class="text-danger mt-1">
+							{% for error in form.category.errors %}
+							<small><i class="fas fa-exclamation-circle"></i> {{ error }}</small>
+							{% endfor %}
+						</div>
+						{% endif %}
+					</div>
+				</div>
+				<div class="col-md-6">
+					<div class="form-group">
+						<label for="{{ form.max_students.id_for_label }}" class="form-label">
+							<i class="fas fa-user-friends"></i> Máximo de Estudiantes
+						</label>
+						{{ form.max_students }}
+						{% if form.max_students.errors %}
+						<div class="text-danger mt-1">
+							{% for error in form.max_students.errors %}
+							<small><i class="fas fa-exclamation-circle"></i> {{ error }}</small>
+							{% endfor %}
+						</div>
+						{% endif %}
+					</div>
+				</div>
+			</div>
+		</div>
+
+		<!-- Información Adicional -->
+		<div class="form-card">
+			<h3 class="card-title">
+				<i class="fas fa-plus-circle"></i>
+				Información Adicional
+			</h3>
+			
+			<div class="form-group">
+				<label for="{{ form.prerequisites.id_for_label }}" class="form-label">
+					<i class="fas fa-list-check"></i> Prerrequisitos
+				</label>
+				{{ form.prerequisites }}
+				{% if form.prerequisites.errors %}
+				<div class="text-danger mt-1">
+					{% for error in form.prerequisites.errors %}
+					<small><i class="fas fa-exclamation-circle"></i> {{ error }}</small>
+					{% endfor %}
+				</div>
+				{% endif %}
+				<small class="text-muted">
+					<i class="fas fa-info-circle"></i> Requisitos previos para tomar el curso
+				</small>
+			</div>
+			
+			<div class="form-group">
+				<label for="{{ form.methodology.id_for_label }}" class="form-label">
+					<i class="fas fa-chalkboard-teacher"></i> Metodología
+				</label>
+				{{ form.methodology }}
+				{% if form.methodology.errors %}
+				<div class="text-danger mt-1">
+					{% for error in form.methodology.errors %}
+					<small><i class="fas fa-exclamation-circle"></i> {{ error }}</small>
+					{% endfor %}
+				</div>
+				{% endif %}
+				<small class="text-muted">
+					<i class="fas fa-info-circle"></i> Metodología de enseñanza utilizada
+				</small>
+			</div>
+			
+			<div class="form-group">
+				<label for="{{ form.materials_included.id_for_label }}" class="form-label">
+					<i class="fas fa-box-open"></i> Materiales Incluidos
+				</label>
+				{{ form.materials_included }}
+				{% if form.materials_included.errors %}
+				<div class="text-danger mt-1">
+					{% for error in form.materials_included.errors %}
+					<small><i class="fas fa-exclamation-circle"></i> {{ error }}</small>
+					{% endfor %}
+				</div>
+				{% endif %}
+				<small class="text-muted">
+					<i class="fas fa-info-circle"></i> Materiales que se incluyen en el curso
+				</small>
+			</div>
+			
+			<div class="row">
+				<div class="col-md-6">
+					<div class="form-group">
+						<div class="form-check">
+							{{ form.certification }}
+							<label for="{{ form.certification.id_for_label }}" class="form-check-label">
+								<i class="fas fa-certificate"></i> ¿Incluye Certificación?
+							</label>
+						</div>
+						{% if form.certification.errors %}
+						<div class="text-danger mt-1">
+							{% for error in form.certification.errors %}
+							<small><i class="fas fa-exclamation-circle"></i> {{ error }}</small>
+							{% endfor %}
+						</div>
+						{% endif %}
+					</div>
+				</div>
+				<div class="col-md-6">
+					<div class="form-group">
+						<div class="form-check">
+							{{ form.is_active }}
+							<label for="{{ form.is_active.id_for_label }}" class="form-check-label">
+								<i class="fas fa-toggle-on"></i> ¿Curso Activo?
+							</label>
+						</div>
+						{% if form.is_active.errors %}
+						<div class="text-danger mt-1">
+							{% for error in form.is_active.errors %}
+							<small><i class="fas fa-exclamation-circle"></i> {{ error }}</small>
+							{% endfor %}
+						</div>
+						{% endif %}
+					</div>
+				</div>
+			</div>
+		</div>
+		
+		<div class="button-group">
+			<a href="{% url 'course:programs' %}" class="btn-cancel">
+				<i class="fas fa-times"></i>Cancelar
+			</a>
+			<button class="btn-submit" type="submit">
+				<i class="fas fa-save"></i>{% if form.instance.pk %}Actualizar Curso{% else %}Guardar Curso{% endif %}
+			</button>
+		</div>
+	</form>
+</div>
+
+{% endblock content %}

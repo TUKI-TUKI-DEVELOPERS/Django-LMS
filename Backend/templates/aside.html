@@ -1,0 +1,606 @@
+{% load static %}
+{% load i18n %}
+
+<style>
+    /* Sidebar fino y consistente */
+    #side-nav {
+        background: var(--white);
+        backdrop-filter: blur(16px);
+        box-shadow: var(--shadow-soft);
+        border-right: 1px solid rgba(146, 182, 42, 0.25);
+        position: fixed;
+        left: 0;
+        top: 0;
+        height: 100vh;
+        width: var(--sidebar-width-desktop);
+        z-index: 1000;
+        display: flex;
+        flex-direction: column;
+        transition: transform 0.25s ease;
+        overflow: hidden;
+    }
+
+    .main-menu {
+        height: 100vh;
+        display: flex;
+        flex-direction: column;
+        overflow: hidden;
+        width: 100%;
+    }
+
+    .top-side {
+        background: linear-gradient(135deg, var(--lime-green) 0%, #a8c73a 100%);
+        border-bottom: 1px solid rgba(146, 182, 42, 0.2);
+        padding: 1.5rem 1.25rem;
+        text-align: center;
+        flex-shrink: 0;
+        position: relative;
+        overflow: hidden;
+        width: 100%;
+    }
+
+    .top-side::before {
+        content: '';
+        position: absolute;
+        inset: 0;
+        background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><circle cx="20" cy="20" r="2" fill="rgba(255,255,255,0.1)"/><circle cx="80" cy="40" r="1.5" fill="rgba(255,255,255,0.1)"/><circle cx="40" cy="80" r="1" fill="rgba(255,255,255,0.1)"/></svg>');
+        opacity: 0.25;
+    }
+
+    .logo-container {
+        width: 84px;
+        height: 84px;
+        border-radius: 50%;
+        background: var(--white);
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        box-shadow: var(--shadow-soft);
+        border: 2px solid var(--lime-green);
+        margin-bottom: 1.25rem;
+        transition: transform 0.2s ease, box-shadow 0.2s ease;
+        position: relative;
+        z-index: 1;
+    }
+
+    .logo-container:hover { transform: scale(1.04); }
+
+    .logo-container img {
+        width: 60px;
+        height: 60px;
+        object-fit: contain;
+        transition: transform 0.2s ease;
+    }
+
+    .top-side p {
+        margin-top: 0.75rem;
+        font-size: 0.85rem;
+        font-weight: 700;
+        color: var(--navy-blue);
+        background: rgba(255, 255, 255, 0.92);
+        padding: 0.45rem 0.9rem;
+        border-radius: 14px;
+        border: 1px solid rgba(255, 255, 255, 0.8);
+        display: inline-block;
+        backdrop-filter: blur(8px);
+        position: relative;
+        z-index: 1;
+        letter-spacing: 0.4px;
+        max-width: 100%;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+    }
+
+    .main-menu ul {
+        list-style: none;
+        padding: 0.75rem 0;
+        margin: 0;
+        flex: 1;
+        overflow-y: auto;
+        height: calc(100vh - 210px);
+        background: var(--white);
+        width: 100%;
+    }
+
+    .main-menu ul li { 
+        margin: 0.35rem 0.9rem; 
+        width: calc(100% - 1.8rem);
+    }
+
+    .main-menu ul li a {
+        display: flex;
+        align-items: center;
+        padding: 0.9rem 1.2rem;
+        color: var(--text-dark);
+        text-decoration: none;
+        border-radius: 12px;
+        transition: background 0.2s ease, color 0.2s ease, transform 0.2s ease, box-shadow 0.2s ease;
+        font-weight: 600;
+        font-size: 0.92rem;
+        position: relative;
+        background: transparent;
+        border: 1px solid transparent;
+        min-height: 48px;
+        letter-spacing: 0.2px;
+        overflow: hidden;
+        width: 100%;
+        white-space: nowrap;
+        text-overflow: ellipsis;
+    }
+
+    .main-menu ul li a::before {
+        content: '';
+        position: absolute;
+        inset: 0;
+        left: -100%;
+        background: linear-gradient(90deg, transparent, rgba(146, 182, 42, 0.1), transparent);
+        transition: left 0.25s ease;
+    }
+    .main-menu ul li a:hover::before { left: 100%; }
+
+    .main-menu ul li a:hover {
+        background: rgba(146, 182, 42, 0.08);
+        color: var(--navy-blue);
+        transform: translateX(4px);
+        border-color: rgba(146, 182, 42, 0.35);
+        box-shadow: 0 4px 16px rgba(146, 182, 42, 0.12);
+    }
+
+    .main-menu ul li.active a {
+        background: linear-gradient(135deg, var(--lime-green) 0%, #a8c73a 100%);
+        color: var(--white);
+        box-shadow: 0 6px 20px rgba(146, 182, 42, 0.25);
+        border-color: var(--lime-green);
+        font-weight: 700;
+        transform: scale(1.01);
+        position: relative;
+    }
+    .main-menu ul li.active a::after {
+        content: '';
+        position: absolute;
+        left: 0;
+        top: 10px;
+        bottom: 10px;
+        width: 4px;
+        border-radius: 2px;
+        background: linear-gradient(180deg, var(--lime-green), #a8c73a);
+    }
+
+    .main-menu ul li a i {
+        margin-right: 14px;
+        font-size: 1.1rem;
+        width: 26px;
+        text-align: center;
+        transition: transform 0.2s ease, color 0.2s ease;
+        flex-shrink: 0;
+        color: var(--lime-green);
+        position: relative;
+    }
+    .main-menu ul li a:hover i { transform: translateX(1px); color: var(--navy-blue); }
+    .main-menu ul li.active a i { color: var(--white); }
+
+    /* Scrollbar */
+    .main-menu ul::-webkit-scrollbar { width: 6px; }
+    .main-menu ul::-webkit-scrollbar-track { background: transparent; }
+    .main-menu ul::-webkit-scrollbar-thumb {
+        background: var(--lime-green);
+        border-radius: 4px;
+        transition: background 0.2s ease;
+    }
+    .main-menu ul::-webkit-scrollbar-thumb:hover { background: #a8c73a; }
+    .main-menu ul { scrollbar-width: thin; scrollbar-color: var(--lime-green) transparent; }
+
+    /* Toggle Button */
+    .toggle-btn {
+        position: absolute;
+        top: 1rem;
+        right: 1rem;
+        background: rgba(255, 255, 255, 0.2);
+        border: 1px solid rgba(255, 255, 255, 0.35);
+        color: var(--white);
+        padding: 0.5rem;
+        border-radius: 10px;
+        cursor: pointer;
+        transition: background 0.2s ease, transform 0.2s ease;
+        font-size: 1rem;
+        width: 40px;
+        height: 40px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        backdrop-filter: blur(8px);
+        z-index: 2;
+    }
+    .toggle-btn:hover { background: rgba(255, 255, 255, 0.3); transform: scale(1.05) rotate(45deg); }
+
+    /* Mobile hamburger */
+    .mobile-toggle {
+        display: none;
+        position: fixed;
+        top: 1rem;
+        left: 1rem;
+        background: linear-gradient(135deg, var(--lime-green) 0%, #7a9a2a 100%);
+        border: none;
+        color: var(--white);
+        padding: 0.75rem;
+        border-radius: 12px;
+        cursor: pointer;
+        transition: transform 0.2s ease, filter 0.2s ease;
+        font-size: 1.1rem;
+        width: 50px;
+        height: 50px;
+        z-index: 11000; /* elevar sobre navbar */
+        box-shadow: 0 4px 14px rgba(0,0,0,0.18);
+    }
+    .mobile-toggle:hover { transform: scale(1.04); filter: brightness(0.98); }
+
+    /* Mostrar botón de cierre solo en móvil/tablet */
+    .desktop-hide { display: none; }
+    @media (max-width: 1024px) { .desktop-hide { display: block; } }
+
+    /* Asegura que el área clickeable del hamburguesa no sea tapada por el navbar */
+    #mobile-toggle-btn { pointer-events: auto; }
+
+    /* Section Dividers */
+    .main-menu ul p {
+        color: var(--navy-blue);
+        font-size: 0.78rem;
+        font-weight: 700;
+        margin: 1.4rem 0 0.75rem 1.1rem;
+        opacity: 0.9;
+        text-transform: uppercase;
+        letter-spacing: 0.8px;
+        background: rgba(146, 182, 42, 0.1);
+        padding: 0.45rem 0.75rem;
+        border-radius: 10px;
+        display: inline-block;
+        position: relative;
+        max-width: calc(100% - 2.2rem);
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+    }
+    .main-menu ul p::before {
+        content: '';
+        position: absolute;
+        left: -8px;
+        top: 50%;
+        transform: translateY(-50%);
+        width: 4px; height: 4px; background: var(--lime-green); border-radius: 50%;
+    }
+
+    /* Footer */
+    .card-footer {
+        background: linear-gradient(135deg, var(--lime-green) 0%, #a8c73a 100%);
+        border-top: 1px solid rgba(255, 255, 255, 0.2);
+        padding: 1.25rem;
+        flex-shrink: 0;
+        position: sticky;
+        bottom: 0;
+        width: 100%;
+        position: relative;
+        overflow: hidden;
+    }
+    .card-footer::before {
+        content: '';
+        position: absolute;
+        inset: 0;
+        background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><circle cx="10" cy="20" r="1" fill="rgba(255,255,255,0.1)"/><circle cx="90" cy="30" r="0.8" fill="rgba(255,255,255,0.1)"/><circle cx="30" cy="80" r="0.6" fill="rgba(255,255,255,0.1)"/></svg>');
+        opacity: 0.18;
+    }
+    .card-footer p {
+        font-size: 0.78rem; color: var(--white); line-height: 1.6; margin: 0; font-weight: 500; position: relative; z-index: 1;
+    }
+    .card-footer a { color: var(--white); font-weight: 600; text-decoration: underline; transition: color 0.2s ease, transform 0.2s ease; }
+    .card-footer a:hover { color: var(--navy-blue); transform: translateY(-1px); }
+
+    /* Responsive mejorado */
+    @media (max-width: 1200px) {
+        #side-nav { width: var(--sidebar-width-lg); }
+        .main-menu ul li a { padding: 0.85rem 1.1rem; font-size: 0.9rem; }
+        .main-menu ul li a i { font-size: 1.05rem; width: 24px; margin-right: 12px; }
+    }
+    @media (max-width: 992px) {
+        #side-nav { width: var(--sidebar-width-md); }
+        .main-menu ul li a { padding: 0.8rem 1rem; font-size: 0.875rem; }
+        .main-menu ul li a i { font-size: 1rem; width: 22px; margin-right: 10px; }
+    }
+    @media (max-width: 1024px) {
+        #side-nav {
+            width: 100%;
+            transform: translateX(-100%);
+            transition: transform 0.25s ease;
+            position: fixed;
+            z-index: 9999;
+            max-width: 100vw;
+        }
+        #side-nav.show { transform: translateX(0); }
+        .mobile-toggle { display: flex; align-items: center; justify-content: center; top: 1rem; left: 1rem; }
+        .main-menu ul li a { padding: 1rem 1.3rem; font-size: 0.95rem; min-height: 56px; }
+        .main-menu ul li a i { font-size: 1.2rem; width: 28px; margin-right: 14px; }
+        .top-side { padding: 1.6rem 1.2rem; }
+        .logo-container { width: 78px; height: 78px; }
+        .logo-container img { width: 54px; height: 54px; }
+        .toggle-btn { width: 44px; height: 44px; font-size: 1.05rem; }
+    }
+    @media (max-width: 768px) {
+        .main-menu ul li a { padding: 0.95rem 1.2rem; font-size: 0.93rem; min-height: 54px; }
+        .main-menu ul li a i { font-size: 1.15rem; width: 26px; margin-right: 12px; }
+        .top-side { padding: 1.5rem 1.1rem; }
+        .logo-container { width: 76px; height: 76px; }
+        .logo-container img { width: 52px; height: 52px; }
+        .toggle-btn { width: 42px; height: 42px; font-size: 1.05rem; }
+    }
+    @media (max-width: 576px) {
+        #side-nav { width: 100%; max-width: 100vw; }
+        .main-menu ul li a { padding: 1.1rem 1.4rem; font-size: 0.98rem; min-height: 58px; }
+        .main-menu ul li a i { font-size: 1.25rem; width: 28px; margin-right: 14px; }
+        .top-side { padding: 1.75rem 1.4rem; }
+        .logo-container { width: 84px; height: 84px; }
+        .logo-container img { width: 58px; height: 58px; }
+        .card-footer { padding: 1.6rem; }
+        .card-footer p { font-size: 0.84rem; }
+    }
+    @media (prefers-reduced-motion: reduce) {
+        .main-menu ul li a,
+        .main-menu ul li a i,
+        .logo-container,
+        .toggle-btn { transition: none; }
+    }
+</style>
+
+<!-- Mobile Hamburger Button -->
+<button class="mobile-toggle" onclick="toggleMobileSidebar()" id="mobile-toggle-btn">
+	<i class="fas fa-bars"></i>
+</button>
+
+<div id="side-nav">
+	<div class="main-menu">
+		<div class="top-side text-center py-4">
+			<div class="desktop-hide">
+				<div class="toggle-btn" onclick="closeMobileSidebar()" id="close-sidebar-btn">
+					<i class="fas fa-times"></i>
+				</div>
+			</div>
+			<div class="logo-container">
+				<img src="{% static 'img/logo-aprendeya.png' %}" alt="Logo Aprende Ya">
+			</div>
+			<p>
+				<i class="far fa-user-circle me-1"></i>
+				{{ request.user.get_user_role }}
+			</p>
+		</div>
+		{% url 'home' as hom %} {% url 'dashboard' as dash %} {% url 'profile' as prof %}
+		{% url 'lecturer_list' as lec %}
+		{% url 'student_list' as stu %} {% url 'course:course_allocation_view' as cav %}
+		{% url 'course:programs' as pro %} {% url 'session_list' as sess %} {% url 'semester_list' as sem %}
+		{% url 'add_score' as ascore %} {% url 'grade_results' as vr %}{% url 'ass_results' as ar %} {% url 'certificate_list' as certl %}
+		{% url 'program_course_grades' as pgr %}
+		{% url 'course:course_registration' as cr %} {% url 'edit_profile' as ep %} {% url 'change_password' as cp %}
+        {% url 'quiz:quiz_progress' as qpr %} {% url 'quiz:quiz_marking' as qce %} {% url 'course:user_course_list' as ucl %}
+		{% url 'admin_panel' as admin_p %}
+		
+
+		<ul>
+			{% if request.user.is_superuser %}
+			<li class="{% if request.path == dash %}active{% endif %}">
+				<a href="{% url 'dashboard' %}"><i class="fas fa-gauge-high"></i>Panel de Control</a>
+			</li>
+			{% endif %}
+			<li class="{% if request.path == hom %}active{% endif %}">
+				<a href="{% url 'home' %}"><i class="fas fa-house"></i>Inicio</a>
+			</li>
+			<li class="{% if request.path == prof %}active{% endif %}">
+				<a href="{% url 'profile' %}"><i class="fas fa-user-circle"></i>Perfil</a>
+			</li>
+
+			{% if request.user.is_superuser %}
+			<li class="{% if request.path == admin_p %}active{% endif %}">
+				<a href="{% url 'admin_panel' %}"><i class="fas fa-shield-halved"></i>Panel de Administración</a>
+			</li>
+			<li class="{% if request.path == lec %}active{% endif %}">
+				<a href="{% url 'lecturer_list' %}"><i class="fas fa-chalkboard-user"></i>Profesores</a>
+			</li>
+			<li class="{% if request.path == stu %}active{% endif %}">
+				<a href="{% url 'student_list' %}"><i class="fas fa-user-graduate"></i>Estudiantes</a>
+			</li>
+			<li class="{% if request.path == '/accounts/dep-heads/' %}active{% endif %}">
+				<a href="{% url 'dep_head_list' %}"><i class="fas fa-user-tie"></i>Jefes de Departamento</a>
+			</li>
+			{% endif %}
+
+			{% if request.user.is_lecturer or request.user.is_student %}
+			<li class="{% if request.path == ucl %}active{% endif %}">
+				<a href="{% url 'course:user_course_list' %}"><i class="fas fa-book-open"></i>Mis Cursos</a>
+			</li>
+			{% endif %}
+
+			{% if request.user.is_superuser or request.user.is_lecturer or request.user.is_dep_head %}
+			<li class="{% if request.path == pro %}active{% endif %}">
+				<a href="{% url 'course:programs' %}"><i class="fas fa-graduation-cap"></i>Programas & Cursos</a>
+			</li>
+			{% endif %}
+
+			{% if request.user.is_superuser or request.user.is_lecturer %}
+            <li class="{% if request.path == qce %}active{% endif %}">
+                <a href="{% url 'quiz:quiz_marking' %}"><i class="fas fa-clipboard-check"></i>Exámenes Completos</a>
+			</li>
+			{% endif %}
+
+			{% if request.user.is_superuser or request.user.is_dep_head %}
+			{% if request.user.is_superuser or request.user.is_staff %}
+			<li class="{% if request.path == qpr %}active{% endif %}">
+				<a href="{% url 'quiz:quiz_progress' %}"><i class="fas fa-chart-line"></i>Progreso de Exámenes</a>
+			</li>
+			<li class="{% if request.path == cav %}active{% endif %}">
+				<a href="{% url 'course:course_allocation_view' %}"><i class="fas fa-tasks"></i>Asignación de Cursos</a>
+			</li>
+			{% endif %}
+			{% if request.user.is_superuser or request.user.is_staff %}
+			<li class="{% if request.path == sess %}active{% endif %}">
+				<a href="{% url 'session_list' %}"><i class="fas fa-calendar-days"></i>Gestionar Sesión</a>
+			</li>
+			<li class="{% if request.path == sem %}active{% endif %}">
+				<a href="{% url 'semester_list' %}"><i class="fas fa-calendar-week"></i>Gestionar Semestre</a>
+			</li>
+			{% endif %}
+            <li class="{% if request.path == certl %}active{% endif %}">
+                <a href="{% url 'certificate_manage' %}"><i class="fas fa-award"></i>Certificados (Admin)</a>
+            </li>
+			<li class="{% if request.path == pgr %}active{% endif %}">
+				<a href="{% url 'program_course_grades' %}"><i class="fas fa-graduation-cap"></i>Calificaciones del Programa</a>
+			</li>
+			{% endif %}
+
+			{% if request.user.is_lecturer %}
+			<li class="{% if request.path == ascore %}active{% endif %}">
+				<a href="{% url 'add_score' %}"><i class="fas fa-table-cells"></i>Gestionar Calificaciones</a>
+			</li>
+			<li class="{% if request.path == certl %}active{% endif %}">
+				<a href="{% url 'certificate_list' %}"><i class="fas fa-certificate"></i>Certificados de Alumnos</a>
+			</li>
+			{% endif %}
+
+			{% if request.user.is_superuser %}
+			<li>
+				<a href="{% url 'add_dep_head' %}"><i class="fas fa-user-plus"></i>Registrar Jefe de Departamento</a>
+			</li>
+			{% endif %}
+
+			{% if request.user.is_student %}
+            <li class="{% if request.path == qpr %}active{% endif %}">
+                <a href="{% url 'quiz:quiz_progress' %}"><i class="fas fa-chart-line"></i>Progreso de Exámenes</a>
+			</li>
+			<li class="{% if request.path == vr %}active{% endif %}">
+				<a href="{% url 'grade_results' %}"><i class="fas fa-trophy"></i>Resultados de Calificaciones</a>
+			</li>
+			<li class="{% if request.path == ar %}active{% endif %}">
+				<a href="{% url 'ass_results' %}"><i class="fas fa-list-check"></i>Resultados de Evaluación</a>
+			</li>
+			<li class="{% if request.path == certl %}active{% endif %}">
+				<a href="{% url 'certificate_list' %}"><i class="fas fa-certificate"></i>Mis Certificados</a>
+			</li>
+			<li class="{% if request.path == cr %}active{% endif %}">
+				<a href="{% url 'course:course_registration' %}"><i class="fas fa-plus-circle"></i>Agregar &amp; Retirar Curso</a>
+			</li>
+			{% endif %}
+			
+			<p>⚙️ Configuración</p>
+			<li class="{% if request.path == ep %}active{% endif %}">
+				<a href="{% url 'edit_profile' %}"><i class="fas fa-user-gear"></i>Configuración de Cuenta</a>
+			</li>
+			<li class="{% if request.path == cp %}active{% endif %}">
+				<a href="{% url 'change_password' %}"><i class="fas fa-key"></i>Cambiar Contraseña</a>
+			</li>
+		</ul>
+	</div>
+
+	<footer class="card-footer">
+		<div class="col-12">
+			<p class="small m-0 text-center">
+				Lee nuestra <a href="#"> Privacidad </a> y <a href="#"> Términos de uso. </a>
+				<br />Aprende Ya &copy; <script>document.write(new Date().getFullYear());</script>
+				<br />Desarrollado por TukiTuki Solutions SAC
+			</p>
+		</div>
+	</footer>
+</div>
+
+<!-- Scripts -->
+<script type="text/javascript" src="{% static 'js/dashboard.js' %}"></script>
+<script>
+// Mobile sidebar functionality
+function toggleMobileSidebar() {
+    console.log("toggleMobileSidebar called");
+    const sideNav = document.getElementById("side-nav");
+    const mobileToggle = document.getElementById("mobile-toggle-btn");
+    
+    if (sideNav) {
+        sideNav.classList.toggle("show");
+        console.log("Sidebar toggled, show class:", sideNav.classList.contains("show"));
+        
+        // Hide mobile toggle when sidebar is open
+        if (mobileToggle) {
+            if (sideNav.classList.contains("show")) {
+                mobileToggle.style.display = "none";
+            } else {
+                mobileToggle.style.display = "flex";
+            }
+        }
+    } else {
+        console.error("Side-nav element not found");
+    }
+}
+
+function closeMobileSidebar() {
+    console.log("closeMobileSidebar called");
+    const sideNav = document.getElementById("side-nav");
+    const mobileToggle = document.getElementById("mobile-toggle-btn");
+    
+    if (sideNav) {
+        sideNav.classList.remove("show");
+        console.log("Sidebar closed");
+        
+        if (mobileToggle) {
+            mobileToggle.style.display = "flex";
+        }
+    }
+}
+
+// Initialize when DOM is loaded
+document.addEventListener('DOMContentLoaded', function() {
+    console.log("DOM loaded, initializing mobile sidebar");
+    
+    // Add event listener to close button
+    const closeBtn = document.getElementById("close-sidebar-btn");
+    if (closeBtn) {
+        closeBtn.addEventListener('click', function(e) {
+            e.preventDefault();
+            e.stopPropagation();
+            console.log("Close button clicked");
+            closeMobileSidebar();
+        });
+    }
+    
+    // Close sidebar when clicking outside (mobile)
+    document.addEventListener('click', function(event) {
+        const sideNav = document.getElementById("side-nav");
+        const mobileToggle = document.getElementById("mobile-toggle-btn");
+        const closeBtn = document.getElementById("close-sidebar-btn");
+        
+        if (sideNav && sideNav.classList.contains('show')) {
+            // If clicking outside the sidebar and not on the mobile toggle button or close button
+            if (!sideNav.contains(event.target) && !mobileToggle.contains(event.target) && !closeBtn.contains(event.target)) {
+                sideNav.classList.remove('show');
+                if (mobileToggle) {
+                    mobileToggle.style.display = "flex";
+                }
+            }
+        }
+    });
+    
+    // Handle window resize
+    window.addEventListener('resize', function() {
+        const sideNav = document.getElementById("side-nav");
+        const mobileToggle = document.getElementById("mobile-toggle-btn");
+        
+        if (window.innerWidth > 1024 && sideNav) {
+            sideNav.classList.remove('show');
+            if (mobileToggle) {
+                mobileToggle.style.display = "none";
+            }
+        } else if (window.innerWidth <= 1024 && mobileToggle) {
+            mobileToggle.style.display = "flex";
+        }
+    });
+    
+    // Show mobile toggle on mobile and tablet devices
+    if (window.innerWidth <= 1024) {
+        const mobileToggle = document.getElementById("mobile-toggle-btn");
+        if (mobileToggle) {
+            mobileToggle.style.display = "flex";
+        }
+    }
+});
+</script>

@@ -1,0 +1,343 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Eliminar Módulo - {{ module.title }}{% endblock %}
+
+{% block content %}
+<div class="delete-confirmation-container">
+    <div class="container">
+        <div class="content-wrapper">
+            <!-- Header -->
+            <div class="page-header">
+                <div class="header-content">
+                    <div class="header-title">
+                        <h1><i class="fas fa-trash-alt"></i> Eliminar Módulo</h1>
+                        <p class="subtitle">Curso: {{ course.title }}</p>
+                    </div>
+                    <div class="header-actions">
+                        <a href="{% url 'course:course_modules' slug=course.slug %}" class="btn btn-secondary">
+                            <i class="fas fa-arrow-left"></i> Volver a Módulos
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Confirmation Card -->
+            <div class="confirmation-section">
+                <div class="confirmation-card">
+                    <div class="confirmation-header">
+                        <div class="warning-icon">
+                            <i class="fas fa-exclamation-triangle"></i>
+                        </div>
+                        <h3>¿Estás seguro de que quieres eliminar este módulo?</h3>
+                        <p>Esta acción no se puede deshacer.</p>
+                    </div>
+                    
+                    <div class="module-info">
+                        <div class="info-item">
+                            <strong>Título:</strong> {{ module.title }}
+                        </div>
+                        <div class="info-item">
+                            <strong>Orden:</strong> {{ module.order }}
+                        </div>
+                        <div class="info-item">
+                            <strong>Descripción:</strong> {{ module.description|truncatewords:20 }}
+                        </div>
+                        <div class="info-item">
+                            <strong>Lecciones:</strong> {{ module.lessons.count }}
+                        </div>
+                        <div class="info-item">
+                            <strong>Estado:</strong> 
+                            {% if module.is_active %}
+                                <span class="badge badge-success">Activo</span>
+                            {% else %}
+                                <span class="badge badge-secondary">Inactivo</span>
+                            {% endif %}
+                        </div>
+                    </div>
+                    
+                    <div class="warning-message">
+                        <div class="warning-content">
+                            <i class="fas fa-info-circle"></i>
+                            <div>
+                                <strong>Advertencia:</strong> Al eliminar este módulo, también se eliminarán:
+                                <ul>
+                                    <li>Todas las lecciones asociadas</li>
+                                    <li>Todo el contenido de las lecciones</li>
+                                    <li>Todos los quizzes y preguntas</li>
+                                    <li>Todo el progreso de los estudiantes</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <form method="post" class="delete-form">
+                        {% csrf_token %}
+                        <div class="form-actions">
+                            <button type="submit" class="btn btn-danger">
+                                <i class="fas fa-trash-alt"></i> Sí, Eliminar Módulo
+                            </button>
+                            <a href="{% url 'course:course_modules' slug=course.slug %}" class="btn btn-secondary">
+                                <i class="fas fa-times"></i> Cancelar
+                            </a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+:root {
+    --primary-color: #204444;
+    --secondary-color: #92b62a;
+    --accent-color: #9f081f;
+    --warning-color: #e2d229;
+    --dark-gray: #454545;
+    --light-gray: #f8f9fa;
+    --white: #ffffff;
+    --glass-bg: rgba(255, 255, 255, 0.1);
+    --glass-border: rgba(255, 255, 255, 0.2);
+    --shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+    --border-radius: 12px;
+}
+
+.delete-confirmation-container {
+    min-height: 100vh;
+    background: linear-gradient(135deg, var(--primary-color) 0%, var(--dark-gray) 100%);
+    padding: 2rem 0;
+}
+
+.content-wrapper {
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 0 1rem;
+}
+
+.page-header {
+    background: var(--glass-bg);
+    backdrop-filter: blur(10px);
+    border: 1px solid var(--glass-border);
+    border-radius: var(--border-radius);
+    padding: 2rem;
+    margin-bottom: 2rem;
+    box-shadow: var(--shadow);
+}
+
+.header-content {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 1rem;
+}
+
+.header-title h1 {
+    color: var(--white);
+    margin: 0;
+    font-size: 2rem;
+    font-weight: 700;
+}
+
+.header-title .subtitle {
+    color: var(--secondary-color);
+    margin: 0.5rem 0 0 0;
+    font-size: 1.1rem;
+}
+
+.header-actions .btn {
+    background: var(--secondary-color);
+    border: none;
+    color: var(--white);
+    padding: 0.75rem 1.5rem;
+    border-radius: var(--border-radius);
+    text-decoration: none;
+    transition: all 0.3s ease;
+    font-weight: 600;
+}
+
+.header-actions .btn:hover {
+    background: #7a9a22;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(146, 182, 42, 0.3);
+}
+
+.confirmation-section {
+    background: var(--glass-bg);
+    backdrop-filter: blur(10px);
+    border: 1px solid var(--glass-border);
+    border-radius: var(--border-radius);
+    padding: 2rem;
+    box-shadow: var(--shadow);
+}
+
+.confirmation-card {
+    background: var(--white);
+    border-radius: var(--border-radius);
+    padding: 2rem;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+}
+
+.confirmation-header {
+    text-align: center;
+    margin-bottom: 2rem;
+    padding-bottom: 1rem;
+    border-bottom: 2px solid var(--light-gray);
+}
+
+.warning-icon {
+    font-size: 4rem;
+    color: var(--accent-color);
+    margin-bottom: 1rem;
+}
+
+.confirmation-header h3 {
+    color: var(--primary-color);
+    margin: 0;
+    font-size: 1.5rem;
+    font-weight: 700;
+}
+
+.confirmation-header p {
+    color: var(--dark-gray);
+    margin: 0.5rem 0 0 0;
+}
+
+.module-info {
+    background: var(--light-gray);
+    border-radius: var(--border-radius);
+    padding: 1.5rem;
+    margin-bottom: 2rem;
+}
+
+.info-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0.5rem 0;
+    border-bottom: 1px solid #dee2e6;
+}
+
+.info-item:last-child {
+    border-bottom: none;
+}
+
+.info-item strong {
+    color: var(--primary-color);
+    font-weight: 600;
+}
+
+.badge {
+    padding: 0.25rem 0.75rem;
+    border-radius: 20px;
+    font-size: 0.875rem;
+    font-weight: 600;
+}
+
+.badge-success {
+    background: var(--secondary-color);
+    color: var(--white);
+}
+
+.badge-secondary {
+    background: var(--dark-gray);
+    color: var(--white);
+}
+
+.warning-message {
+    background: #fff3cd;
+    border: 1px solid #ffeaa7;
+    border-radius: var(--border-radius);
+    padding: 1.5rem;
+    margin-bottom: 2rem;
+}
+
+.warning-content {
+    display: flex;
+    gap: 1rem;
+    align-items: flex-start;
+}
+
+.warning-content i {
+    color: var(--warning-color);
+    font-size: 1.5rem;
+    margin-top: 0.25rem;
+}
+
+.warning-content strong {
+    color: var(--accent-color);
+}
+
+.warning-content ul {
+    margin: 0.5rem 0 0 1.5rem;
+    padding: 0;
+}
+
+.warning-content li {
+    color: var(--dark-gray);
+    margin-bottom: 0.25rem;
+}
+
+.delete-form .form-actions {
+    display: flex;
+    gap: 1rem;
+    justify-content: center;
+    margin-top: 2rem;
+    padding-top: 2rem;
+    border-top: 2px solid var(--light-gray);
+}
+
+.form-actions .btn {
+    padding: 0.75rem 2rem;
+    border-radius: var(--border-radius);
+    font-weight: 600;
+    text-decoration: none;
+    transition: all 0.3s ease;
+    border: none;
+}
+
+.form-actions .btn-danger {
+    background: var(--accent-color);
+    color: var(--white);
+}
+
+.form-actions .btn-danger:hover {
+    background: #8b061a;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(159, 8, 31, 0.3);
+}
+
+.form-actions .btn-secondary {
+    background: var(--dark-gray);
+    color: var(--white);
+}
+
+.form-actions .btn-secondary:hover {
+    background: #333;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(69, 69, 69, 0.3);
+}
+
+@media (max-width: 768px) {
+    .header-content {
+        flex-direction: column;
+        text-align: center;
+    }
+    
+    .form-actions {
+        flex-direction: column;
+    }
+    
+    .form-actions .btn {
+        width: 100%;
+    }
+    
+    .info-item {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 0.5rem;
+    }
+}
+</style>
+{% endblock %}

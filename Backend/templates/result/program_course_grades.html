@@ -1,0 +1,110 @@
+{% extends 'base.html' %}
+{% load i18n %}
+{% block title %}Calificaciones del Programa | Sistema de Gestión Académica{% endblock title %}
+{% load static %}
+
+{% block content %}
+<div class="container py-4">
+	<nav aria-label="breadcrumb">
+		<ol class="breadcrumb">
+			<li class="breadcrumb-item"><a href="/">Inicio</a></li>
+			<li class="breadcrumb-item active" aria-current="page">Calificaciones del Programa</li>
+		</ol>
+	</nav>
+
+	<div class="page-header">
+		<h1 class="page-title">Calificaciones del Programa</h1>
+		<p class="page-subtitle">Visualiza las calificaciones por curso de tu programa</p>
+	</div>
+
+	<div class="card border-0 shadow-sm mb-4">
+		<div class="card-body">
+			<form method="get" class="row g-3 align-items-end">
+				<div class="col-md-4">
+					<label class="form-label">Programa</label>
+					<input type="text" class="form-control" value="{{ program }}" disabled>
+				</div>
+				<div class="col-md-4">
+					<label class="form-label">Curso</label>
+					<select name="course" class="form-control">
+						<option value="">Todos</option>
+						{% for c in courses %}
+						<option value="{{ c.id }}" {% if selected_course_id == c.id %}selected{% endif %}>{{ c.title }} ({{ c.code }})</option>
+						{% endfor %}
+					</select>
+				</div>
+				<div class="col-md-4">
+					<button type="submit" class="btn btn-primary"><i class="fas fa-search"></i> Filtrar</button>
+				</div>
+			</form>
+		</div>
+	</div>
+
+	{% if course_to_taken %}
+		{% for course, items in course_to_taken.items %}
+		<div class="card border-0 shadow-sm mb-4">
+			<div class="card-header bg-white d-flex justify-content-between align-items-center">
+				<h5 class="m-0"><i class="fas fa-book me-2"></i>{{ course.title }} <small class="text-muted">({{ course.code }})</small></h5>
+				<span class="badge bg-success">{{ items|length }} alumnos</span>
+			</div>
+			<div class="card-body p-0">
+				<div class="table-responsive">
+					<table class="table table-hover table-striped m-0">
+						<thead class="table-light">
+							<tr>
+								<th>#</th>
+								<th>Alumno</th>
+								<th>Asignación (20%)</th>
+								<th>Parcial (25%)</th>
+								<th>Quiz (15%)</th>
+								<th>Asistencia (10%)</th>
+								<th>Final (30%)</th>
+								<th>Total</th>
+								<th>Nota</th>
+								<th>Estado</th>
+							</tr>
+						</thead>
+						<tbody>
+							{% for tc in items %}
+							<tr>
+								<td>{{ forloop.counter }}</td>
+								<td>{{ tc.student.student.get_full_name }} <small class="text-muted">({{ tc.student.student.username }})</small></td>
+								<td>{{ tc.assignment|default:"-" }}</td>
+								<td>{{ tc.mid_exam|default:"-" }}</td>
+								<td>{{ tc.quiz|default:"-" }}</td>
+								<td>{{ tc.attendance|default:"-" }}</td>
+								<td>{{ tc.final_exam|default:"-" }}</td>
+								<td><strong>{{ tc.total|default:"0" }}</strong></td>
+								<td>{{ tc.grade|default:"-" }}</td>
+								<td>
+									{% if tc.comment == 'PASS' %}
+									<span class="badge bg-success">APROBADO</span>
+									{% elif tc.comment == 'FAIL' %}
+									<span class="badge bg-danger">DESAPROBADO</span>
+									{% else %}
+									<span class="badge bg-secondary">N/D</span>
+									{% endif %}
+								</td>
+							</tr>
+							{% empty %}
+							<tr><td colspan="10" class="text-center text-muted">Sin alumnos registrados</td></tr>
+							{% endfor %}
+						</tbody>
+					</table>
+				</div>
+			</div>
+		</div>
+		{% endfor %}
+	{% else %}
+	<div class="card border-0 shadow-sm">
+		<div class="card-body text-center text-muted py-5">
+			<i class="fas fa-info-circle fa-2x mb-2"></i>
+			<p class="mb-0">No hay calificaciones para mostrar</p>
+		</div>
+	</div>
+	{% endif %}
+
+</div>
+{% endblock content %}
+
+

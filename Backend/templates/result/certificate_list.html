@@ -1,0 +1,140 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block title %}Certificados | Sistema de Gestión Académica{% endblock %}
+
+{% block content %}
+
+<style>
+  :root {
+    --lime-green: rgb(146, 182, 42);
+    --lime-green-dark: #7a9a2a;
+    --gray-dark: #454545;
+    --gray-600: #6c757d;
+    --white: #ffffff;
+    --shadow-soft: 0 8px 32px rgba(0,0,0,0.08);
+  }
+  body { background: url('{% static "img/pic-8.png" %}') center/cover no-repeat fixed; background-attachment: fixed; }
+  .cert-list-container { max-width: 1400px; margin: 1rem auto; padding: 1.5rem; background: rgba(255,255,255,0.95); backdrop-filter: blur(18px); border-radius: 18px; box-shadow: var(--shadow-soft); border: 1px solid rgba(146,182,42,0.12); }
+  .page-header { display:flex; align-items:center; justify-content:space-between; padding-bottom: .75rem; margin-bottom: 1.25rem; border-bottom: 1px solid rgba(146,182,42,0.15); }
+  .page-title { font-size: 2rem; font-weight: 800; margin: 0; line-height: 1.1; background: linear-gradient(135deg, var(--lime-green) 0%, #a8c73a 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
+  .subtitle { color: var(--gray-600); font-weight: 600; }
+  .breadcrumb { background: transparent; padding: 0; margin-bottom: 1rem; }
+  .breadcrumb-item a { color: var(--lime-green); text-decoration: none; font-weight: 600; }
+  .breadcrumb-item a:hover { color: var(--lime-green-dark); }
+  .table-container { background: rgba(255,255,255,0.98); border-radius: 14px; box-shadow: 0 6px 22px rgba(0,0,0,0.06); overflow: hidden; border: 1px solid rgba(146, 182, 42, 0.12); }
+  .table { margin: 0; width: 100%; }
+  .table thead th { background: rgba(146,182,42,0.08); color: var(--gray-dark); border: none; padding: 0.9rem 0.9rem; font-weight: 800; font-size: 0.85rem; text-transform: uppercase; letter-spacing: 0.5px; }
+  .table tbody tr { transition: all 0.2s ease; border-bottom: 1px solid rgba(146, 182, 42, 0.10); }
+  .table tbody tr:hover { background: rgba(146, 182, 42, 0.05); }
+  .table tbody td { padding: 0.9rem 0.9rem; border: none; color: var(--gray-600); vertical-align: middle; font-size: 0.92rem; }
+  .badge-status { padding: 0.35rem 0.8rem; border-radius: 16px; font-size: 0.78rem; font-weight: 800; letter-spacing: 0.4px; }
+  .status-active { background: linear-gradient(135deg, rgba(39,174,96,0.08) 0%, rgba(39,174,96,0.16) 100%); color: #27ae60; border: 1px solid rgba(39,174,96,0.28); }
+  .status-suspended { background: linear-gradient(135deg, rgba(231,76,60,0.10) 0%, rgba(231,76,60,0.18) 100%); color: #e74c3c; border: 1px solid rgba(231,76,60,0.28); }
+  .status-none { background: linear-gradient(135deg, rgba(108,117,125,0.08) 0%, rgba(108,117,125,0.16) 100%); color: var(--gray-600); border: 1px solid rgba(108,117,125,0.28); }
+  .empty-state { text-align: center; padding: 3rem 1.5rem; color: var(--gray-600); background: rgba(255,255,255,0.95); border-radius: 16px; border: 1px dashed rgba(146, 182, 42, 0.3); backdrop-filter: blur(8px); }
+  .student-info { display: flex; align-items: center; gap: 0.6rem; }
+  .student-avatar { width: 38px; height: 38px; border-radius: 50%; object-fit: cover; border: 2px solid rgba(146,182,42,0.22); }
+  .student-name { font-weight: 800; color: var(--gray-dark); }
+  .student-username { font-size: 0.8rem; color: var(--gray-600); font-weight: 600; }
+  .serial-note { font-size: 0.8rem; color: var(--gray-600); }
+</style>
+
+<div class="cert-list-container">
+  <nav style="--bs-breadcrumb-divider: '>';" aria-label="breadcrumb">
+    <ol class="breadcrumb">
+      <li class="breadcrumb-item"><a href="/">Inicio</a></li>
+      <li class="breadcrumb-item active" aria-current="page">Certificados</li>
+    </ol>
+  </nav>
+
+  <div class="page-header">
+    <div>
+      <h1 class="page-title">Certificados</h1>
+      <div class="subtitle">Se listan solo cursos aprobados</div>
+    </div>
+  </div>
+
+  {% include 'snippets/messages.html' %}
+
+  <div class="table-container">
+    <div class="table-responsive">
+      <table class="table">
+        <thead>
+          <tr>
+            <th>#</th>
+            {% if request.user.is_lecturer or request.user.is_superuser or request.user.is_dep_head %}
+            <th>Alumno</th>
+            {% endif %}
+            <th>Curso</th>
+            <th>Código</th>
+            <th>Créditos</th>
+            <th>Total</th>
+            <th>Estado</th>
+            <th>Certificado</th>
+            <th>Acciones</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for tc in passed %}
+          <tr>
+            <td>{{ forloop.counter }}</td>
+            {% if request.user.is_lecturer or request.user.is_superuser or request.user.is_dep_head %}
+            <td>
+              <div class="student-info">
+                <img src="{{ tc.student.student.get_picture }}" class="student-avatar" alt="{{ tc.student.student.get_full_name }}" />
+                <div>
+                  <div class="student-name">{{ tc.student.student.get_full_name }}</div>
+                  <div class="student-username">@{{ tc.student.student.username }}</div>
+                </div>
+              </div>
+            </td>
+            {% endif %}
+            <td>{{ tc.course.title }}</td>
+            <td>{{ tc.course.code }}</td>
+            <td>{{ tc.course.credit }}</td>
+            <td>{{ tc.total }}</td>
+            <td>{{ tc.comment }}</td>
+            <td>
+              {% if tc.certificate %}
+                {% if tc.certificate.status == 'SUSPENDED' %}
+                  <span class="badge-status status-suspended">Suspendido</span>
+                  <div class="serial-note">Serie: {{ tc.certificate.serial_number }}</div>
+                {% else %}
+                  <span class="badge-status status-active">Activo</span>
+                  <div class="serial-note">Serie: {{ tc.certificate.serial_number }}</div>
+                {% endif %}
+              {% else %}
+                <span class="badge-status status-none">No emitido</span>
+              {% endif %}
+            </td>
+            <td>
+              {% if tc.certificate and tc.certificate.status == 'SUSPENDED' %}
+                <a class="btn btn-sm btn-secondary disabled" aria-disabled="true" tabindex="-1">
+                  <i class="fas fa-ban"></i> No disponible (contacte administración)
+                </a>
+              {% else %}
+                <a class="btn btn-sm btn-success" href="{% url 'certificate_pdf_view' tc.id %}" target="_blank">
+                  <i class="fas fa-file-pdf"></i> Ver PDF
+                </a>
+              {% endif %}
+            </td>
+          </tr>
+          {% empty %}
+          <tr>
+            <td colspan="{% if request.user.is_lecturer or request.user.is_superuser or request.user.is_dep_head %}9{% else %}8{% endif %}" class="text-center py-4">
+              <div class="empty-state">
+                <i class="fas fa-certificate" style="font-size:3rem; color: var(--lime-green); opacity:.8;"></i>
+                <h3 class="mt-2 mb-1">No se encontraron certificados</h3>
+                <p>Cuando apruebes cursos, tus certificados aparecerán aquí.</p>
+              </div>
+            </td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+{% endblock %}
+
+

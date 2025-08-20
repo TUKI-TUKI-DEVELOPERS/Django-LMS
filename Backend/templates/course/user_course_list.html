@@ -1,0 +1,682 @@
+{% extends 'base.html' %}
+{% load i18n %}
+{% block title %}Mis Cursos | Sistema de Gestión Académica{% endblock title %}
+{% load static %}
+
+{% block content %}
+
+<style>
+	/* Minimalist Course Cards Design */
+	:root {
+		--lime-green: rgb(146, 182, 42);
+		--lime-green-dark: #7a9a2a;
+		--gray-dark: #454545;
+		--gray-600: #6c757d;
+		--light-gray: #f8f9fa;
+		--white: #ffffff;
+		--shadow-soft: 0 4px 20px rgba(0,0,0,0.08);
+		--shadow-hover: 0 8px 30px rgba(146, 182, 42, 0.15);
+	}
+
+	/* Subtle background */
+	body {
+		background: url('{% static "img/pic-8.png" %}') center/cover no-repeat fixed;
+		background-attachment: fixed;
+	}
+
+	/* Main container */
+	.courses-container {
+		max-width: 1400px;
+		margin: 1rem auto;
+		padding: 1.5rem;
+		background: rgba(255, 255, 255, 0.95);
+		backdrop-filter: blur(15px);
+		border-radius: 16px;
+		box-shadow: var(--shadow-soft);
+		border: 1px solid rgba(146, 182, 42, 0.1);
+		display: grid;
+		grid-template-columns: 1fr 300px;
+		gap: 2rem;
+	}
+
+	.main-content {
+		order: 1;
+	}
+
+	.sidebar {
+		order: 2;
+	}
+
+	/* Breadcrumb */
+	.breadcrumb {
+		background: transparent;
+		padding: 0;
+		margin-bottom: 1.5rem;
+	}
+
+	.breadcrumb-item a {
+		color: var(--lime-green);
+		text-decoration: none;
+		font-weight: 500;
+		transition: color 0.2s ease;
+	}
+
+	.breadcrumb-item a:hover {
+		color: var(--lime-green-dark);
+	}
+
+	.breadcrumb-item.active {
+		color: var(--gray-600);
+	}
+
+	/* Page header */
+	.page-header {
+		margin-bottom: 2rem;
+		padding-bottom: 1rem;
+		border-bottom: 1px solid rgba(146, 182, 42, 0.1);
+	}
+
+	.page-title {
+		font-size: 1.8rem;
+		font-weight: 600;
+		color: var(--gray-dark);
+		margin: 0 0 0.5rem 0;
+	}
+
+	.page-subtitle {
+		color: var(--gray-600);
+		font-size: 1rem;
+		margin: 0;
+	}
+
+	/* Student stats - simplified */
+	.student-stats {
+		background: rgba(146, 182, 42, 0.05);
+		border-radius: 12px;
+		padding: 1.5rem;
+		margin-bottom: 2rem;
+		border: 1px solid rgba(146, 182, 42, 0.1);
+	}
+
+	.stats-grid {
+		display: grid;
+		grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+		gap: 1rem;
+	}
+
+	.stat-card {
+		text-align: center;
+		padding: 1rem;
+		background: white;
+		border-radius: 8px;
+		border: 1px solid rgba(146, 182, 42, 0.1);
+	}
+
+	.stat-value {
+		font-size: 1.5rem;
+		font-weight: 600;
+		color: var(--lime-green);
+		margin-bottom: 0.25rem;
+	}
+
+	.stat-label {
+		font-size: 0.85rem;
+		color: var(--gray-600);
+		font-weight: 500;
+	}
+
+	/* Section headers */
+	.section-header {
+		display: flex;
+		justify-content: space-between;
+		align-items: center;
+		margin-bottom: 1.5rem;
+		padding-bottom: 0.75rem;
+		border-bottom: 1px solid rgba(146, 182, 42, 0.1);
+	}
+
+	.section-title {
+		font-size: 1.3rem;
+		font-weight: 600;
+		color: var(--gray-dark);
+		margin: 0;
+		display: flex;
+		align-items: center;
+		gap: 0.5rem;
+	}
+
+	.section-title i {
+		color: var(--lime-green);
+		font-size: 1.1rem;
+	}
+
+	.section-count {
+		font-size: 0.9rem;
+		color: var(--gray-600);
+		background: rgba(146, 182, 42, 0.1);
+		padding: 0.25rem 0.75rem;
+		border-radius: 20px;
+	}
+
+	/* Course cards - Moodle/Canvas style */
+	.courses-grid {
+		display: grid;
+		grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+		gap: 1rem;
+	}
+
+	.course-card {
+		background: white;
+		border: 1px solid #e0e0e0;
+		border-radius: 8px;
+		overflow: hidden;
+		transition: all 0.2s ease;
+		position: relative;
+	}
+
+	.course-card.registered {
+		background: #f8f9fa;
+		border-color: #dee2e6;
+	}
+
+	.course-card.registered .course-title,
+	.course-card.registered .course-info {
+		opacity: 0.8;
+	}
+
+	.course-card:hover {
+		transform: translateY(-2px);
+		box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+	}
+
+	/* Course image */
+	.course-image-container {
+		height: 140px;
+		background: #f5f5f5;
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		position: relative;
+		border-bottom: 1px solid #e0e0e0;
+	}
+
+	.course-image {
+		width: 100%;
+		height: 100%;
+		object-fit: cover;
+	}
+
+	.course-image-placeholder {
+		color: var(--lime-green);
+		font-size: 2rem;
+		opacity: 0.6;
+	}
+
+	/* Course content */
+	.course-content {
+		padding: 1rem;
+	}
+
+	.course-title {
+		font-size: 0.95rem;
+		font-weight: 600;
+		color: var(--gray-dark);
+		margin-bottom: 0.25rem;
+		line-height: 1.3;
+		display: -webkit-box;
+		-webkit-line-clamp: 2;
+		-webkit-box-orient: vertical;
+		overflow: hidden;
+	}
+
+	.course-code {
+		font-size: 0.75rem;
+		color: var(--gray-600);
+		font-family: 'Courier New', monospace;
+		margin-bottom: 0.5rem;
+		background: #f8f9fa;
+		padding: 0.15rem 0.4rem;
+		border-radius: 3px;
+		display: inline-block;
+		border: 1px solid #e9ecef;
+	}
+
+	/* Course info - compact */
+	.course-info {
+		display: flex;
+		flex-wrap: wrap;
+		gap: 0.5rem;
+		margin-bottom: 0.75rem;
+		font-size: 0.75rem;
+	}
+
+	.info-item {
+		display: flex;
+		align-items: center;
+		gap: 0.35rem;
+		color: #6c757d;
+		background: #f8f9fa;
+		padding: 0.2rem 0.5rem;
+		border-radius: 12px;
+		border: 1px solid #e9ecef;
+	}
+
+	.info-item i {
+		color: #6c757d;
+		font-size: 0.7rem;
+	}
+
+	/* Course status - badge style */
+	.course-status {
+		position: absolute;
+		top: 0.5rem;
+		right: 0.5rem;
+		display: inline-flex;
+		align-items: center;
+		gap: 0.25rem;
+		font-size: 0.7rem;
+		font-weight: 500;
+		padding: 0.25rem 0.5rem;
+		border-radius: 12px;
+		background: white;
+		box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+	}
+
+	.status-completed {
+		background: #28a745;
+		color: white;
+	}
+
+	.status-in-progress {
+		background: #ffc107;
+		color: #000;
+	}
+
+	.status-registered {
+		background: #6c757d;
+		color: white;
+	}
+
+	/* Course actions - compact */
+	.course-actions {
+		display: flex;
+		gap: 0.5rem;
+		margin-top: auto;
+	}
+
+	.btn-course {
+		flex: 1;
+		padding: 0.4rem 0.75rem;
+		border-radius: 4px;
+		text-decoration: none;
+		font-size: 0.75rem;
+		font-weight: 500;
+		text-align: center;
+		transition: all 0.2s ease;
+		display: inline-flex;
+		align-items: center;
+		justify-content: center;
+		gap: 0.25rem;
+	}
+
+	.btn-primary {
+		background: var(--lime-green);
+		color: white;
+		border: 1px solid var(--lime-green);
+	}
+
+	.btn-primary:hover {
+		background: var(--lime-green-dark);
+		color: white;
+		text-decoration: none;
+	}
+
+	.btn-secondary {
+		background: rgba(146, 182, 42, 0.1);
+		color: var(--lime-green);
+		border: 1px solid rgba(146, 182, 42, 0.2);
+	}
+
+	.btn-secondary:hover {
+		background: var(--lime-green);
+		color: white;
+		text-decoration: none;
+	}
+
+	/* Empty state */
+	.empty-state {
+		text-align: center;
+		padding: 3rem 2rem;
+		color: var(--gray-600);
+	}
+
+	.empty-state i {
+		font-size: 3rem;
+		color: rgba(146, 182, 42, 0.3);
+		margin-bottom: 1rem;
+	}
+
+	.empty-state h4 {
+		color: var(--gray-dark);
+		margin-bottom: 0.5rem;
+		font-weight: 600;
+	}
+
+	.empty-state p {
+		margin: 0;
+		font-size: 0.95rem;
+	}
+
+	/* Responsive design */
+	/* Sidebar styles */
+	.sidebar {
+		background: white;
+		border-radius: 12px;
+		padding: 1.5rem;
+		height: fit-content;
+		border: 1px solid rgba(146, 182, 42, 0.1);
+		box-shadow: var(--shadow-soft);
+	}
+
+	.sidebar-title {
+		font-size: 1.1rem;
+		font-weight: 600;
+		color: var(--gray-dark);
+		margin-bottom: 1.5rem;
+		padding-bottom: 0.75rem;
+		border-bottom: 1px solid rgba(146, 182, 42, 0.1);
+	}
+
+	.student-stats {
+		margin-bottom: 0;
+	}
+
+	.stats-grid {
+		display: grid;
+		grid-template-columns: 1fr;
+		gap: 1rem;
+	}
+
+	@media (max-width: 1200px) {
+		.courses-container {
+			grid-template-columns: 1fr;
+			gap: 1.5rem;
+		}
+		
+		.main-content {
+			order: 1;
+		}
+		
+		.sidebar {
+			order: 2;
+		}
+		
+		.stats-grid {
+			grid-template-columns: repeat(2, 1fr);
+		}
+	}
+
+	@media (max-width: 768px) {
+		.courses-container {
+			margin: 0.5rem;
+			padding: 1rem;
+		}
+		
+		.courses-grid {
+			grid-template-columns: 1fr;
+			gap: 1rem;
+		}
+		
+		.course-info {
+			grid-template-columns: 1fr;
+		}
+		
+		.course-actions {
+			flex-direction: column;
+		}
+	}
+
+	@media (max-width: 480px) {
+		.stats-grid {
+			grid-template-columns: 1fr;
+		}
+		
+		.section-header {
+			flex-direction: column;
+			align-items: flex-start;
+			gap: 0.5rem;
+		}
+	}
+</style>
+
+<div class="courses-container">
+    <div class="main-content">
+        <nav style="--bs-breadcrumb-divider: '>';" aria-label="breadcrumb">
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item"><a href="/">Inicio</a></li>
+                <li class="breadcrumb-item active" aria-current="page">Mis Cursos</li>
+            </ol>
+        </nav>
+
+        <div class="page-header">
+            <h1 class="page-title">Mis Cursos</h1>
+            <p class="page-subtitle">
+                {% if request.user.is_student %}
+                    Gestiona tu progreso académico
+                {% elif request.user.is_lecturer %}
+                    Administra los cursos que impartes
+                {% else %}
+                    Consulta información de cursos
+                {% endif %}
+            </p>
+        </div>
+
+        {% include 'snippets/messages.html' %}
+
+	<!-- Cursos Registrados -->
+	{% if request.user.is_student and taken_courses %}
+	<div class="section-header">
+		<h3 class="section-title">
+			<i class="fas fa-check-circle"></i>
+			Cursos Registrados
+		</h3>
+		<span class="section-count">{{ taken_courses|length }} cursos</span>
+	</div>
+	
+	<div class="courses-grid">
+		{% for taken_course in taken_courses %}
+		<div class="course-card {% if taken_course.is_registered %}registered{% endif %}">
+			<div class="course-image-container">
+				{% if taken_course.course.image %}
+					<img src="{{ taken_course.course.image.url }}" alt="{{ taken_course.course.title }}" class="course-image">
+				{% else %}
+					<div class="course-image-placeholder">
+						<i class="fas fa-book"></i>
+					</div>
+				{% endif %}
+				
+				<div class="course-status status-{{ taken_course.course.status }}">
+					<i class="fas fa-circle"></i>
+					{{ taken_course.course.status_text }}
+				</div>
+			</div>
+			
+			<div class="course-content">
+				<div class="course-title">{{ taken_course.course.title }}</div>
+				<div class="course-code">{{ taken_course.course.code }}</div>
+				
+				<div class="course-info">
+					<div class="info-item" title="Créditos">
+						<i class="fas fa-star"></i>
+						{{ taken_course.course.credit }}
+					</div>
+					<div class="info-item" title="Año">
+						<i class="fas fa-calendar"></i>
+						{{ taken_course.course.year }}
+					</div>
+					<div class="info-item" title="Semestre">
+						<i class="fas fa-clock"></i>
+						{{ taken_course.course.semester }}
+					</div>
+					{% if taken_course.course.materials_count > 0 %}
+					<div class="info-item" title="Materiales">
+						<i class="fas fa-file-alt"></i>
+						{{ taken_course.course.materials_count }}
+					</div>
+					{% endif %}
+				</div>
+				
+				<div class="course-actions">
+					<a href="{{ taken_course.course.get_absolute_url }}" class="btn-course btn-primary">
+						<i class="fas fa-book-reader"></i> Ver
+					</a>
+					<a href="{% url 'course:course_modules' taken_course.course.slug %}" class="btn-course btn-secondary">
+						<i class="fas fa-layer-group"></i> Módulos
+					</a>
+				</div>
+			</div>
+		</div>
+		{% endfor %}
+	</div>
+	{% endif %}
+
+	<!-- Todos los Cursos Disponibles -->
+	<div class="section-header">
+		<h3 class="section-title">
+			<i class="fas fa-book"></i>
+			{% if request.user.is_student %}
+				Todos los Cursos Disponibles
+			{% elif request.user.is_lecturer %}
+				Cursos Asignados
+			{% else %}
+				Todos los Cursos
+			{% endif %}
+		</h3>
+		<span class="section-count">{{ courses|length }} cursos</span>
+	</div>
+	
+	{% if courses %}
+	<div class="courses-grid">
+		{% for course in courses %}
+		<div class="course-card">
+			<div class="course-image-container">
+				{% if course.image %}
+					<img src="{{ course.image.url }}" alt="{{ course.title }}" class="course-image">
+				{% else %}
+					<div class="course-image-placeholder">
+						<i class="fas fa-graduation-cap"></i>
+					</div>
+				{% endif %}
+			</div>
+			
+			<div class="course-content">
+				<div class="course-title">{{ course.title }}</div>
+				<div class="course-code">{{ course.code }}</div>
+				
+				<div class="course-info">
+					<div class="info-item">
+						<i class="fas fa-graduation-cap"></i>
+						<span>{{ course.credit }} créditos</span>
+					</div>
+					<div class="info-item">
+						<i class="fas fa-calendar"></i>
+						<span>Año {{ course.year }}</span>
+					</div>
+					<div class="info-item">
+						<i class="fas fa-clock"></i>
+						<span>{{ course.semester }}</span>
+					</div>
+					<div class="info-item">
+						<i class="fas fa-file-alt"></i>
+						<span>{{ course.materials_count }} materiales</span>
+					</div>
+				</div>
+				
+				{% if request.user.is_student %}
+					{% if course.is_registered %}
+					<div class="course-status status-registered">
+						<i class="fas fa-check-circle"></i>
+						Ya Registrado
+					</div>
+					{% else %}
+					<div class="course-status status-in-progress">
+						<i class="fas fa-clock"></i>
+						Disponible para Registro
+					</div>
+					{% endif %}
+				{% endif %}
+				
+				<div class="course-actions">
+					<a href="{{ course.get_absolute_url }}" class="btn-course btn-primary">
+						<i class="fas fa-eye"></i> Ver Detalles
+					</a>
+					{% if request.user.is_student and not course.is_registered %}
+					<a href="{% url 'course:course_registration' %}" class="btn-course btn-secondary">
+						<i class="fas fa-plus-circle"></i> Registrarse
+					</a>
+					{% endif %}
+				</div>
+			</div>
+		</div>
+		{% endfor %}
+	</div>
+	{% else %}
+	<div class="empty-state">
+		<i class="fas fa-info-circle"></i>
+		<h4>
+			{% if request.user.is_student %}
+				No hay cursos disponibles
+			{% elif request.user.is_lecturer %}
+				No tienes cursos asignados
+			{% else %}
+				No hay cursos disponibles
+			{% endif %}
+		</h4>
+		<p>
+			{% if request.user.is_student %}
+				No hay cursos disponibles para tu programa y nivel actual
+			{% elif request.user.is_lecturer %}
+				Contacta al administrador para asignarte cursos
+			{% else %}
+				No hay cursos en el sistema
+			{% endif %}
+		</p>
+	</div>
+	{% endif %}
+
+</div>
+
+    <!-- Sidebar con estadísticas -->
+    <div class="sidebar">
+        {% if request.user.is_student and student %}
+        <h3 class="sidebar-title">
+            <i class="fas fa-chart-line"></i>
+            Resumen Académico
+        </h3>
+        <div class="student-stats">
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <div class="stat-value">{{ total_credits_registered }}</div>
+                    <div class="stat-label">Créditos Registrados</div>
+                </div>
+                
+                <div class="stat-card">
+                    <div class="stat-value">{{ current_gpa }}</div>
+                    <div class="stat-label">GPA Actual</div>
+                </div>
+                
+                <div class="stat-card">
+                    <div class="stat-value">{{ progress_percentage }}%</div>
+                    <div class="stat-label">Progreso del Programa</div>
+                </div>
+                
+                <div class="stat-card">
+                    <div class="stat-value">{{ courses_count }}/{{ total_courses_available }}</div>
+                    <div class="stat-label">Cursos Completados</div>
+                </div>
+            </div>
+        </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock content %}

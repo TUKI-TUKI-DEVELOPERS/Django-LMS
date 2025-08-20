@@ -1,0 +1,422 @@
+{% extends 'base.html' %}
+{% load i18n %}
+{% block title %}{{ video.title }} | Sistema de Gestión Académica{% endblock title %}
+{% load static %}
+
+{% block content %}
+
+<style>
+	/* Modern Video Detail Styles 2025 */
+	:root {
+		--gray-dark: rgb(69, 69, 69);
+		--lime-green: rgb(146, 182, 42);
+		--navy-blue: rgb(32, 32, 68);
+		--dark-red: rgb(159, 8, 31);
+		--mustard-yellow: rgb(226, 210, 41);
+	}
+
+	/* Page background with transparency */
+	body {
+		background: url('{% static "img/pic-8.png" %}') center/cover no-repeat fixed;
+		background-attachment: fixed;
+	}
+
+	.video-detail-container {
+		background: rgba(255, 255, 255, 0.95);
+		backdrop-filter: blur(20px);
+		border-radius: 20px;
+		box-shadow: 0 8px 32px rgba(0,0,0,0.08);
+		margin: 1rem;
+		padding: 2rem;
+		border: 1px solid rgba(146, 182, 42, 0.1);
+	}
+
+	/* Breadcrumb - Elegant */
+	.breadcrumb {
+		background: transparent;
+		padding: 0;
+		margin-bottom: 2rem;
+	}
+
+	.breadcrumb-item a {
+		color: var(--lime-green);
+		text-decoration: none;
+		font-weight: 500;
+		transition: color 0.3s ease;
+	}
+
+	.breadcrumb-item a:hover {
+		color: #a8c73a;
+	}
+
+	.breadcrumb-item.active {
+		color: #6c757d;
+	}
+
+	/* Page Header */
+	.page-header {
+		margin-bottom: 2rem;
+		padding-bottom: 1rem;
+		border-bottom: 1px solid rgba(146, 182, 42, 0.1);
+	}
+
+	.page-title {
+		font-size: 2.2rem;
+		font-weight: 700;
+		color: var(--navy-blue);
+		margin: 0;
+		background: linear-gradient(135deg, var(--navy-blue) 0%, var(--lime-green) 100%);
+		-webkit-background-clip: text;
+		-webkit-text-fill-color: transparent;
+		background-clip: text;
+		display: flex;
+		align-items: center;
+	}
+
+	.page-title i {
+		margin-right: 1rem;
+		font-size: 2rem;
+		background: linear-gradient(135deg, var(--lime-green) 0%, #a8c73a 100%);
+		-webkit-background-clip: text;
+		-webkit-text-fill-color: transparent;
+		background-clip: text;
+	}
+
+	/* Video Info */
+	.video-info {
+		background: rgba(146, 182, 42, 0.1);
+		border-radius: 12px;
+		padding: 1.5rem;
+		margin-bottom: 2rem;
+		border-left: 4px solid var(--lime-green);
+	}
+
+	.video-info h4 {
+		color: var(--navy-blue);
+		margin: 0 0 0.5rem 0;
+		font-weight: 600;
+	}
+
+	.video-info p {
+		color: #6c757d;
+		margin: 0;
+		font-size: 0.95rem;
+	}
+
+	/* Video Player Container */
+	.video-player-container {
+		background: rgba(255, 255, 255, 0.98);
+		border: 1px solid rgba(146, 182, 42, 0.1);
+		border-radius: 16px;
+		box-shadow: 0 4px 20px rgba(0,0,0,0.06);
+		padding: 2rem;
+		margin-bottom: 2rem;
+		transition: all 0.3s ease;
+		position: relative;
+		overflow: hidden;
+	}
+
+	.video-player-container::before {
+		content: '';
+		position: absolute;
+		top: 0;
+		left: 0;
+		right: 0;
+		height: 3px;
+		background: linear-gradient(135deg, var(--lime-green) 0%, #a8c73a 100%);
+		opacity: 1;
+	}
+
+	.video-player-container:hover {
+		transform: translateY(-2px);
+		box-shadow: 0 8px 32px rgba(146, 182, 42, 0.15);
+		border-color: rgba(146, 182, 42, 0.3);
+	}
+
+	/* Video Player */
+	.video-player {
+		width: 100%;
+		max-width: 100%;
+		border-radius: 12px;
+		box-shadow: 0 8px 25px rgba(0,0,0,0.15);
+		transition: all 0.3s ease;
+	}
+
+	.video-player:hover {
+		transform: scale(1.02);
+		box-shadow: 0 12px 35px rgba(0,0,0,0.2);
+	}
+
+	/* Video Metadata */
+	.video-metadata {
+		background: rgba(32, 32, 68, 0.05);
+		border-radius: 12px;
+		padding: 1.5rem;
+		margin-top: 1.5rem;
+		border-left: 4px solid var(--navy-blue);
+	}
+
+	.video-metadata h5 {
+		color: var(--navy-blue);
+		margin-bottom: 1rem;
+		font-weight: 600;
+		display: flex;
+		align-items: center;
+	}
+
+	.video-metadata h5 i {
+		margin-right: 0.5rem;
+		color: var(--lime-green);
+	}
+
+	.metadata-item {
+		display: flex;
+		align-items: center;
+		margin-bottom: 0.8rem;
+		padding: 0.5rem;
+		border-radius: 8px;
+		transition: all 0.3s ease;
+	}
+
+	.metadata-item:hover {
+		background: rgba(146, 182, 42, 0.1);
+	}
+
+	.metadata-item i {
+		color: var(--lime-green);
+		margin-right: 0.8rem;
+		font-size: 1.1rem;
+		width: 20px;
+		text-align: center;
+	}
+
+	.metadata-item span {
+		color: var(--navy-blue);
+		font-weight: 500;
+	}
+
+	.metadata-item .value {
+		color: #6c757d;
+		margin-left: 0.5rem;
+	}
+
+	/* Video Description */
+	.video-description {
+		background: rgba(255, 255, 255, 0.98);
+		border: 1px solid rgba(146, 182, 42, 0.1);
+		border-radius: 16px;
+		box-shadow: 0 4px 20px rgba(0,0,0,0.06);
+		padding: 2rem;
+		margin-bottom: 2rem;
+		transition: all 0.3s ease;
+		position: relative;
+		overflow: hidden;
+	}
+
+	.video-description::before {
+		content: '';
+		position: absolute;
+		top: 0;
+		left: 0;
+		right: 0;
+		height: 3px;
+		background: linear-gradient(135deg, var(--lime-green) 0%, #a8c73a 100%);
+		opacity: 1;
+	}
+
+	.video-description:hover {
+		transform: translateY(-2px);
+		box-shadow: 0 8px 32px rgba(146, 182, 42, 0.15);
+		border-color: rgba(146, 182, 42, 0.3);
+	}
+
+	.description-title {
+		font-size: 1.3rem;
+		font-weight: 600;
+		color: var(--navy-blue);
+		margin-bottom: 1rem;
+		display: flex;
+		align-items: center;
+	}
+
+	.description-title i {
+		margin-right: 0.8rem;
+		color: var(--lime-green);
+	}
+
+	.description-content {
+		color: #6c757d;
+		line-height: 1.6;
+		font-size: 1rem;
+	}
+
+	.no-description {
+		color: #6c757d;
+		font-style: italic;
+		text-align: center;
+		padding: 2rem;
+		background: rgba(146, 182, 42, 0.05);
+		border-radius: 8px;
+		border: 2px dashed rgba(146, 182, 42, 0.3);
+	}
+
+	/* Action Buttons */
+	.action-buttons {
+		display: flex;
+		gap: 1rem;
+		margin-top: 2rem;
+		justify-content: center;
+	}
+
+	.btn-action {
+		background: linear-gradient(135deg, var(--lime-green) 0%, #a8c73a 100%);
+		border: none;
+		color: white;
+		padding: 0.8rem 1.5rem;
+		border-radius: 12px;
+		font-weight: 600;
+		transition: all 0.3s ease;
+		box-shadow: 0 4px 15px rgba(146, 182, 42, 0.3);
+		text-decoration: none;
+		display: inline-flex;
+		align-items: center;
+	}
+
+	.btn-action:hover {
+		transform: translateY(-2px);
+		box-shadow: 0 8px 25px rgba(146, 182, 42, 0.4);
+		color: white;
+	}
+
+	.btn-action i {
+		margin-right: 0.5rem;
+	}
+
+	.btn-secondary {
+		background: linear-gradient(135deg, #6c757d 0%, #5a6268 100%);
+		box-shadow: 0 4px 15px rgba(108, 117, 125, 0.3);
+	}
+
+	.btn-secondary:hover {
+		box-shadow: 0 8px 25px rgba(108, 117, 125, 0.4);
+	}
+
+	/* Responsive */
+	@media (max-width: 768px) {
+		.video-detail-container {
+			margin: 0.5rem;
+			padding: 1rem;
+		}
+		
+		.page-title {
+			font-size: 1.8rem;
+		}
+		
+		.video-player-container,
+		.video-description {
+			padding: 1.5rem;
+		}
+		
+		.action-buttons {
+			flex-direction: column;
+		}
+		
+		.btn-action {
+			justify-content: center;
+		}
+	}
+</style>
+
+<div class="video-detail-container">
+	<nav style="--bs-breadcrumb-divider: '>';" aria-label="breadcrumb">
+		<ol class="breadcrumb">
+			<li class="breadcrumb-item"><a href="/">Inicio</a></li>
+			<li class="breadcrumb-item"><a href="{% url 'course:programs' %}">Programas</a></li>
+			<li class="breadcrumb-item"><a href="{% url 'course:program_detail' video.course.program.id %}">{{ video.course.program }}</a></li>
+			<li class="breadcrumb-item"><a href="{% url 'course:course_single' video.course.slug %}">{{ video.course }}</a></li>
+			<li class="breadcrumb-item active" aria-current="page">{{ video.title }}</li>
+		</ol>
+	</nav>
+
+	<div class="page-header">
+		<h1 class="page-title">
+			<i class="fas fa-play-circle"></i>
+			{{ video.title }}
+		</h1>
+	</div>
+
+	<div class="video-info">
+		<h4><i class="fas fa-book"></i> {{ video.course }}</h4>
+		<p><i class="fas fa-project-diagram"></i> Programa: {{ video.course.program }}</p>
+	</div>
+
+	<div class="video-player-container">
+		<video class="video-player" src="{{ video.video.url }}" controls>
+			Tu navegador no soporta el elemento de video.
+		</video>
+		
+		<div class="video-metadata">
+			<h5><i class="fas fa-info-circle"></i> Información del Video</h5>
+			
+			<div class="metadata-item">
+				<i class="fas fa-calendar"></i>
+				<span>Subido:</span>
+				<span class="value">{{ video.timestamp|timesince }} atrás</span>
+			</div>
+			
+			<div class="metadata-item">
+				<i class="fas fa-user"></i>
+				<span>Profesor:</span>
+				<span class="value">{{ video.course.lecturer.get_full_name|default:"No asignado" }}</span>
+			</div>
+			
+			<div class="metadata-item">
+				<i class="fas fa-clock"></i>
+				<span>Duración:</span>
+				<span class="value">Video tutorial</span>
+			</div>
+			
+			<div class="metadata-item">
+				<i class="fas fa-eye"></i>
+				<span>Estado:</span>
+				<span class="value">Disponible para estudiantes</span>
+			</div>
+		</div>
+	</div>
+
+	<div class="video-description">
+		<h3 class="description-title">
+			<i class="fas fa-align-left"></i>
+			Descripción del Video
+		</h3>
+		
+		{% if video.summary %}
+		<div class="description-content">
+			{{ video.summary }}
+		</div>
+		{% else %}
+		<div class="no-description">
+			<i class="fas fa-info-circle"></i>
+			No se ha establecido una descripción para este video.
+		</div>
+		{% endif %}
+	</div>
+
+	<div class="action-buttons">
+		<a href="{% url 'course:course_single' video.course.slug %}" class="btn-action btn-secondary">
+			<i class="fas fa-arrow-left"></i>Volver al Curso
+		</a>
+		
+		{% if request.user.is_lecturer or request.user.is_superuser %}
+			<a href="{% url 'course:edit_video_view' video.course.slug video.slug %}" class="btn-action">
+				<i class="fas fa-edit"></i> Editar Video
+			</a>
+			<a href="{% url 'course:delete_video_view' video.course.slug video.slug %}" class="btn-action btn-secondary"
+			   onclick="return confirm('¿Estás seguro de que quieres eliminar este video?')">
+				<i class="fas fa-trash"></i> Eliminar Video
+			</a>
+		{% endif %}
+	</div>
+</div>
+
+{% endblock content %}

@@ -1,0 +1,630 @@
+{% extends 'base.html' %}
+{% load static %}
+{% load crispy_forms_tags %}
+
+{% block title %}Cursos{% endblock %}
+
+{% block content %}
+<link rel="stylesheet" href="{% static 'css/course-2025.css' %}">
+<div class="course-list-container">
+    <div class="container">
+        <div class="content-wrapper">
+            <!-- Header -->
+            <div class="page-header">
+                <div class="header-content">
+                    <div class="header-title">
+                        <h1><i class="fas fa-graduation-cap"></i> Cursos</h1>
+                        <p class="subtitle">Gestiona todos los cursos del sistema</p>
+                    </div>
+                    <div class="header-actions">
+                        <a href="{% url 'course:user_course_list' %}" class="btn btn-secondary">
+                            <i class="fas fa-list"></i> Mis Cursos
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Filter Section -->
+            <div class="filter-section">
+                <div class="filter-card">
+                    <div class="filter-header">
+                        <h3><i class="fas fa-filter"></i> Filtros</h3>
+                    </div>
+                    <form method="get" class="filter-form">
+                        {{ filter.form|crispy }}
+                        <div class="filter-actions">
+                            <button type="submit" class="btn btn-primary">
+                                <i class="fas fa-search"></i> Filtrar
+                            </button>
+                            <a href="{% url 'course:course_list' %}" class="btn btn-secondary">
+                                <i class="fas fa-times"></i> Limpiar
+                            </a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+            <!-- Courses List -->
+            <div class="courses-section">
+                <div class="section-header">
+                    <h2>
+                        <i class="fas fa-graduation-cap"></i>Lista de Cursos
+                    </h2>
+                    <div class="section-actions">
+                        <span class="courses-count">{{ page_obj.paginator.count }} cursos encontrados</span>
+                    </div>
+                </div>
+                
+                {% if page_obj %}
+                <div class="courses-grid">
+                    {% for course in page_obj %}
+                    <div class="course-card">
+                        {% if course.image %}
+                        <div class="course-image-container">
+                            <img src="{{ course.image.url }}" alt="{{ course.title }}" class="course-image">
+                        </div>
+                        {% else %}
+                        <div class="course-image-container">
+                            <div class="course-image-placeholder">
+                                <i class="fas fa-graduation-cap"></i>
+                            </div>
+                        </div>
+                        {% endif %}
+                        
+                        <div class="course-header">
+                            <div class="course-title">{{ course.title }}</div>
+                            <div class="course-code">{{ course.code }}</div>
+                        </div>
+                        
+                        <div class="course-body">
+                            <div class="course-description">
+                                {{ course.summary|truncatewords:20 }}
+                            </div>
+                            
+                            <div class="course-info">
+                                <div class="info-item">
+                                    <i class="fas fa-book"></i>
+                                    <span>{{ course.program.title }}</span>
+                                </div>
+                                <div class="info-item">
+                                    <i class="fas fa-star"></i>
+                                    <span>{{ course.credit }} créditos</span>
+                                </div>
+                                <div class="info-item">
+                                    <i class="fas fa-clock"></i>
+                                    <span>{{ course.semester }}</span>
+                                </div>
+                            </div>
+                            
+                            <div class="course-status">
+                                {% if course.is_active %}
+                                    <span class="badge badge-success">Activo</span>
+                                {% else %}
+                                    <span class="badge badge-secondary">Inactivo</span>
+                                {% endif %}
+                                {% if course.is_elective %}
+                                    <span class="badge badge-info">Electivo</span>
+                                {% else %}
+                                    <span class="badge badge-warning">Obligatorio</span>
+                                {% endif %}
+                            </div>
+                            
+                            <div class="course-actions">
+                                <a href="{% url 'course:course_single' slug=course.slug %}" class="btn-course btn-primary">
+                                    <i class="fas fa-eye"></i> Ver Curso
+                                </a>
+                                {% if user.is_lecturer or user.is_superuser %}
+                                <div class="admin-actions">
+                                    <a href="{% url 'course:course_modules' slug=course.slug %}" class="btn-course btn-secondary">
+                                        <i class="fas fa-cubes"></i> Módulos
+                                    </a>
+                                </div>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+                
+                <!-- Pagination -->
+                {% if page_obj.has_other_pages %}
+                <div class="pagination-section">
+                    <nav aria-label="Navegación de páginas">
+                        <ul class="pagination">
+                            {% if page_obj.has_previous %}
+                                <li class="page-item">
+                                    <a class="page-link" href="?page=1{% if request.GET.q %}&q={{ request.GET.q }}{% endif %}">
+                                        <i class="fas fa-angle-double-left"></i>
+                                    </a>
+                                </li>
+                                <li class="page-item">
+                                    <a class="page-link" href="?page={{ page_obj.previous_page_number }}{% if request.GET.q %}&q={{ request.GET.q }}{% endif %}">
+                                        <i class="fas fa-angle-left"></i>
+                                    </a>
+                                </li>
+                            {% endif %}
+                            
+                            {% for num in page_obj.paginator.page_range %}
+                                {% if page_obj.number == num %}
+                                    <li class="page-item active">
+                                        <span class="page-link">{{ num }}</span>
+                                    </li>
+                                {% elif num > page_obj.number|add:'-3' and num < page_obj.number|add:'3' %}
+                                    <li class="page-item">
+                                        <a class="page-link" href="?page={{ num }}{% if request.GET.q %}&q={{ request.GET.q }}{% endif %}">{{ num }}</a>
+                                    </li>
+                                {% endif %}
+                            {% endfor %}
+                            
+                            {% if page_obj.has_next %}
+                                <li class="page-item">
+                                    <a class="page-link" href="?page={{ page_obj.next_page_number }}{% if request.GET.q %}&q={{ request.GET.q }}{% endif %}">
+                                        <i class="fas fa-angle-right"></i>
+                                    </a>
+                                </li>
+                                <li class="page-item">
+                                    <a class="page-link" href="?page={{ page_obj.paginator.num_pages }}{% if request.GET.q %}&q={{ request.GET.q }}{% endif %}">
+                                        <i class="fas fa-angle-double-right"></i>
+                                    </a>
+                                </li>
+                            {% endif %}
+                        </ul>
+                    </nav>
+                </div>
+                {% endif %}
+                
+                {% else %}
+                <div class="empty-state">
+                    <i class="fas fa-graduation-cap"></i>
+                    <h4>No se encontraron cursos</h4>
+                    <p>No hay cursos que coincidan con los filtros aplicados.</p>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+:root {
+    --primary-color: #204444;
+    --secondary-color: #92b62a;
+    --accent-color: #9f081f;
+    --warning-color: #e2d229;
+    --dark-gray: #454545;
+    --light-gray: #f8f9fa;
+    --white: #ffffff;
+    --glass-bg: rgba(255, 255, 255, 0.1);
+    --glass-border: rgba(255, 255, 255, 0.2);
+    --shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+    --border-radius: 12px;
+}
+
+.course-list-container {
+    min-height: 100vh;
+    background: linear-gradient(135deg, var(--primary-color) 0%, var(--dark-gray) 100%);
+    padding: 2rem 0;
+}
+
+.content-wrapper {
+    max-width: 1400px;
+    margin: 0 auto;
+    padding: 0 1rem;
+}
+
+.page-header {
+    background: var(--glass-bg);
+    backdrop-filter: blur(10px);
+    border: 1px solid var(--glass-border);
+    border-radius: var(--border-radius);
+    padding: 2rem;
+    margin-bottom: 2rem;
+    box-shadow: var(--shadow);
+}
+
+.header-content {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 1rem;
+}
+
+.header-title h1 {
+    color: var(--white);
+    margin: 0;
+    font-size: 2rem;
+    font-weight: 700;
+}
+
+.header-title .subtitle {
+    color: var(--secondary-color);
+    margin: 0.5rem 0 0 0;
+    font-size: 1.1rem;
+}
+
+.header-actions .btn {
+    background: var(--secondary-color);
+    border: none;
+    color: var(--white);
+    padding: 0.75rem 1.5rem;
+    border-radius: var(--border-radius);
+    text-decoration: none;
+    transition: all 0.3s ease;
+    font-weight: 600;
+}
+
+.header-actions .btn:hover {
+    background: #7a9a22;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(146, 182, 42, 0.3);
+}
+
+.filter-section {
+    background: var(--glass-bg);
+    backdrop-filter: blur(10px);
+    border: 1px solid var(--glass-border);
+    border-radius: var(--border-radius);
+    padding: 2rem;
+    margin-bottom: 2rem;
+    box-shadow: var(--shadow);
+}
+
+.filter-card {
+    background: var(--white);
+    border-radius: var(--border-radius);
+    padding: 2rem;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+}
+
+.filter-header h3 {
+    color: var(--primary-color);
+    margin: 0 0 1.5rem 0;
+    font-size: 1.25rem;
+    font-weight: 700;
+}
+
+.filter-actions {
+    display: flex;
+    gap: 1rem;
+    margin-top: 1.5rem;
+}
+
+.filter-actions .btn {
+    padding: 0.75rem 1.5rem;
+    border-radius: var(--border-radius);
+    font-weight: 600;
+    text-decoration: none;
+    transition: all 0.3s ease;
+    border: none;
+}
+
+.filter-actions .btn-primary {
+    background: var(--secondary-color);
+    color: var(--white);
+}
+
+.filter-actions .btn-primary:hover {
+    background: #7a9a22;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(146, 182, 42, 0.3);
+}
+
+.filter-actions .btn-secondary {
+    background: var(--dark-gray);
+    color: var(--white);
+}
+
+.filter-actions .btn-secondary:hover {
+    background: #333;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(69, 69, 69, 0.3);
+}
+
+.courses-section {
+    background: var(--glass-bg);
+    backdrop-filter: blur(10px);
+    border: 1px solid var(--glass-border);
+    border-radius: var(--border-radius);
+    padding: 2rem;
+    box-shadow: var(--shadow);
+}
+
+.section-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 2rem;
+    padding-bottom: 1rem;
+    border-bottom: 2px solid var(--glass-border);
+}
+
+.section-header h2 {
+    color: var(--white);
+    margin: 0;
+    font-size: 1.75rem;
+    font-weight: 700;
+}
+
+.section-actions {
+    margin-left: auto;
+}
+
+.courses-count {
+    color: var(--secondary-color);
+    font-weight: 600;
+    font-size: 1rem;
+}
+
+.courses-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 1.2rem; margin-bottom: 2rem; }
+@media (max-width: 992px){ .courses-grid { grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); } }
+@media (max-width: 576px){ .courses-grid { grid-template-columns: 1fr; } }
+
+.course-card {
+    background: var(--white);
+    border-radius: var(--border-radius);
+    overflow: hidden;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+    transition: all 0.3s ease;
+}
+
+.course-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 8px 30px rgba(0, 0, 0, 0.15);
+}
+
+.course-image-container { height: clamp(180px, 26vw, 240px); overflow: hidden; position: relative; }
+
+.course-image {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.course-image-placeholder {
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(135deg, var(--primary-color), var(--dark-gray));
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--white);
+    font-size: 3rem;
+}
+
+.course-header {
+    padding: 1.5rem 1.5rem 1rem;
+    border-bottom: 1px solid var(--light-gray);
+}
+
+.course-title {
+    color: var(--primary-color);
+    font-size: 1.25rem;
+    font-weight: 700;
+    margin-bottom: 0.5rem;
+}
+
+.course-code {
+    color: var(--secondary-color);
+    font-weight: 600;
+    font-size: 0.875rem;
+}
+
+.course-body {
+    padding: 1rem 1.5rem 1.5rem;
+}
+
+.course-description {
+    color: var(--dark-gray);
+    font-size: 0.875rem;
+    line-height: 1.5;
+    margin-bottom: 1rem;
+}
+
+.course-info { margin-bottom: 1rem; }
+.course-info .info-item span{word-break: break-word}
+
+.info-item {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    margin-bottom: 0.5rem;
+    font-size: 0.875rem;
+    color: var(--dark-gray);
+}
+
+.info-item i {
+    color: var(--secondary-color);
+    width: 16px;
+}
+
+.course-status {
+    display: flex;
+    gap: 0.5rem;
+    margin-bottom: 1rem;
+}
+
+.badge {
+    padding: 0.25rem 0.75rem;
+    border-radius: 20px;
+    font-size: 0.75rem;
+    font-weight: 600;
+}
+
+.badge-success {
+    background: var(--secondary-color);
+    color: var(--white);
+}
+
+.badge-secondary {
+    background: var(--dark-gray);
+    color: var(--white);
+}
+
+.badge-info {
+    background: var(--primary-color);
+    color: var(--white);
+}
+
+.badge-warning {
+    background: var(--warning-color);
+    color: var(--dark-gray);
+}
+
+.course-actions { display: flex; flex-direction: column; gap: 0.5rem; }
+@media (max-width: 768px){ .course-actions { flex-direction: column; } }
+
+.btn-course {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    padding: 0.75rem 1rem;
+    border-radius: var(--border-radius);
+    text-decoration: none;
+    font-weight: 600;
+    transition: all 0.3s ease;
+    border: none;
+    font-size: 0.875rem;
+}
+
+.btn-course.btn-primary {
+    background: var(--secondary-color);
+    color: var(--white);
+}
+
+.btn-course.btn-primary:hover {
+    background: #7a9a22;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(146, 182, 42, 0.3);
+}
+
+.btn-course.btn-secondary {
+    background: var(--dark-gray);
+    color: var(--white);
+}
+
+.btn-course.btn-secondary:hover {
+    background: #333;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(69, 69, 69, 0.3);
+}
+
+.admin-actions {
+    display: flex;
+    gap: 0.5rem;
+}
+
+.admin-actions .btn-course {
+    flex: 1;
+}
+
+.pagination-section {
+    display: flex;
+    justify-content: center;
+    margin-top: 2rem;
+}
+
+.pagination {
+    display: flex;
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    gap: 0.5rem;
+}
+
+.page-item {
+    margin: 0;
+}
+
+.page-link {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 40px;
+    height: 40px;
+    border-radius: var(--border-radius);
+    background: var(--white);
+    color: var(--primary-color);
+    text-decoration: none;
+    font-weight: 600;
+    transition: all 0.3s ease;
+    border: 2px solid transparent;
+}
+
+.page-link:hover {
+    background: var(--secondary-color);
+    color: var(--white);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(146, 182, 42, 0.3);
+}
+
+.page-item.active .page-link {
+    background: var(--secondary-color);
+    color: var(--white);
+    border-color: var(--secondary-color);
+}
+
+.empty-state {
+    text-align: center;
+    padding: 3rem 2rem;
+    color: var(--white);
+}
+
+.empty-state i {
+    font-size: 4rem;
+    color: var(--secondary-color);
+    margin-bottom: 1rem;
+}
+
+.empty-state h4 {
+    font-size: 1.5rem;
+    font-weight: 700;
+    margin: 1rem 0;
+}
+
+.empty-state p {
+    font-size: 1rem;
+    opacity: 0.8;
+}
+
+@media (max-width: 768px) {
+    .header-content {
+        flex-direction: column;
+        text-align: center;
+    }
+    
+    .section-header {
+        flex-direction: column;
+        gap: 1rem;
+    }
+    
+    .courses-grid {
+        grid-template-columns: 1fr;
+    }
+    
+    .filter-actions {
+        flex-direction: column;
+    }
+    
+    .admin-actions {
+        flex-direction: column;
+    }
+}
+</style>
+<style>
+  /* Unified white + lime skin overrides for course */
+  :root { --lime-green: rgb(146, 182, 42); --lime-green-dark: #7a9a2a; --gray-dark: #454545; --gray-600: #6c757d; }
+  body { background: url('{% static "img/pic-8.png" %}') center/cover no-repeat fixed; background-attachment: fixed; }
+  .course-list-container { background: transparent !important; }
+  .content-wrapper { background: rgba(255,255,255,0.95); border: 1px solid rgba(146,182,42,0.12); box-shadow: 0 8px 32px rgba(0,0,0,0.08); backdrop-filter: blur(18px); border-radius: 18px; padding: 1rem; }
+  .page-header { background: transparent !important; border: none; padding: 1rem 0 !important; border-bottom: 1px solid rgba(146,182,42,0.15); }
+  .header-title h1 { background: linear-gradient(135deg, var(--lime-green) 0%, #a8c73a 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; color: transparent; }
+  .breadcrumb .breadcrumb-item a, .breadcrumb-item a { color: var(--lime-green) !important; }
+  .breadcrumb-item a:hover { color: var(--lime-green-dark) !important; }
+  .form-control, .form-select, input[type="text"], input[type="email"], input[type="tel"], textarea, select { border: 1px solid rgba(146,182,42,0.2); border-radius: 10px; padding: 0.65rem 0.9rem; background: rgba(255,255,255,0.95); transition: all 0.2s ease; }
+  .form-control:focus, .form-select:focus, input[type="text"]:focus, input[type="email"]:focus, input[type="tel"]:focus, textarea:focus, select:focus { outline: none; border-color: var(--lime-green); box-shadow: 0 0 0 3px rgba(146,182,42,0.12); }
+  .btn, .btn-primary, .btn-secondary { background: linear-gradient(135deg, var(--lime-green) 0%, var(--lime-green-dark) 100%) !important; color: #fff !important; border: none !important; box-shadow: 0 4px 14px rgba(146,182,42,0.28) !important; }
+  .btn:hover, .btn-primary:hover, .btn-secondary:hover { transform: translateY(-1px); box-shadow: 0 6px 18px rgba(146,182,42,0.22) !important; color: #fff !important; }
+</style>
+{% endblock %}

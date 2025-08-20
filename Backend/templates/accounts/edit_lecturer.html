@@ -1,0 +1,444 @@
+{% extends 'base.html' %}
+{% load i18n %}
+{% block title %}{{ title }} | Sistema de Gestión Académica{% endblock title %}
+{% load crispy_forms_tags %}
+{% load static %}
+
+{% block content %}
+
+<style>
+	/* Modern Form Styles 2025 */
+	.form-container {
+		background: rgba(255, 255, 255, 0.95);
+		backdrop-filter: blur(20px);
+		border-radius: 16px;
+		box-shadow: 0 8px 32px rgba(0,0,0,0.08);
+		margin: 1rem;
+		padding: 2rem;
+	}
+
+	/* Breadcrumb - Elegant */
+	.breadcrumb {
+		background: transparent;
+		padding: 0;
+		margin-bottom: 2rem;
+	}
+
+	.breadcrumb-item a {
+		color: #92b62a;
+		text-decoration: none;
+		font-weight: 500;
+		transition: color 0.3s ease;
+	}
+
+	.breadcrumb-item a:hover {
+		color: #7a9a2a;
+	}
+
+	.breadcrumb-item.active {
+		color: #6c757d;
+	}
+
+	/* Page Header */
+	.page-header {
+		display: flex;
+		align-items: center;
+		margin-bottom: 2rem;
+		padding-bottom: 1rem;
+		border-bottom: 1px solid rgba(146, 182, 42, 0.1);
+	}
+
+	.page-title {
+		font-size: 2rem;
+		font-weight: 700;
+		color: #2c3e50;
+		margin: 0;
+		background: linear-gradient(135deg, #2c3e50 0%, #92b62a 100%);
+		-webkit-background-clip: text;
+		-webkit-text-fill-color: transparent;
+		background-clip: text;
+		display: flex;
+		align-items: center;
+	}
+
+	.page-title i {
+		margin-right: 0.8rem;
+		color: #92b62a;
+	}
+
+	/* Form Card */
+	.form-card {
+		background: linear-gradient(135deg, rgba(255,255,255,0.9) 0%, rgba(248,249,250,0.9) 100%);
+		backdrop-filter: blur(10px);
+		border: 1px solid rgba(146, 182, 42, 0.1);
+		border-radius: 16px;
+		box-shadow: 0 4px 20px rgba(0,0,0,0.05);
+		padding: 2rem;
+		margin-bottom: 2rem;
+		position: relative;
+		overflow: hidden;
+	}
+
+	.form-card::before {
+		content: '';
+		position: absolute;
+		top: 0;
+		left: 0;
+		right: 0;
+		height: 3px;
+		background: linear-gradient(90deg, #92b62a, #7a9a2a);
+	}
+
+	.form-card:hover {
+		transform: translateY(-2px);
+		box-shadow: 0 8px 30px rgba(146, 182, 42, 0.15);
+		border-color: rgba(146, 182, 42, 0.3);
+	}
+
+	/* Section Title */
+	.section-title {
+		font-size: 1.3rem;
+		font-weight: 600;
+		color: #2c3e50;
+		margin-bottom: 1.5rem;
+		padding-bottom: 0.5rem;
+		border-bottom: 2px solid rgba(146, 182, 42, 0.2);
+		display: flex;
+		align-items: center;
+	}
+
+	.section-title i {
+		margin-right: 0.5rem;
+		color: #92b62a;
+	}
+
+	/* Form Fields */
+	.form-control, .form-select {
+		border: 2px solid rgba(146, 182, 42, 0.2);
+		border-radius: 10px;
+		padding: 0.8rem 1rem;
+		font-size: 0.95rem;
+		transition: all 0.3s ease;
+		background: rgba(255, 255, 255, 0.9);
+	}
+
+	.form-control:focus, .form-select:focus {
+		border-color: #92b62a;
+		box-shadow: 0 0 0 3px rgba(146, 182, 42, 0.1);
+		outline: none;
+	}
+
+	.form-control.bg-light {
+		background: rgba(248, 249, 250, 0.9) !important;
+		color: #6c757d;
+	}
+
+	.form-label {
+		font-weight: 600;
+		color: #2c3e50;
+		margin-bottom: 0.5rem;
+	}
+
+	/* Submit Button */
+	.btn-submit {
+		background: linear-gradient(135deg, #92b62a 0%, #7a9a2a 100%);
+		border: none;
+		color: white;
+		padding: 1rem 2rem;
+		border-radius: 12px;
+		font-weight: 600;
+		font-size: 1rem;
+		transition: all 0.3s ease;
+		box-shadow: 0 4px 15px rgba(146, 182, 42, 0.3);
+		text-transform: uppercase;
+		letter-spacing: 0.5px;
+	}
+
+	.btn-submit:hover {
+		transform: translateY(-2px);
+		box-shadow: 0 8px 25px rgba(146, 182, 42, 0.4);
+		color: white;
+	}
+
+	/* Cancel Button */
+	.btn-cancel {
+		background: rgba(108, 117, 125, 0.1);
+		border: 1px solid rgba(108, 117, 125, 0.2);
+		color: #6c757d;
+		padding: 1rem 2rem;
+		border-radius: 12px;
+		font-weight: 600;
+		font-size: 1rem;
+		transition: all 0.3s ease;
+		text-decoration: none;
+		display: inline-block;
+		margin-right: 1rem;
+	}
+
+	.btn-cancel:hover {
+		background: rgba(108, 117, 125, 0.2);
+		color: #495057;
+		transform: translateY(-2px);
+		text-decoration: none;
+	}
+
+	/* Form Row */
+	.form-row {
+		display: grid;
+		grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+		gap: 1.5rem;
+		margin-bottom: 1.5rem;
+	}
+
+	/* Field Group */
+	.field-group {
+		margin-bottom: 1.5rem;
+	}
+
+	.field-group label {
+		display: block;
+		margin-bottom: 0.5rem;
+		font-weight: 600;
+		color: #2c3e50;
+	}
+
+	.field-group input,
+	.field-group select,
+	.field-group textarea {
+		width: 100%;
+		border: 2px solid rgba(146, 182, 42, 0.2);
+		border-radius: 10px;
+		padding: 0.8rem 1rem;
+		font-size: 0.95rem;
+		transition: all 0.3s ease;
+		background: rgba(255, 255, 255, 0.9);
+	}
+
+	.field-group input:focus,
+	.field-group select:focus,
+	.field-group textarea:focus {
+		border-color: #92b62a;
+		box-shadow: 0 0 0 3px rgba(146, 182, 42, 0.1);
+		outline: none;
+	}
+
+	/* File Upload */
+	.file-upload {
+		border: 2px dashed rgba(146, 182, 42, 0.3);
+		border-radius: 12px;
+		padding: 2rem;
+		text-align: center;
+		background: rgba(146, 182, 42, 0.05);
+		transition: all 0.3s ease;
+	}
+
+	.file-upload:hover {
+		border-color: #92b62a;
+		background: rgba(146, 182, 42, 0.1);
+	}
+
+	/* Checkbox */
+	.form-check {
+		margin-bottom: 1rem;
+	}
+
+	.form-check-input {
+		width: 1.2rem;
+		height: 1.2rem;
+		margin-right: 0.5rem;
+		border: 2px solid rgba(146, 182, 42, 0.3);
+		border-radius: 4px;
+		transition: all 0.3s ease;
+	}
+
+	.form-check-input:checked {
+		background-color: #92b62a;
+		border-color: #92b62a;
+	}
+
+	.form-check-label {
+		font-weight: 500;
+		color: #2c3e50;
+		cursor: pointer;
+	}
+
+	/* Error Messages */
+	.error-message {
+		color: #dc3545;
+		font-size: 0.85rem;
+		margin-top: 0.25rem;
+	}
+
+	/* Responsive */
+	@media (max-width: 768px) {
+		.form-container {
+			margin: 0.5rem;
+			padding: 1rem;
+		}
+		
+		.page-title {
+			font-size: 1.6rem;
+		}
+		
+		.form-card {
+			padding: 1.5rem;
+		}
+		
+		.form-row {
+			grid-template-columns: 1fr;
+		}
+	}
+</style>
+
+<style>
+  /* Accounts unified skin overrides */
+  :root { --lime-green: rgb(146, 182, 42); --lime-green-dark: #7a9a2a; }
+  body { background: url('{% static "img/pic-8.png" %}') center/cover no-repeat fixed; background-attachment: fixed; }
+  .form-control, .form-select,
+  input[type="text"], input[type="email"], input[type="tel"], input[type="password"], textarea, select { border: 1px solid rgba(146,182,42,0.2); border-radius: 10px; padding: 0.65rem 0.9rem; background: rgba(255,255,255,0.95); transition: all 0.2s ease; }
+  .form-control:focus, .form-select:focus,
+  input[type="text"]:focus, input[type="email"]:focus, input[type="tel"]:focus, input[type="password"]:focus, textarea:focus, select:focus { outline: none; border-color: var(--lime-green); box-shadow: 0 0 0 3px rgba(146,182,42,0.12); }
+  .btn-submit { background: linear-gradient(135deg, var(--lime-green) 0%, var(--lime-green-dark) 100%) !important; color: #fff !important; border: none; box-shadow: 0 4px 14px rgba(146,182,42,0.28); }
+  .btn-cancel { border: 1px solid rgba(146,182,42,0.22); }
+  .breadcrumb-item a { color: var(--lime-green) !important; }
+  .breadcrumb-item a:hover { color: var(--lime-green-dark) !important; }
+</style>
+
+<div class="form-container">
+	<nav style="--bs-breadcrumb-divider: '>';" aria-label="breadcrumb">
+		<ol class="breadcrumb">
+		  <li class="breadcrumb-item"><a href="/">Inicio</a></li>
+		  <li class="breadcrumb-item"><a href="{% url 'lecturer_list' %}">Profesores</a></li>
+		  <li class="breadcrumb-item active" aria-current="page">Editar</li>
+		</ol>
+	</nav>
+
+	<div class="page-header">
+		<h1 class="page-title">
+			<i class="fas fa-edit"></i>Editar Profesor
+		</h1>
+	</div>
+
+	{% include 'snippets/messages.html' %}
+
+	<form action="" method="POST" enctype="multipart/form-data">{% csrf_token %}
+		<!-- Información de Cuenta -->
+		<div class="form-card">
+			<div class="section-title">
+				<i class="fas fa-user-circle"></i>Información de Cuenta
+			</div>
+			
+			<div class="form-row">
+				<div class="field-group">
+					<label for="{{ form.username.id_for_label }}">Nombre de Usuario</label>
+					{{ form.username }}
+					{% if form.username.errors %}
+					<div class="error-message">{{ form.username.errors.0 }}</div>
+					{% endif %}
+				</div>
+				<div class="field-group">
+					<label for="{{ form.is_active.id_for_label }}">Estado del Usuario</label>
+					<div class="form-check">
+						{{ form.is_active }}
+						<label class="form-check-label" for="{{ form.is_active.id_for_label }}">
+							Usuario Activo
+						</label>
+					</div>
+					{% if form.is_active.errors %}
+					<div class="error-message">{{ form.is_active.errors.0 }}</div>
+					{% endif %}
+				</div>
+			</div>
+		</div>
+
+		<!-- Información Personal -->
+		<div class="form-card">
+			<div class="section-title">
+				<i class="fas fa-user"></i>Información Personal
+			</div>
+			
+			<div class="form-row">
+				<div class="field-group">
+					<label for="{{ form.first_name.id_for_label }}">Nombre</label>
+					{{ form.first_name }}
+					{% if form.first_name.errors %}
+					<div class="error-message">{{ form.first_name.errors.0 }}</div>
+					{% endif %}
+				</div>
+				<div class="field-group">
+					<label for="{{ form.last_name.id_for_label }}">Apellido</label>
+					{{ form.last_name }}
+					{% if form.last_name.errors %}
+					<div class="error-message">{{ form.last_name.errors.0 }}</div>
+					{% endif %}
+				</div>
+			</div>
+			
+			<div class="form-row">
+				<div class="field-group">
+					<label for="{{ form.email.id_for_label }}">Correo Electrónico</label>
+					{{ form.email }}
+					{% if form.email.errors %}
+					<div class="error-message">{{ form.email.errors.0 }}</div>
+					{% endif %}
+				</div>
+				<div class="field-group">
+					<label for="{{ form.phone.id_for_label }}">Teléfono</label>
+					{{ form.phone }}
+					{% if form.phone.errors %}
+					<div class="error-message">{{ form.phone.errors.0 }}</div>
+					{% endif %}
+				</div>
+			</div>
+			
+			<div class="form-row">
+				<div class="field-group">
+					<label for="{{ form.address.id_for_label }}">Dirección</label>
+					{{ form.address }}
+					{% if form.address.errors %}
+					<div class="error-message">{{ form.address.errors.0 }}</div>
+					{% endif %}
+				</div>
+				<div class="field-group">
+					<label for="{{ form.gender.id_for_label }}">Género</label>
+					{{ form.gender }}
+					{% if form.gender.errors %}
+					<div class="error-message">{{ form.gender.errors.0 }}</div>
+					{% endif %}
+				</div>
+			</div>
+		</div>
+
+		<!-- Foto de Perfil -->
+		<div class="form-card">
+			<div class="section-title">
+				<i class="fas fa-image"></i>Foto de Perfil
+			</div>
+			
+			<div class="field-group">
+				<div class="file-upload">
+					<label for="{{ form.picture.id_for_label }}">
+						<i class="fas fa-cloud-upload-alt fa-2x text-muted mb-3"></i>
+						<p class="mb-2">Haz clic para subir o arrastra y suelta</p>
+						<p class="small text-muted">PNG, JPG, GIF hasta 10MB</p>
+					</label>
+					{{ form.picture }}
+				</div>
+				{% if form.picture.errors %}
+				<div class="error-message">{{ form.picture.errors.0 }}</div>
+				{% endif %}
+			</div>
+		</div>
+		
+		<div class="text-center">
+			<a href="{% url 'lecturer_list' %}" class="btn-cancel">
+				<i class="fas fa-times me-2"></i>Cancelar
+			</a>
+			<button type="submit" class="btn-submit">
+				<i class="fas fa-save me-2"></i>Actualizar Profesor
+			</button>
+		</div>
+	</form>
+</div>
+
+{% endblock content %}
